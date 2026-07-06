@@ -1,1 +1,12 @@
 .vs/
+appsettings.json
+appsettings.Development.json
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.idea/
+.vscode/
+*.log
