@@ -1,4 +1,6 @@
 using BosBelme.Data;
+using BosBelme.Service.Service;
+using BosBelme.Service.IService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddControllersWithViews();
+
+// Внедрение зависимостей для сервисов аутентификации и регистрации
+builder.Services.AddScoped<IAuthentication, Authentication>();
+builder.Services.AddScoped<IRegistration, Registration>();
 
 var app = builder.Build();
 
