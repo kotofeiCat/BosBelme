@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Тут общие стили */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Это стили для header */
+header {
+    font-family: "Montserrat";
+    font-weight: 800;
+    background-color: #b4dfe5;
+}
+
+.header {
+    color: #303c6c;
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    margin: 15px;
+}
+
+.tabs {
+    margin: 20px 20px 0px 0px;
+    font-size: small;
+}
+
+/* Это стили для main */
+main {
+    font-family: "Montserrat";
+    font-weight: 500;
+    background-color: #d2fdff;
+    overflow: auto;
+}
+
+.first-text {
+    font-weight: 900;
+    font-size:xx-large;
+    margin: 35px 20px 15px 20px;
+}
+
+.other-text {
+    margin: 0px 25px 30px 25px;
+}
+
+.btn {
+    padding: 10px 24px;
+    background-color: #fbe8a6;
+    color: #f4976c;
+    border-radius: 11px;
+    cursor: pointer;
+    -webkit-tab-highlight-color: transparent;
+    font-weight: 700;
+    transition: background-color 0.8s ease transform 0.7s ease;
+}
+
+.btn:hover {
+    padding: 6px 20px;
+}
+
+/* Это стили для footer */
+footer {
+    font-family: "Montserrat";
+    font-weight: 400;
+    background-color: #303c6c;
+    color: #d2fdff;
+    font-size: small;
+    text-align: center;
+    padding: 15px;
+}
+
+footer a {
+    color: #d2fdff;
+}
+
+footer div {
+    margin: 15px;
+}
+
+footer p {
+    color: #b4dfe5
+}
+
