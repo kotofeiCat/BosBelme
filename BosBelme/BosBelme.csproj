@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BosBelme.Data\BosBelme.Data.csproj" />
+    <ProjectReference Include="..\BosBelme.Service\BosBelme.Service.csproj" />
   </ItemGroup>
 
 </Project>

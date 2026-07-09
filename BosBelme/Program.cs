@@ -14,8 +14,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 // Внедрение зависимостей для сервисов аутентификации и регистрации
-builder.Services.AddScoped<IAuthentication, Authentication>();
-builder.Services.AddScoped<IRegistration, Registration>();
+builder.Services.AddScoped<IAuthService, Authentication>();
+builder.Services.AddScoped<IRegService, Registration>();
 
 var app = builder.Build();
 

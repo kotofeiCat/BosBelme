@@ -1,19 +1,22 @@
 using BosBelme.Models;
+using BosBelme.Service.Service;
+using BosBelme.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace BosBelme.Controllers
 {
-    public class HomeController : Controller
+    public class AccountController : Controller
     {
+
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Login()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult Help()
+        public IActionResult Register()
         {
             return View();
         }
