@@ -6,10 +6,10 @@ namespace BosBelme.ViewModels
     {
         [MaxLength(50)]
         [Required]
-        public string NameOrEmail { get; set; }
+        public string NameOrEmail { get; set; } = string.Empty;
 
         [MaxLength(100)]
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }

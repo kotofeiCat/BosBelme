@@ -7,6 +7,6 @@ namespace BosBelme.Service.IService
 {
     public interface IAuthService
     {
-        Task<Users?> AuthenticationUserAsync(string loginOrEmail, string password);
+        Task<Users> AuthenticationUserAsync(string loginOrEmail, string password);
     }
 }

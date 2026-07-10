@@ -1,24 +1,31 @@
-<p class="first-text dark-color">Регистрация</p>
+@{
+    ViewData["Title"] = "Регистрация";
+}
 
-<hr class="line">
+<h2 class="first-text">Регистрация нового пользователя</h2>
+<div class="line"></div>
 
-<form action="" method="post">
-    <label for="name"></label>
-    <input name="Name" class="input container" id="name" type="text" placeholder="Имя" maxlength="20" required>
+<div asp-validation-summary="ModelOnly" class="form-link" style="color: red; margin-bottom: 15px;"></div>
 
-    <label for="email"></label>
-    <input name="Email" class="input container" id="email" type="email" placeholder="Почта" required>
-
-    <label for="password"></label>
-    <input name="Password" class="input container" id="password" type="password" placeholder="Пароль" maxlength="100" required>
-    
-    <label for="confirm-password"></label>
-    <input name="ConfirmPassword" class="input container" id="confirm-password" type="password" placeholder="Повторите" maxlength="100" required>
-
-    <div class="row-container">
-        <button class="send" type="submit">Отправить</button>
-
-        <p class="for-login"><a href="/Account/Login">Уже есть аккаунт?</a></p>
+<form asp-controller="Account" asp-action="Register" method="post" class="retro-form">
+    <div class="input-group">
+        <input name="Name" class="retro-input" id="name" type="text" placeholder="Имя пользователя" maxlength="20" required>
     </div>
-    
+
+    <div class="input-group">
+        <input name="Email" class="retro-input" id="email" type="email" placeholder="Эл. почта (Email)" required>
+    </div>
+
+    <div class="input-group">
+        <input name="Password" class="retro-input" id="password" type="password" placeholder="Пароль" maxlength="100" required>
+    </div>
+
+    <div class="input-group">
+        <input name="ConfirmPassword" class="retro-input" id="confirm-password" type="password" placeholder="Подтвердите пароль" maxlength="100" required>
+    </div>
+
+    <div class="form-footer">
+        <button class="retro-btn" type="submit">Создать</button>
+        <a class="form-link" asp-controller="Account" asp-action="Login">Уже есть аккаунт?</a>
+    </div>
 </form>

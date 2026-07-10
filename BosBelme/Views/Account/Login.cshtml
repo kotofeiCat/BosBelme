@@ -1,18 +1,23 @@
-<p class="first-text dark-color">Авторизация</p>
+@{
+    ViewData["Title"] = "Авторизация";
+}
 
-<hr class="line">
+<h2 class="first-text">Вход в систему</h2>
+<div class="line"></div>
 
-<form action="" method="post">
-    <label for="email"></label>
-    <input name="NameOrEmail" class="input container" id="email" type="email" placeholder="Имя или Почта" required>
+<div asp-validation-summary="ModelOnly" class="form-link" style="color: red; margin-bottom: 15px;"></div>
 
-    <label for="password"></label>
-    <input name="Password" class="input container" id="password" type="password" placeholder="Пароль" maxlength="100" required>
-
-    <div class="row-container">
-        <button class="send" type="submit">Войти</button>
-
-        <p class="for-login"><a href="/Account/Register">Нет аккаунта?</a></p>
+<form asp-controller="Account" asp-action="Login" method="post" class="retro-form">
+    <div class="input-group">
+        <input name="NameOrEmail" class="retro-input" id="email" type="text" placeholder="Имя или Почта" required>
     </div>
-    
+
+    <div class="input-group">
+        <input name="Password" class="retro-input" id="password" type="password" placeholder="Пароль" maxlength="100" required>
+    </div>
+
+    <div class="form-footer">
+        <button class="retro-btn" type="submit">Войти</button>
+        <a class="form-link" asp-controller="Account" asp-action="Register">Нет аккаунта?</a>
+    </div>
 </form>

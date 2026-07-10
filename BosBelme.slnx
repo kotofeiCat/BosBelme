@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="BosBelme.Data/BosBelme.Data.csproj" Id="e81d414c-7590-435d-bed6-8d31d0fb80a5" />
+  <Project Path="BosBelme.Service/BosBelme.Service.csproj" />
+  <Project Path="BosBelme/BosBelme.csproj" />
 </Solution>

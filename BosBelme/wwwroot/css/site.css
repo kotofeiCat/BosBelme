@@ -1,155 +1,257 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* RoomBox Retro OS Stylesheet
+   Aesthetic: Classic B&W Macintosh System 7 / Windows 1.0
+*/
 
-/* Тут общие стили */
+:root {
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-gray-dark: #333333;
+    --color-gray-medium: #888888;
+    --color-gray-light: #dddddd;
+    --color-desktop-bg: #999999;
+}
+
+/* Сброс стилей и база */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
 body {
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', 'Courier Prime', monospace;
+    font-size: 11px;
+    background-color: var(--color-desktop-bg);
+    /* Классический 1-битный узор дизеринга (шахматка) */
+    background-image: radial-gradient(var(--color-black) 25%, transparent 25%), radial-gradient(var(--color-black) 25%, transparent 25%);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+    color: var(--color-black);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    user-select: none;
 }
 
 a {
     text-decoration: none;
+    color: var(--color-black);
 }
 
 ul {
     list-style: none;
 }
 
-/* Это стили для header */
-header {
-    font-family: "Montserrat";
-    font-weight: 800;
-    background-color: #b4dfe5;
-}
-
-.header {
-    color: #303c6c;
+/* Верхняя системная панель (Menu Bar) */
+.menu-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background-color: var(--color-white);
+    border-bottom: 2px solid var(--color-black);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 0 12px;
+    z-index: 100;
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.logo {
-    margin: 15px;
+.menu-left, .menu-right {
+    display: flex;
+    align-items: center;
 }
 
-.tabs {
-    margin: 20px 20px 0px 0px;
-    font-size: small;
-}
-
-/* Это стили для main */
-main {
-    font-family: "Montserrat";
-    font-weight: 500;
-    background-color: #d2fdff;
-    overflow: auto;
-}
-
-.first-text {
-    font-weight: 900;
-    font-size:xx-large;
-    margin: 35px 20px 15px 20px;
-}
-
-.other-text {
-    margin: 0px 25px 30px 25px;
-}
-
-.btn {
-    padding: 10px 24px;
-    background-color: #fbe8a6;
-    color: #f4976c;
-    border-radius: 11px;
+.menu-item {
+    margin-right: 16px;
+    padding: 2px 6px;
     cursor: pointer;
-    -webkit-tab-highlight-color: transparent;
-    font-weight: 700;
-    transition: background-color 0.8s ease transform 0.7s ease;
 }
 
-.btn:hover {
-    padding: 6px 20px;
+    .menu-item:hover:not(.logo-icon) {
+        background-color: var(--color-black);
+        color: var(--color-white);
+    }
+
+.logo-icon {
+    font-size: 16px;
+    margin-right: 8px;
 }
 
-.container {
+/* Основной контейнер ОС-окна */
+.window-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px 40px 20px; /* Отступы с учетом menu-bar */
+}
+
+.window {
+    width: 100%;
+    max-width: 760px;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-black);
+    box-shadow: 6px 6px 0px var(--color-black);
     display: flex;
     flex-direction: column;
 }
 
-.row-container {
+/* Заголовок окна с фирменными горизонтальными линиями */
+.window-titlebar {
+    height: 28px;
+    background-color: var(--color-white);
+    border-bottom: 2px solid var(--color-black);
     display: flex;
+    align-items: center;
+    position: relative;
 }
 
-.input {
-    padding: 10px 14px;
-    margin:  0px 0px 20px 27px;
-    border-radius: 6px;
-    border: 1px solid #f4976c;
-    background-color: #fbe8a6;
-    box-sizing: border-box;
+.titlebar-lines {
+    flex-grow: 1;
+    height: 12px;
+    margin: 0 8px;
+    background: repeating-linear-gradient( 0deg, var(--color-black), var(--color-black) 2px, transparent 2px, transparent 4px );
 }
+
+.window-title {
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0 8px;
+    background-color: var(--color-white);
+    white-space: nowrap;
+}
+
+.close-box {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-black);
+    margin-left: 8px;
+    background-color: var(--color-white);
+}
+
+/* Тело окна */
+.window-body {
+    padding: 30px;
+    background-color: var(--color-white);
+}
+
+/* Элементы контента Главной страницы */
+.first-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.other-text {
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+/* Ретро Кнопки */
+.retro-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-black);
+    box-shadow: 4px 4px 0px var(--color-black);
+    cursor: pointer;
+    outline: none;
+    text-transform: uppercase;
+}
+
+    .retro-btn:hover {
+        background-color: var(--color-gray-light);
+    }
+
+    .retro-btn:active {
+        box-shadow: 0px 0px 0px;
+        transform: translate(4px, 4px);
+    }
+
+/* Формы и Инпуты */
+.retro-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.retro-input {
+    padding: 10px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    outline: none;
+}
+
+    .retro-input:focus {
+        background-color: var(--color-gray-light);
+    }
 
 .line {
     border: none;
-    height: 3px;
-    width: 239px;
-    background-color: #303c6c;
-    margin: 0px 0px 20px 17px;
+    height: 2px;
+    background-color: var(--color-black);
+    margin-bottom: 25px;
 }
 
-.send {
-    padding: 10px 24px;
-    background-color: #b4dfe5;
-    border: 2px solid #303c6c;
-    border-radius: 11px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background-color 0.8s ease transform 0.7s ease;
-    margin: 0px 0px 20px 29px;
+.form-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
 }
 
-.send:hover {
-    padding: 8px 22px;
+.form-link {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    text-decoration: underline;
 }
 
-.dark-color {
-    color: #303c6c;
+    .form-link:hover {
+        background-color: var(--color-black);
+        color: var(--color-white);
+    }
+
+/* Подвал внутри окна */
+.retro-footer {
+    border-top: 2px solid var(--color-black);
+    margin-top: 40px;
+    padding-top: 15px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
 }
 
-.for-login {
-    color: #303c6c;
-    font-size: small;
-    font-weight: 400;
-    margin: 13px;
+.footer-nav {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
 }
 
-.or {
-    margin: 0px 0px 20px 35px;
-}
+    .footer-nav a {
+        text-decoration: underline;
+    }
 
-/* Это стили для footer */
-footer {
-    font-family: "Montserrat";
-    font-weight: 400;
-    background-color: #303c6c;
-    color: #d2fdff;
-    font-size: small;
-    text-align: center;
-    padding: 15px;
-}
-
-footer a {
-    color: #d2fdff;
-}
-
-footer div {
-    margin: 15px;
-}
-
-footer p {
-    color: #b4dfe5
-}
+        .footer-nav a:hover {
+            background-color: var(--color-black);
+            color: var(--color-white);
+        }

@@ -1,9 +1,25 @@
-<header>
-    <nav class="header">
-        <h3 class="header logo">RoomBox</h3>
-        <ul class="header">
-            <li><a class="header tabs" href="/">Главная</a></li>
-            <li><a class="header tabs" href="/Home/Help">Помощь</a></li>
-        </ul>
-    </nav>
+<header class="menu-bar">
+    <div class="menu-left">
+        <span class="menu-item logo-icon">⚂</span>
+        <span class="menu-item" onclick="location.href='@Url.Action("Index", "Home")'"><b>RoomBox</b></span>
+        <a class="menu-item" asp-controller="Home" asp-action="Index">Главная</a>
+        <a class="menu-item" asp-controller="Home" asp-action="Help">Помощь</a>
+    </div>
+    <div class="menu-right">
+        <span class="menu-item" id="system-clock">12:00 PM</span>
+    </div>
 </header>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const clockEl = document.getElementById('system-clock');
+        if(clockEl) clockEl.textContent = `${hours}:${minutes} ${ampm}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>

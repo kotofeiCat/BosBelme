@@ -31,7 +31,7 @@ namespace BosBelme.Service.Service
             if(await _context.Users.AnyAsync(u => u.Name == login))
             {
                 // Если пользователь с таким именем уже существует, выбрасывается другое исключение.
-                throw new UserAlreadyExistsException("Пользователь с таким именем уже существует.");
+                throw new UserNameAlreadyExistsException("Пользователь с таким именем уже существует.");
             }
 
             Users user = new Users
@@ -41,7 +41,7 @@ namespace BosBelme.Service.Service
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
             };
 
-            _context.Users.Add(user);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
             return user;
