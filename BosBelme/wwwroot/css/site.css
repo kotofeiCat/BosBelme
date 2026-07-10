@@ -23,9 +23,8 @@ body {
     min-height: 100vh;
     font-family: 'Press Start 2P', 'Courier Prime', monospace;
     font-size: 11px;
-    background-color: var(--color-desktop-bg);
-    /* Классический 1-битный узор дизеринга (шахматка) */
-    background-image: radial-gradient(var(--color-black) 25%, transparent 25%), radial-gradient(var(--color-black) 25%, transparent 25%);
+    background-color: #a0a0a0; 
+    background-image: radial-gradient(rgba(0, 0, 0, 0.12) 25%, transparent 25%), radial-gradient(rgba(0, 0, 0, 0.12) 25%, transparent 25%);
     background-size: 4px 4px;
     background-position: 0 0, 2px 2px;
     color: var(--color-black);
@@ -303,4 +302,311 @@ ul {
 .logout-btn:hover {
     background-color: var(--color-black) !important;
     color: var(--color-white) !important;
+}
+
+/* --- ОБНОВЛЕННЫЙ ХЕДЕР И НАСТРОЙКА ИКОНКИ --- */
+.menu-brand {
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 10px;
+}
+
+    .logo-icon img {
+        height: 20px; /* Оптимальный размер под высоту хедера */
+        width: auto;
+        display: block;
+        /* Ретро-магия: запрещаем браузеру размывать пиксели при масштабировании */
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+    }
+
+.menu-right-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-desktop-nav {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+/* Очистка стилей кнопок-форм в шапке */
+.logout-form {
+    display: inline;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+}
+
+/* --- РЕТРО БУРГЕР-КНОПКА --- */
+.burger-btn {
+    display: none; /* Скрыта на ПК */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 101;
+}
+
+.burger-line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-black);
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+/* Эффект крестика при активации бургера */
+.burger-btn.open .burger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.burger-btn.open .burger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-btn.open .burger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+
+/* --- КРАСИВОЕ БОКОВОЕ МЕНЮ (SIDEBAR) --- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -280px; /* Спрятано за экраном по умолчанию */
+    width: 260px;
+    height: 100vh;
+    background-color: var(--color-white);
+    border-left: 3px solid var(--color-black);
+    box-shadow: -4px 0px 0px var(--color-black);
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); /* Приятный упругий сдвиг */
+}
+
+    .sidebar.open {
+        right: 0; /* Выезжает */
+    }
+
+/* Ретро-оверлей (затемнение с пиксельной текстурой дизеринга) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    /* Шахматный ретро-узор для эффекта старого экрана */
+    background-image: radial-gradient(rgba(0,0,0,0.5) 15%, transparent 15%);
+    background-size: 4px 4px;
+    z-index: 140;
+}
+
+    .sidebar-overlay.open {
+        display: block;
+    }
+
+/* Шапка бокового окна */
+.sidebar-header {
+    height: 34px;
+    border-bottom: 2px solid var(--color-black);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background-color: var(--color-white);
+}
+
+.sidebar-titlebar-lines {
+    flex-grow: 1;
+    height: 10px;
+    margin: 0 10px;
+    background: repeating-linear-gradient(0deg, var(--color-black), var(--color-black) 2px, transparent 2px, transparent 4px);
+}
+
+.sidebar-title {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    font-weight: bold;
+    background: var(--color-white);
+    padding-left: 6px;
+}
+
+/* Кнопка закрытия [×] в стиле старого Mac/Win */
+.sidebar-close-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+    .sidebar-close-box:active {
+        background-color: var(--color-black);
+        color: var(--color-white);
+    }
+
+/* Содержимое меню */
+.sidebar-content {
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-item {
+    font-family: 'Courier Prime', monospace;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--color-black);
+    text-decoration: none;
+    padding: 10px 12px;
+    border: 2px solid transparent;
+    display: block;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+    .sidebar-item:hover {
+        background-color: var(--color-black);
+        color: var(--color-white);
+        border-color: var(--color-black);
+    }
+
+.sidebar-divider {
+    height: 2px;
+    background-color: var(--color-black);
+    margin: 10px 5px;
+    border-bottom: 1px dashed var(--color-gray-light);
+}
+
+.sidebar-logout-btn {
+    background: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+
+/* --- МЕДИА-ЗАПРОС ДЛЯ МОБИЛЬНЫХ СИСТЕМ --- */
+@media (max-width: 768px) {
+    .menu-desktop-nav {
+        display: none; /* Прячем обычные ссылки на смартфонах */
+    }
+
+    .burger-btn {
+        display: flex; /* Показываем ретро-гамбургер */
+    }
+}
+
+/* --- СИСТЕМА ДЛЯ ВСТАВКИ КАРТИНОК --- */
+
+/* Контейнер-рамка для фото */
+.retro-img-frame {
+    display: block;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    padding: 6px; /* Внутренний отступ создает эффект паспарту */
+    box-shadow: 4px 4px 0px var(--color-black);
+    margin: 15px 0;
+    max-width: 100%;
+}
+
+.retro-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-black);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.retro-img-caption {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--color-gray-dark);
+    text-align: center;
+    margin-top: 8px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--color-black);
+}
+
+.retro-img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+/* site.css */
+/* Добавьте эти стили в конец вашего файла site.css */
+
+/* Модификатор для ретро-кнопок с иконками */
+.retro-btn.btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+}
+
+.retro-btn .btn-icon {
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Улучшенные ретро-инпуты с лейблами */
+.input-group label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+/* Стилизация статусных иконок в профиле */
+.profile-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-badge {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 2px 6px;
+    font-size: 11px;
+    font-family: 'Press Start 2P', monospace;
 }

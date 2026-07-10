@@ -4,9 +4,6 @@ namespace BosBelme.Controllers
 {
     public class HubController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
     }
 }

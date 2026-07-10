@@ -1,31 +1,39 @@
+
 @{
     ViewData["Title"] = "Регистрация";
 }
 
-<h2 class="first-text">Регистрация нового пользователя</h2>
+<h2 class="first-text">Создание аккаунта</h2>
 <div class="line"></div>
 
 <div asp-validation-summary="ModelOnly" class="form-link" style="color: red; margin-bottom: 15px;"></div>
 
 <form asp-controller="Account" asp-action="Register" method="post" class="retro-form">
     <div class="input-group">
-        <input name="Name" class="retro-input" id="name" type="text" placeholder="Имя пользователя" maxlength="20" required>
+        <label for="name">Имя пользователя:</label>
+        <input name="Name" class="retro-input" id="name" type="text" placeholder="User123" maxlength="20" required>
     </div>
 
     <div class="input-group">
-        <input name="Email" class="retro-input" id="email" type="email" placeholder="Эл. почта (Email)" required>
+        <label for="email">Электронная почта:</label>
+        <input name="Email" class="retro-input" id="email" type="email" placeholder="example@roombox.com" required>
     </div>
 
     <div class="input-group">
-        <input name="Password" class="retro-input" id="password" type="password" placeholder="Пароль" maxlength="100" required>
+        <label for="password">Пароль:</label>
+        <input name="Password" class="retro-input" id="password" type="password" placeholder="••••••••" maxlength="100" required>
     </div>
 
     <div class="input-group">
-        <input name="ConfirmPassword" class="retro-input" id="confirm-password" type="password" placeholder="Подтвердите пароль" maxlength="100" required>
+        <label for="confirm-password">Подтверждение пароля:</label>
+        <input name="ConfirmPassword" class="retro-input" id="confirm-password" type="password" placeholder="••••••••" maxlength="100" required>
     </div>
 
     <div class="form-footer">
-        <button class="retro-btn" type="submit">Создать</button>
+        <button class="retro-btn btn-with-icon" type="submit">
+            <img src="~/img/disk-icon.png" class="btn-icon" alt="" />
+            <span>Создать</span>
+        </button>
         <a class="form-link" asp-controller="Account" asp-action="Login">Уже есть аккаунт?</a>
     </div>
 </form>

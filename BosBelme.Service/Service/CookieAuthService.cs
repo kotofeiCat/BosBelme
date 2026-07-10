@@ -25,6 +25,7 @@ namespace BosBelme.Service.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
+        // Метод для входа пользователя в систему с использованием куки
         public async Task SignInAsync(RegisterDto dto)
         {
             List<Claim> claims = new List<Claim>
@@ -49,6 +50,7 @@ namespace BosBelme.Service.Service
                 });
         }
 
+        // Метод для выхода пользователя из системы
         public async Task SignOutAsync()
         {
             await _httpContextAccessor.HttpContext.SignOutAsync(

@@ -1,25 +1,74 @@
 <header class="menu-bar">
-    <div class="menu-left">
-        <span class="menu-item logo-icon">⚂</span>
-        <span class="menu-item" onclick="location.href='@Url.Action("Index", "Home")'"><b>RoomBox</b></span>
-        <a class="menu-item" asp-controller="Home" asp-action="Help">Помощь</a>
+    <div class="menu-brand">
+        <span class="menu-item logo-icon">
+            <img src="~/img/old-computer.png" alt="RoomBox Logo" />
+        </span>
+        <span class="menu-item brand-name" onclick="location.href='@Url.Action("Index", "Home")'"><b>RoomBox</b></span>
     </div>
-    <div class="menu-right">
+
+    <div class="menu-desktop-nav">
+        <a class="menu-item" asp-controller="Home" asp-action="Help">
+            Помощь
+        </a>
         @if (User?.Identity?.IsAuthenticated == true)
         {
-            <a class="menu-item" asp-controller="Account" asp-action="Profile">👤 Профиль</a>
-            <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
-                <button type="submit" class="menu-item logout-btn" style="background:none; border:none; font-family:inherit; font-size:inherit; font-weight:inherit; cursor:pointer;">Выйти</button>
+            <a class="menu-item" asp-controller="Account" asp-action="Profile">
+                Профиль
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
+                <button type="submit" class="menu-item logout-btn">
+                    Выйти
+                </button>
             </form>
         }
         else
         {
-            <a class="menu-item" asp-controller="Account" asp-action="Login">Войти</a>
+            <a class="menu-item" asp-controller="Account" asp-action="Login">Вход</a>
             <a class="menu-item" asp-controller="Account" asp-action="Register">Регистрация</a>
         }
+    </div>
+
+    <div class="menu-right-panel">
         <span class="menu-item" id="system-clock">12:00 PM</span>
+        <button class="burger-btn" onclick="toggleSidebar()" aria-label="Открыть меню">
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+        </button>
     </div>
 </header>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar" id="sidebarMenu">
+    <div class="sidebar-header">
+        <button class="sidebar-close-box" onclick="toggleSidebar()">×</button>
+        <div class="sidebar-titlebar-lines"></div>
+        <span class="sidebar-title">MENU</span>
+    </div>
+    <div class="sidebar-content">
+        <a class="sidebar-item" asp-controller="Home" asp-action="Help">
+            Помощь
+        </a>
+        <div class="sidebar-divider"></div>
+        @if (User?.Identity?.IsAuthenticated == true)
+        {
+            <a class="sidebar-item" asp-controller="Account" asp-action="Profile">
+                Личный кабинет
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="sidebar-item sidebar-logout-btn">
+                    Выйти
+                </button>
+            </form>
+        }
+        else
+        {
+            <a class="sidebar-item" asp-controller="Account" asp-action="Login">Войти</a>
+            <a class="sidebar-item" asp-controller="Account" asp-action="Register">Регистрация</a>
+        }
+    </div>
+</nav>
 
 <script>
     function updateClock() {
@@ -31,6 +80,17 @@
         const clockEl = document.getElementById('system-clock');
         if(clockEl) clockEl.textContent = `${hours}:${minutes} ${ampm}`;
     }
-    setInterval(updateClock, 1000);
+    setInterval(updateClock, 30000); 
     updateClock();
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebarMenu');
+        const overlay = document.getElementById('sidebarOverlay');
+        const burger = document.querySelector('.burger-btn');
+        if (sidebar && overlay && burger) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            burger.classList.toggle('open');
+        }
+    }
 </script>

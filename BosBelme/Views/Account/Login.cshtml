@@ -1,3 +1,4 @@
+
 @{
     ViewData["Title"] = "Авторизация";
 }
@@ -9,15 +10,20 @@
 
 <form asp-controller="Account" asp-action="Login" method="post" class="retro-form">
     <div class="input-group">
-        <input name="NameOrEmail" class="retro-input" id="email" type="text" placeholder="Имя или Почта" required>
+        <label for="email">Имя пользователя или Email:</label>
+        <input name="NameOrEmail" class="retro-input" id="email" type="text" placeholder="Введите логин..." required>
     </div>
 
     <div class="input-group">
-        <input name="Password" class="retro-input" id="password" type="password" placeholder="Пароль" maxlength="100" required>
+        <label for="password">Пароль:</label>
+        <input name="Password" class="retro-input" id="password" type="password" placeholder="••••••••" maxlength="100" required>
     </div>
 
     <div class="form-footer">
-        <button class="retro-btn" type="submit">Войти</button>
+        <button class="retro-btn btn-with-icon" type="submit">
+            <img src="~/img/key-icon.png" class="btn-icon" alt="" />
+            <span>Войти</span>
+        </button>
         <a class="form-link" asp-controller="Account" asp-action="Register">Нет аккаунта?</a>
     </div>
 </form>
