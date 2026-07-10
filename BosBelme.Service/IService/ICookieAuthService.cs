@@ -9,5 +9,7 @@ namespace BosBelme.Service.IService
     public interface ICookieAuthService
     {
         Task SignInAsync(RegisterDto dto);
+
+        Task SignOutAsync();
     }
 }

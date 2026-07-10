@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<h1 class="first-text">Данные пользователя</h1>
+<hr class="line" />
+
+<div class="profile-card">
+    <div class="profile-avatar">
+        <span style="font-size: 48px;">👤</span>
+    </div>
+
+    <div class="profile-info">
+        <div class="info-row">
+            <span class="info-label">Имя пользователя:</span>
+            <span class="info-value">@User?.Identity?.Name</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Системный ID:</span>
+            <span class="info-value">#04892-X</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Статус:</span>
+            <span class="info-value">[ Administrator ]</span>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 30px;">
+    <a asp-controller="Home" asp-action="Index" class="retro-btn">На главную</a>
+</div>

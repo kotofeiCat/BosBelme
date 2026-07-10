@@ -6,7 +6,7 @@ namespace BosBelme.Controllers
         private readonly IAuthService _authService;
         private readonly IRegService _regService;
         private readonly ICookieAuthService _cookieAuthService;
-        
+
         public AccountController(
             IAuthService authService,
             IRegService regService,
@@ -21,6 +21,7 @@ namespace BosBelme.Controllers
         // Методы для отображения страниц регистрации и входа
         public IActionResult Register() => View();
         public IActionResult Login() => View();
+        public IActionResult Profile() => View();
 
 
         // Методы для обработки POST-запросов регистрации
@@ -45,12 +46,12 @@ namespace BosBelme.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
-            catch( UserNameAlreadyExistsException ex)
+            catch (UserNameAlreadyExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
-            } 
-            catch( Exception ex)
+            }
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
@@ -88,6 +89,12 @@ namespace BosBelme.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _cookieAuthService.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

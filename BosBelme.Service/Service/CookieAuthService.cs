@@ -48,5 +48,11 @@ namespace BosBelme.Service.Service
                     ExpiresUtc = DateTime.UtcNow.AddDays(30)
                 });
         }
+
+        public async Task SignOutAsync()
+        {
+            await _httpContextAccessor.HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
+        }
     }
 }

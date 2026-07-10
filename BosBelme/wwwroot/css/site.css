@@ -255,3 +255,52 @@ ul {
             background-color: var(--color-black);
             color: var(--color-white);
         }
+
+/* Стили для личного кабинета */
+.profile-card {
+    display: flex;
+    gap: 20px;
+    border: 2px dashed var(--color-black);
+    padding: 20px;
+    background-color: var(--color-white);
+    max-width: 500px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--color-black);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-gray-light);
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+}
+
+.info-row {
+    display: flex;
+    gap: 10px;
+}
+
+.info-label {
+    font-weight: bold;
+    color: var(--color-gray-dark);
+}
+
+.info-value {
+    color: var(--color-black);
+}
+
+/* Фикс для кнопки выхода в меню */
+.logout-btn:hover {
+    background-color: var(--color-black) !important;
+    color: var(--color-white) !important;
+}

@@ -1,0 +1,12 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace BosBelme.Controllers
+{
+    public class HubController : Controller
+    {
+        public IActionResult Index()
+        {
+            return View();
+        }
+    }
+}
