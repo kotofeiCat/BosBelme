@@ -5,8 +5,8 @@ using System.Text;
 namespace BosBelme.Service.Exceptions
 {
     //Кастомное исключения, для обрабоктки существующего имени при регистрации
-    public class UserNameAlredyExistsException : Exception
+    public class UserNameAlreadyExistsException : Exception
     {
-        public UserNameAlredyExistsException(string message) : base(message) { }
+        public UserNameAlreadyExistsException(string message) : base(message) { }
     }
 }

@@ -1,8 +1,3 @@
-using BosBelme.Data;
-using BosBelme.Service.Service;
-using BosBelme.Service.IService;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
 
-// Внедрение зависимостей для сервисов аутентификации, регистрации и куки
+// Внедрение зависимостей для сервисов
 builder.Services.AddScoped<IAuthService, Authentication>();
 builder.Services.AddScoped<IRegService, Registration>();
 builder.Services.AddScoped<ICookieAuthService, CookieAuthService>();
@@ -40,8 +35,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseAuthorization();
+
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

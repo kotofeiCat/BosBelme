@@ -1,15 +1,3 @@
-using BosBelme.ViewModels;
-using BosBelme.Service.Dto;
-using BosBelme.Service.Service;
-using BosBelme.Service.IService;
-using BosBelme.Service.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using BosBelme.Data;
-using BosBelme.Data.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using BosBelme.Service.Extension;
-
 namespace BosBelme.Controllers
 {
     public class AccountController : Controller
@@ -29,9 +17,13 @@ namespace BosBelme.Controllers
             _cookieAuthService = cookieAuthService;
         }
 
+
+        // Методы для отображения страниц регистрации и входа
         public IActionResult Register() => View();
         public IActionResult Login() => View();
 
+
+        // Методы для обработки POST-запросов регистрации
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -65,6 +57,8 @@ namespace BosBelme.Controllers
             }
         }
 
+
+        // Методы для обработки POST-запросов входа
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {

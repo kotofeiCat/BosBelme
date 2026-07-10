@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace BosBelme.ViewModels
 {
+    // Модель представления для регистрации пользователя
     public class RegisterViewModel
     {   
         [MaxLength(20)]

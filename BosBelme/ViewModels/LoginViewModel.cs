@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace BosBelme.ViewModels
 {
+    // Модель представления для входа пользователя
     public class LoginViewModel
     {
         [MaxLength(50)]

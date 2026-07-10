@@ -1,27 +1,13 @@
-using BosBelme.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
 namespace BosBelme.Controllers
 {
     public class HomeController : Controller
     {
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
 
-        [HttpGet]
-        public IActionResult Help()
-        {
-            return View();
-        }
+        // Методы для отображения страниц
+        public IActionResult Index() => View();
 
-        [HttpGet]
-        public IActionResult Home()
-        {
-            return View();
-        }
+        public IActionResult Help() => View();
+
+        public IActionResult Home() => View();
     }
 }
