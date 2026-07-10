@@ -4,20 +4,20 @@ using Microsoft.EntityFrameworkCore;
 namespace BosBelme.Data
 {
     //Основной контекст нашей базы данных, который будет использоваться для взаимодействия с таблицами и бд
-    public class ApplicationDbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         // Создание таблиц
         public DbSet<Users> Users { get; set; }
+
         public DbSet<Game> Games { get; set; }
 
         public DbSet<GameHub> GameHubs { get; set; }
 
         public DbSet<GameSession> GameSessions { get; set; }
 
-
-        // Метод для установки свящей между таблицами
+        // Метод для установки связей между таблицами
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

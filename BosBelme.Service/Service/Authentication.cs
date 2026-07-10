@@ -4,28 +4,33 @@ using System.Collections.Generic;
 using System.Text;
 using BosBelme.Data;
 using BosBelme.Data.Entities;
+using BosBelme.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BosBelme.Service.Service
 {
-    // Сервис для аутентификации пользователей реализует интерфейс IAuthentication
-    public class Authentication : IAuthentication
+    // Сервис для аутентификации пользователей реализует интерфейс IAuthService
+    public class Authentication : IAuthService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public Authentication(ApplicationDbContext context)
+        public Authentication(AppDbContext context)
         {
             _context = context;
         }
 
         //Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
-        public async Task<Users?> AuthenticationUserAsync(string loginOrEmail, string password)
+        public async Task<Users> AuthenticationUserAsync(string loginOrEmail, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
+            Users user = await _context.Users.FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (user == null)
             {
-                return null;
+                throw new UserNotExistsException("Пользователя не существует.");
+            }
+            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            {
+                throw new UserPasswordWrongException("Неверный пароль при авторизации.");
             }
 
             return user;

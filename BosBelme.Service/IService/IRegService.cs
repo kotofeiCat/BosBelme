@@ -6,7 +6,7 @@ using BosBelme.Data.Entities;
 
 namespace BosBelme.Service.IService
 {
-    public interface IRegistration
+    public interface IRegService
     {
         Task<Users> RegistrationUserAsync(string login, string password, string email);
     }
