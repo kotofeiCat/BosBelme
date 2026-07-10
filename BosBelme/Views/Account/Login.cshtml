@@ -1,23 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Регистрация</title>
-    <meta name="viewport" content="width=device-width, inital-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="~/css/login.css">
-</head>
+<p class="first-text dark-color">Авторизация</p>
 
-<body>
-    <header>
-        <p>Тут ты хочешь увидеть регистрацию</p>
-    </header>
+<hr class="line">
 
-    <main>
-        
-    </main>
+<form action="" method="post">
+    <label for="email"></label>
+    <input name="NameOrEmail" class="input container" id="email" type="email" placeholder="Имя или Почта" required>
 
-    <footer>
+    <label for="password"></label>
+    <input name="Password" class="input container" id="password" type="password" placeholder="Пароль" maxlength="100" required>
 
-    </footer>
-</body>
+    <div class="row-container">
+        <button class="send" type="submit">Войти</button>
 
-</html>
+        <p class="for-login"><a href="/Account/Register">Нет аккаунта?</a></p>
+    </div>
+    
+</form>

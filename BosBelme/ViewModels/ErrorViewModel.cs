@@ -1,4 +1,4 @@
-namespace BosBelme.Models
+namespace BosBelme.ViewModels
 {
     public class ErrorViewModel
     {

@@ -1,4 +1,4 @@
-using BosBelme.Models;
+using BosBelme.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -14,6 +14,12 @@ namespace BosBelme.Controllers
 
         [HttpGet]
         public IActionResult Help()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Home()
         {
             return View();
         }

@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Тут общие стили */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Это стили для header */
+header {
+    font-family: "Montserrat";
+    font-weight: 800;
+    background-color: #b4dfe5;
+}
+
+.header {
+    color: #303c6c;
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    margin: 15px;
+}
+
+.tabs {
+    margin: 20px 20px 0px 0px;
+    font-size: small;
+}
+
+/* Это стили для main */
+main {
+    font-family: "Montserrat";
+    font-weight: 500;
+    background-color: #d2fdff;
+    overflow: auto;
+}
+
+.first-text {
+    font-weight: 900;
+    font-size:xx-large;
+    margin: 35px 20px 15px 20px;
+}
+
+.other-text {
+    margin: 0px 25px 30px 25px;
+}
+
+.btn {
+    padding: 10px 24px;
+    background-color: #fbe8a6;
+    color: #f4976c;
+    border-radius: 11px;
+    cursor: pointer;
+    -webkit-tab-highlight-color: transparent;
+    font-weight: 700;
+    transition: background-color 0.8s ease transform 0.7s ease;
+}
+
+.btn:hover {
+    padding: 6px 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row-container {
+    display: flex;
+}
+
+.input {
+    padding: 10px 14px;
+    margin:  0px 0px 20px 27px;
+    border-radius: 6px;
+    border: 1px solid #f4976c;
+    background-color: #fbe8a6;
+    box-sizing: border-box;
+}
+
+.line {
+    border: none;
+    height: 3px;
+    width: 239px;
+    background-color: #303c6c;
+    margin: 0px 0px 20px 17px;
+}
+
+.send {
+    padding: 10px 24px;
+    background-color: #b4dfe5;
+    border: 2px solid #303c6c;
+    border-radius: 11px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.8s ease transform 0.7s ease;
+    margin: 0px 0px 20px 29px;
+}
+
+.send:hover {
+    padding: 8px 22px;
+}
+
+.dark-color {
+    color: #303c6c;
+}
+
+.for-login {
+    color: #303c6c;
+    font-size: small;
+    font-weight: 400;
+    margin: 13px;
+}
+
+.or {
+    margin: 0px 0px 20px 35px;
+}
+
+/* Это стили для footer */
+footer {
+    font-family: "Montserrat";
+    font-weight: 400;
+    background-color: #303c6c;
+    color: #d2fdff;
+    font-size: small;
+    text-align: center;
+    padding: 15px;
+}
+
+footer a {
+    color: #d2fdff;
+}
+
+footer div {
+    margin: 15px;
+}
+
+footer p {
+    color: #b4dfe5
+}
