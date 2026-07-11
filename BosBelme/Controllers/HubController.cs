@@ -46,7 +46,7 @@ namespace BosBelme.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = await _registeredServices.RegistrationTempUserAsync(model.PlayerName);
+            var user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
 
             var gameHub = await _roomService.CreateRoomAsync(user.Id);
 
@@ -65,33 +65,11 @@ namespace BosBelme.Controllers
         {
             if (string.IsNullOrEmpty(code)) return RedirectToAction("Index");
 
-            var gameHub = await _context.GameHubs.Include(gh => gh.GameSessions)
-                .ThenInclude(gs => gs.Player)
-                .FirstOrDefaultAsync(gh => gh.ConnectionKey == code);
+            var model = await _roomService.GetRoomDetailsAsync(code);
 
-            if (gameHub == null) return RedirectToAction("Index");
+            if (model == null) return RedirectToAction("Index");
 
-            var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost);
-            string hostName = hostSession?.Player?.Name ?? "Не назначен";
-
-            var model = new RoomViewModel
-            {
-                RoomCode = gameHub.ConnectionKey,
-                RoomName = gameHub.Name,
-                HostName = hostName,
-                Status = gameHub.Status.ToString(),
-
-                Players = gameHub.GameSessions
-                    .Select(gs => new RoomPlayerViewModel
-                    {
-                        Name = gs.Player?.Name ?? "Неизвестный",
-                        IsHost = gs.IsHost,
-                        IsGuest = gs.Player?.IsGuest ?? true
-                    })
-                    .ToList()
-            };
-
-            ViewData["Tittle"] = $"Комната {gameHub.Name}";
+            ViewData["Title"] = $"Комната {model.RoomName}";
 
             return View(model);
         }

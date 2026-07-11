@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data;
-using BosBelme.Data.Entities;
-using BosBelme.Service.Exceptions;
-using BosBelme.Service.IService;
-using Microsoft.EntityFrameworkCore;
-
 namespace BosBelme.Service.Service
 {
     //Класс для регистрации нового пользователя в системе. Реализует интерфейс IRegService.
@@ -48,20 +40,21 @@ namespace BosBelme.Service.Service
         }
 
         //Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
-        public async Task<Users> RegistrationTempUserAsync(string login)
+        public async Task<Users> RegistrationUserAsync(string login)
         {
             if (await _context.Users.AnyAsync(u => u.Name == login))
-            {
                 throw new UserNameAlreadyExistsException("Пользователь с таким именем уже существует.");
-            }
+
             Users user = new Users
             {
                 Name = login,
                 Email = null,
                 PasswordHash = null
             };
+
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+
             return user;
         }
     }

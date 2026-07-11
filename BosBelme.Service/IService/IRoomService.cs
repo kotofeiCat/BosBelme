@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data.Entities;
+﻿using BosBelme.Data.Entities;
 
 namespace BosBelme.Service.IService
 {
@@ -10,5 +7,7 @@ namespace BosBelme.Service.IService
         public Task<GameHub> CreateRoomAsync(int userId);
 
         public Task InviteUserToRoomAsync(int gameHubId, int userId);
+
+        Task<RoomDto?> GetRoomDetailsAsync(string code);
     }
 }

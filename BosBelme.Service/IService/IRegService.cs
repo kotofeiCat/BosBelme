@@ -10,6 +10,6 @@ namespace BosBelme.Service.IService
     public interface IRegService
     {
         Task<Users> RegistrationUserAsync(string login, string password, string email);
-        Task<Users> RegistrationTempUserAsync(string login);
+        Task<Users> RegistrationUserAsync(string login);
     }
 }

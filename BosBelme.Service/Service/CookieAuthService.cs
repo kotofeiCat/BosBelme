@@ -1,18 +1,3 @@
-using BosBelme.Service.IService;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data;
-using BosBelme.Data.Entities;
-using BosBelme.Service.Exceptions;
-using BosBelme.Service.Dto;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using System.Net;
-
 namespace BosBelme.Service.Service
 {
     // Сервис для работы с куки

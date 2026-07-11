@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data;
-using BosBelme.Data.Entities;
-using BosBelme.Service.Extension;
-using BosBelme.Service.Exceptions;
-using BosBelme.Service.IService;
-using Microsoft.EntityFrameworkCore;
-
 namespace BosBelme.Service.Service
 {
     // Сервис для работы с комнатами и игровыми сессиями
@@ -62,6 +53,39 @@ namespace BosBelme.Service.Service
 
             await _context.GameSessions.AddAsync(gameSession);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<RoomDto?> GetRoomDetailsAsync(string code)
+        {
+            if (string.IsNullOrEmpty(code)) return null;
+
+            var gameHub = await _context.GameHubs
+                .AsNoTracking()
+                .Include(gh => gh.GameSessions)
+                    .ThenInclude(gs => gs.Player)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == code);
+
+            if (gameHub == null) return null;
+
+            var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost);
+            string hostName = hostSession?.Player?.Name ?? "Не назначен";
+
+            return new RoomDto
+            {
+                RoomCode = gameHub.ConnectionKey,
+                RoomName = gameHub.Name,
+                HostName = hostName,
+                Status = gameHub.Status.ToString(),
+
+                Players = gameHub.GameSessions
+                    .Select(gs => new RoomPlayerDto
+                    {
+                        Name = gs.Player?.Name ?? "Неизвестный",
+                        IsHost = gs.IsHost,
+                        IsGuest = gs.Player?.IsGuest ?? true
+                    })
+                    .ToList()
+            };
         }
     }
 }
