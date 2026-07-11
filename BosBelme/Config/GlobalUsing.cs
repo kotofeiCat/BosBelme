@@ -1,16 +1,16 @@
-﻿//Глобальные директивы using для ASP.NET Core
+﻿// Глобальные директивы using для ASP.NET Core
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using BosBelme.ViewModels;
 global using Microsoft.AspNetCore.Mvc;
 global using System.Diagnostics;
 global using System.ComponentModel.DataAnnotations;
 
-//Глобальные директивы using для БД
+// Глобальные директивы using для БД
 global using Microsoft.EntityFrameworkCore;
 global using BosBelme.Data;
 global using BosBelme.Data.Entities;
 
-//Глобальные директивы using для сервисного слоя
+// Глобальные директивы using для сервисного слоя
 global using BosBelme.Service.Service;
 global using BosBelme.Service.IService;
 global using BosBelme.Service.Dto;

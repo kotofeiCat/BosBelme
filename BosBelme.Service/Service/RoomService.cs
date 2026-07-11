@@ -51,7 +51,7 @@ namespace BosBelme.Service.Service
         // Приглашает пользователя в существующую игровую комнату
         public async Task InviteUserToRoomAsync(int gameHubId, int userId)
         {
-            if (await _context.GameSessions.AnyAsync(gs => gs.GameHubId == gameHubId && gs.IdPlayer == userId)) 
+            if (await _context.GameSessions.AnyAsync(gs => gs.IdPlayer == userId))
                 throw new UserAlreadyInRoomException($"Пользователь уже состоит в комнате.");
 
             var gameSession = new GameSession
