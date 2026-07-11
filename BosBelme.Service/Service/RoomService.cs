@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BosBelme.Data;
 using BosBelme.Data.Entities;
+using BosBelme.Service.Extension;
 
 namespace BosBelme.Service.Service
 {
@@ -17,13 +18,12 @@ namespace BosBelme.Service.Service
 
         public async Task<GameHub> CreateRoom()
         {
-            string randomString = Guid.NewGuid().ToString("N").Substring(0, 10);
 
             var gameHub = new GameHub
             {
-                Name = $"Комната-{randomString}",
+                Name = $"Комната-{String.GetRandomName()}",
                 GameId = _context.Games.First().Id,
-                ConnectionKey = randomString
+                ConnectionKey = String.GetRandomString()
             };
 
             await _context.GameHubs.AddAsync(gameHub);
