@@ -61,9 +61,39 @@ namespace BosBelme.Controllers
         }
 
         // GET: Отображает страницу игровой комнаты по коду.
-        public IActionResult Room(string code)
+        public async Task<IActionResult> Room(string code)
         {
-            return View();
+            if (string.IsNullOrEmpty(code)) return RedirectToAction("Index");
+
+            var gameHub = await _context.GameHubs.Include(gh => gh.GameSessions)
+                .ThenInclude(gs => gs.Player)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == code);
+
+            if (gameHub == null) return RedirectToAction("Index");
+
+            var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost);
+            string hostName = hostSession?.Player?.Name ?? "Не назначен";
+
+            var model = new RoomViewModel
+            {
+                RoomCode = gameHub.ConnectionKey,
+                RoomName = gameHub.Name,
+                HostName = hostName,
+                Status = gameHub.Status.ToString(),
+
+                Players = gameHub.GameSessions
+                    .Select(gs => new RoomPlayerViewModel
+                    {
+                        Name = gs.Player?.Name ?? "Неизвестный",
+                        IsHost = gs.IsHost,
+                        IsGuest = gs.Player?.IsGuest ?? true
+                    })
+                    .ToList()
+            };
+
+            ViewData["Tittle"] = $"Комната {gameHub.Name}";
+
+            return View(model);
         }
     }
 }

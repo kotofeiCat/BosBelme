@@ -1,0 +1,68 @@
+﻿@model BosBelme.ViewModels.RoomViewModel
+
+<h1 class="first-text">@Model.RoomName</h1>
+<div class="line"></div>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+    <div class="profile-card" style="max-width: 100%;">
+        <div class="profile-avatar">
+            <span style="font-size: 32px;">💾</span>
+        </div>
+        <div class="profile-info">
+            <div class="info-row">
+                <span class="info-label">Код подключения:</span>
+                <span class="info-value" style="font-weight: bold; letter-spacing: 1px;">@Model.RoomCode</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Создатель (Host):</span>
+                <span class="info-value">@Model.HostName</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Статус Ядра:</span>
+                <div class="profile-meta">
+                    <span class="status-badge">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="first-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (@Model.Players.Count):</h2>
+
+    <ul style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px;">
+        @foreach (var player in Model.Players)
+        {
+            <li style="padding: 10px; border-bottom: 1px dashed var(--color-gray-medium); font-family: 'Courier Prime', monospace; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>👤</span>
+                    <strong>@player.Name</strong>
+
+                    @if (player.IsGuest)
+                    {
+                        <span style="color: var(--color-gray-medium); font-size: 11px;">[Временный гость]</span>
+                    }
+                </div>
+
+                <div style="display: flex; gap: 5px;">
+                    @if (player.IsHost)
+                    {
+                        <span class="status-badge" style="background-color: var(--color-black); color: var(--color-white);">HOST</span>
+                    }
+                    else
+                    {
+                        <span class="status-badge" style="background-color: var(--color-gray-light); color: var(--color-black); border: 1px solid var(--color-black)">PLAYER</span>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+
+    <div style="margin-top: 20px; display: flex; gap: 15px;">
+        <a asp-controller="Hub" asp-action="Index" class="retro-btn" style="color: #ff0000;">
+            [x] Выйти
+        </a>
+        <button class="retro-btn" onclick="location.reload();">
+            Обновить данные
+        </button>
+    </div>
+</div>
