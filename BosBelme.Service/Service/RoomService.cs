@@ -30,5 +30,7 @@ namespace BosBelme.Service.Service
             await _context.SaveChangesAsync();
             return gameHub;
         }
+
+        
     }
 }
