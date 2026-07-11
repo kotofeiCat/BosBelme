@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BosBelme.Service.Extension
 {
+    // Класс расширения для случайных генерайий.
     public static class RandomExtension
     {
         private static readonly char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
@@ -20,6 +21,7 @@ namespace BosBelme.Service.Extension
 
         extension(String str)
         {
+            // Метод для генерации случайной строки заданной длины. Возвращает строку, состоящую из случайных символов из массива chars.
             public static string GetRandomString(int length = 10)
             {
                 var result = new StringBuilder(length);
@@ -35,6 +37,7 @@ namespace BosBelme.Service.Extension
                 return result.ToString();
             }
 
+            // Метод для получения случайного имени из списка names. Возвращает случайное имя из списка.
             public static string GetRandomName()
             {
                 return names[Random.Shared.Next(names.Count)];

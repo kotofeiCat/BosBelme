@@ -4,10 +4,14 @@ using System.Text;
 using BosBelme.Data;
 using BosBelme.Data.Entities;
 using BosBelme.Service.Extension;
+using BosBelme.Service.Exceptions;
+using BosBelme.Service.IService;
+using Microsoft.EntityFrameworkCore;
 
 namespace BosBelme.Service.Service
 {
-    public class RoomService
+    // Сервис для работы с комнатами и игровыми сессиями
+    public class RoomService : IRoomService
     {
         private readonly AppDbContext _context;
 
@@ -16,21 +20,48 @@ namespace BosBelme.Service.Service
             _context = context;
         }
 
-        public async Task<GameHub> CreateRoom()
+        // Создает новую игровую комнату и добавляет пользователя в нее
+        public async Task<GameHub> CreateRoomAsync(int userId)
         {
+            var defoultGame = await _context.Games.FirstOrDefaultAsync() ?? throw new GameNotFoundException("Игра не найдена.");
 
             var gameHub = new GameHub
             {
                 Name = $"Комната-{String.GetRandomName()}",
-                GameId = _context.Games.First().Id,
+                GameId = defoultGame.Id,
                 ConnectionKey = String.GetRandomString()
             };
 
             await _context.GameHubs.AddAsync(gameHub);
+
+            var gameSession = new GameSession
+            {
+                GameHub = gameHub,
+                IdPlayer = userId
+            };
+
+            await _context.GameSessions.AddAsync(gameSession);
+
+
             await _context.SaveChangesAsync();
             return gameHub;
         }
 
-        
+
+        // Приглашает пользователя в существующую игровую комнату
+        public async Task InviteUserToRoomAsync(int gameHubId, int userId)
+        {
+            if (await _context.GameSessions.AnyAsync(gs => gs.GameHubId == gameHubId && gs.IdPlayer == userId)) 
+                throw new UserAlreadyInRoomException($"Пользователь уже состоит в комнате.");
+
+            var gameSession = new GameSession
+            {
+                GameHubId = gameHubId,
+                IdPlayer = userId
+            };
+
+            await _context.GameSessions.AddAsync(gameSession);
+            await _context.SaveChangesAsync();
+        }
     }
 }
