@@ -11,6 +11,8 @@ namespace BosBelme.Data.Entities
 
         public string NameGame { get; set; } = string.Empty;
 
+        public string Discription { get; set; } = string.Empty;
+
         public int MaxPlayers { get; set; }
 
         public int MinPlayers { get; set; }

@@ -4,4 +4,25 @@
 @{
     ViewData["Title"] = "Hub";
 }
-<p>Добро пожаловать в систему RoomBox OS! Здесь вы можете создавать комнаты для игр, общаться с друзьями и наслаждаться мини-играми в реальном времени.</p>
+
+<style>
+    .button-column {
+        display: flex;
+        flex-direction: column; 
+        width: 250px;           
+        gap: 10px;              
+    }
+    .my-btn {
+        padding: 10px;
+        text-align: center;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="button-column">
+    <a asp-controller="Hub" asp-action="CreateRoom" class="my-btn">Создать комнату</a>
+    <a asp-controller="Hub" asp-action="JoinRoom" class="my-btn">Присоединиться к комнате</a>
+</div>

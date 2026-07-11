@@ -9,6 +9,10 @@ namespace BosBelme.Data.Entities
     {
         public int Id { get; set; }
 
+        public string Name { get; set; } = string.Empty;
+
+        public string ConnectionKey { get; set; } = string.Empty;
+
         public int GameId { get; set; }
 
         public GameStatus Status { get; set; }
