@@ -1,7 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BosBelme.ViewModels.JoinRoomCodeViewModel
 @{
     ViewData["Title"] = "Присоединение к комнате";
 }
-<p>Введите код комнаты, чтобы присоединиться:</p>
+
+<h2 class="first-text">Подключение по коду</h2>
+<div class="line"></div>
+
+<p class="other-text">Для входа в чужую операционную комнату введите ее уникальный 6-значный идентификатор.</p>
+
+<form asp-controller="Hub" asp-action="JoinRoom" method="post" class="retro-form">
+
+    <div class="input-group">
+        <label asp-for="RoomCode">Код Доступа (Код Комнаты):</label>
+        <input asp-for="RoomCode" class="retro-input" placeholder="RM1234" style="text-transform: uppercase;" autocomplete="off" />
+        <span asp-validation-for="RoomCode" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
+    </div>
+
+    <div class="form-footer">
+        <button class="retro-btn" type="submit">[->] Далее</button>
+        <a class="form-link" asp-controller="Hub" asp-action="Index">Отмена</a>
+    </div>
+</form>

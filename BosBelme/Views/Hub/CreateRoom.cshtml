@@ -1,7 +1,24 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BosBelme.ViewModels.CreateRoomViewModel
 @{
     ViewData["Title"] = "Создание комнаты";
 }
-<p>Введите название комнаты:</p>
+
+<h2 class="first-text">Создание новой комнаты</h2>
+<div class="line"></div>
+
+<p class="other-text">Введите ваше имя системы для инициализации выделенного пространства.</p>
+
+<form asp-controller="Hub" asp-action="CreateRoom" method="post" class="retro-form">
+    <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 10px;"></div>
+
+    <div class="input-group">
+        <label asp-for="PlayerName">Ваш Игровoй Никнейм:</label>
+        <input asp-for="PlayerName" class="retro-input" placeholder="User_777" autocomplete="off" />
+        <span asp-validation-for="PlayerName" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
+    </div>
+
+    <div class="form-footer">
+        <button class="retro-btn" type="submit">[+] Создать</button>
+        <a class="form-link" asp-controller="Hub" asp-action="Index">Назад в Хаб</a>
+    </div>
+</form>

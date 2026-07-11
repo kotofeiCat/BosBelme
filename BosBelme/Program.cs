@@ -15,6 +15,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthService, Authentication>();
 builder.Services.AddScoped<IRegService, Registration>();
 builder.Services.AddScoped<ICookieAuthService, CookieAuthService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 // Настройка куки
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

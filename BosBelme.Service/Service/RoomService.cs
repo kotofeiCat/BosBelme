@@ -23,12 +23,12 @@ namespace BosBelme.Service.Service
         // Создает новую игровую комнату и добавляет пользователя в нее
         public async Task<GameHub> CreateRoomAsync(int userId)
         {
-            var defoultGame = await _context.Games.FirstOrDefaultAsync() ?? throw new GameNotFoundException("Игра не найдена.");
+            var defaultGame = await _context.Games.FirstOrDefaultAsync() ?? throw new GameNotFoundException("Игра не найдена.");
 
             var gameHub = new GameHub
             {
                 Name = $"Комната-{String.GetRandomName()}",
-                GameId = defoultGame.Id,
+                GameId = defaultGame.Id,
                 ConnectionKey = String.GetRandomString()
             };
 
