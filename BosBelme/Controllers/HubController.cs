@@ -26,7 +26,7 @@ namespace BosBelme.Controllers
 
         public async Task<IActionResult> CreateRoom()
         {
-            if(User?.Identity?.IsAuthenticated == true)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
 

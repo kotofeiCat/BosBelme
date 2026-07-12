@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BosBelme.Service.Dto
 {
-    public class RoomDto
+    public record RoomDto
     {
         public string RoomCode { get; set; } = string.Empty;
         public string RoomName { get; set; } = string.Empty;
@@ -13,7 +13,7 @@ namespace BosBelme.Service.Dto
         public List<RoomPlayerDto> Players { get; set; } = new();
     }
 
-    public class RoomPlayerDto
+    public record RoomPlayerDto
     {
         public string Name { get; set; } = string.Empty;
         public bool IsHost { get; set; }

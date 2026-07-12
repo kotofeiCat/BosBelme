@@ -20,7 +20,7 @@ namespace BosBelme.Service.Service
         }
 
         //Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
-        public async Task<Users> AuthenticationUserAsync(string loginOrEmail, string password)
+        public async Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
 
@@ -33,7 +33,7 @@ namespace BosBelme.Service.Service
                 throw new UserPasswordWrongException("Неверный пароль при авторизации.");
             }
 
-            return user;
+            return user.FromUser();
         }
     }
 }

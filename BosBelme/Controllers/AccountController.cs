@@ -66,7 +66,7 @@ namespace BosBelme.Controllers
                 // Регистрация нового пользователя
                 var user = await _regService.RegistrationUserAsync(model.Name, model.Email, model.Password);
 
-                await _cookieAuthService.SignInAsync(user.FromUser());
+                await _cookieAuthService.SignInAsync(user);
 
                 return RedirectToAction("Profile", "Account");
             }
@@ -93,7 +93,7 @@ namespace BosBelme.Controllers
                 // Авторизация нового пользователя
                 var user = await _authService.AuthenticationUserAsync(model.NameOrEmail, model.Password);
 
-                await _cookieAuthService.SignInAsync(user.FromUser());
+                await _cookieAuthService.SignInAsync(user);
 
                 return RedirectToAction("Profile", "Account");
             }

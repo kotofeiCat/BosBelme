@@ -13,7 +13,7 @@ namespace BosBelme.Service.Service
         }
 
         //Реализация метода регистрации нового пользователя. Возращает нового зарегестрировонного пользователя.
-        public async Task<Users> RegistrationUserAsync(string login, string email, string password)
+        public async Task<RegisterDto> RegistrationUserAsync(string login, string email, string password)
         {
             if(await _context.Users.AnyAsync(u => u.Email == email))
             {
@@ -36,11 +36,11 @@ namespace BosBelme.Service.Service
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return user.FromUser();
         }
 
         //Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
-        public async Task<Users> RegistrationUserAsync(string login)
+        public async Task<RegisterDto> RegistrationUserAsync(string login)
         {
             if (await _context.Users.AnyAsync(u => u.Name == login))
                 throw new UserNameAlreadyExistsException("Пользователь с таким именем уже существует.");
@@ -56,7 +56,7 @@ namespace BosBelme.Service.Service
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return user.FromUser();
         }
     }
 }
