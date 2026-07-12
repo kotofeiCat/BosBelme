@@ -1,0 +1,24 @@
+@media (max-width: 570px) {
+    .info-card {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 730px) {
+    .btn-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 370px) {
+    .btn {
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    #long-email {
+        flex-direction: column;
+    }
+}

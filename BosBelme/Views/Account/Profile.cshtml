@@ -2,6 +2,10 @@
     ViewData["Title"] = "Профиль";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/account/profile.css">
+}
+
 <h1 class="large-text">Терминал Пользователя</h1>
 <hr/>
 
@@ -19,7 +23,7 @@
             <span class="info-label">Системный ID:</span>
             <span class="info-value">#@ViewBag.UserId</span>
         </div>
-        <div class="info-row">
+        <div class="info-row" id="long-email">
             <span class="info-label">Почта:</span>
             <span class="info-value">@ViewBag.Email</span>
         </div>

@@ -90,7 +90,7 @@
     transition: transform 0.2s, opacity 0.2s;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
     .header-nav {
         display: none; /* Прячем обычные ссылки на смартфонах */
     }

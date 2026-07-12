@@ -60,14 +60,6 @@
     gap: 8px;
 }
 
-.status-badge {
-    background-color: var(--color-black);
-    color: var(--color-white);
-    padding: 2px 6px;
-    font-size: 11px;
-    font-family: 'Press Start 2P', monospace;
-}
-
 .info-card {
     display: flex;
     gap: 20px;
@@ -109,6 +101,14 @@
 .info-value {
     color: var(--color-black);
     margin-top: 3px;
+}
+
+.status-badge {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 2px 6px;
+    font-size: 11px;
+    font-family: 'Press Start 2P', monospace;
 }
 
 

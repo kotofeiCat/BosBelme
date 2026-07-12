@@ -1,0 +1,10 @@
+
+@media (max-width: 366px) {
+    .btn {
+        padding: 10px 12px;
+    }
+}
+
+.footer {
+    margin-top: 20px;
+}
