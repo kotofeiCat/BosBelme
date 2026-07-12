@@ -16,7 +16,6 @@ namespace BosBelme.ViewModels
         public string Password { get; set; } = string.Empty;
 
         [MaxLength(100)]
-        [Compare("Password")]
         [Required]
         public string ConfirmPassword { get; set; } = string.Empty;
     }

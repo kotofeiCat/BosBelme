@@ -1,3 +1,4 @@
+@model BosBelme.ViewModels.RegisterViewModel
 
 @{
     ViewData["Title"] = "Регистрация";
@@ -10,23 +11,23 @@
 
 <form asp-controller="Account" asp-action="Register" method="post" class="retro-form">
     <div class="input-group">
-        <label for="name">Имя пользователя:</label>
-        <input name="Name" class="retro-input" id="name" type="text" placeholder="User123" maxlength="20" required>
+        <label for="Name">Имя пользователя:</label>
+        <input asp-for="Name" class="retro-input" placeholder="User123" required/>
     </div>
 
     <div class="input-group">
-        <label for="email">Электронная почта:</label>
-        <input name="Email" class="retro-input" id="email" type="email" placeholder="example@roombox.com" required>
+        <label for="Email">Электронная почта:</label>
+        <input asp-for="Email" class="retro-input" placeholder="example@roombox.com" required>
     </div>
 
     <div class="input-group">
-        <label for="password">Пароль:</label>
-        <input name="Password" class="retro-input" id="password" type="password" placeholder="••••••••" maxlength="100" required>
+        <label for="Password">Пароль:</label>
+        <input asp-for="Password" class="retro-input" placeholder="••••••••" required>
     </div>
 
     <div class="input-group">
-        <label for="confirm-password">Подтверждение пароля:</label>
-        <input name="ConfirmPassword" class="retro-input" id="confirm-password" type="password" placeholder="••••••••" maxlength="100" required>
+        <label for="ConfirmPassword">Подтверждение пароля:</label>
+        <input asp-for="ConfirmPassword" class="retro-input" placeholder="••••••••" required>
     </div>
 
     <div class="form-footer">

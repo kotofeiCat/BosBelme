@@ -51,9 +51,15 @@ namespace BosBelme.Controllers
             // Если пользователь уже авторизован выгоняем в профиль
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
 
+            // Проверка валидности данных от пользователя
             if (!ModelState.IsValid) return View(model);
 
-            if ((!ModelState.IsValid) || (model.Password != model.ConfirmPassword)) return View(model);
+            // Проверка совпадения паролей
+            if (model.Password != model.ConfirmPassword)
+            {
+                ModelState.AddModelError(string.Empty, "Пароли не совпадают");
+                return View(model);
+            }
 
             try
             {
@@ -79,6 +85,7 @@ namespace BosBelme.Controllers
             // Если пользователь уже авторизован выгоняем в профиль
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
 
+            // Проверка валидности данных от пользователя
             if (!ModelState.IsValid) return View(model);
 
             try

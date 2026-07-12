@@ -224,6 +224,7 @@ ul {
     font-family: 'Courier Prime', monospace;
     font-size: 13px;
     text-decoration: underline;
+    width: fit-content;
 }
 
     .form-link:hover {

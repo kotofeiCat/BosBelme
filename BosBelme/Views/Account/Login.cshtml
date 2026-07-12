@@ -1,3 +1,4 @@
+@model BosBelme.ViewModels.LoginViewModel
 
 @{
     ViewData["Title"] = "Авторизация";
@@ -10,13 +11,13 @@
 
 <form asp-controller="Account" asp-action="Login" method="post" class="retro-form">
     <div class="input-group">
-        <label for="email">Имя пользователя или Email:</label>
-        <input name="NameOrEmail" class="retro-input" id="email" type="text" placeholder="Введите логин..." required>
+        <label for="NameOrEmail">Имя пользователя или Email:</label>
+        <input asp-for="NameOrEmail" class="retro-input" placeholder="Введите логин..." required>
     </div>
 
     <div class="input-group">
-        <label for="password">Пароль:</label>
-        <input name="Password" class="retro-input" id="password" type="password" placeholder="••••••••" maxlength="100" required>
+        <label for="Password">Пароль:</label>
+        <input asp-for="Password" class="retro-input" placeholder="••••••••" required>
     </div>
 
     <div class="form-footer">

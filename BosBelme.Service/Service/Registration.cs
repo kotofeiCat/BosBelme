@@ -18,7 +18,7 @@ namespace BosBelme.Service.Service
             if(await _context.Users.AnyAsync(u => u.Email == email))
             {
                 // Если пользователь с таким email уже существует, выбрасывается исключение.
-                throw new UserAlreadyExistsException("Пользователь с таким email уже существует.");
+                throw new UserAlreadyExistsException("Пользователь с такой почтой уже существует.");
             }
             if(await _context.Users.AnyAsync(u => u.Name == login))
             {
