@@ -23,7 +23,7 @@ namespace BosBelme.Service.Service
                 ConnectionKey = String.GetRandomString()
             };
 
-            await _context.GameHubs.AddAsync(gameHub);
+            _context.GameHubs.Add(gameHub);
 
             var gameSession = new GameSession
             {
@@ -32,8 +32,7 @@ namespace BosBelme.Service.Service
                 IsHost = true
             };
 
-            await _context.GameSessions.AddAsync(gameSession);
-
+            _context.GameSessions.Add(gameSession);
 
             await _context.SaveChangesAsync();
             return gameHub;
