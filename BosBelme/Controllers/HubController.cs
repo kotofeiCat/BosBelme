@@ -71,7 +71,21 @@ namespace BosBelme.Controllers
 
             ViewData["Title"] = $"Комната {model.RoomName}";
 
-            return View(model);
+            var viewModel = new RoomViewModel
+            {
+                RoomCode = model.RoomCode,
+                RoomName = model.RoomName,
+                HostName = model.HostName,
+                Status = model.Status,
+                Players = model.Players.Select(p => new RoomPlayerViewModel
+                {
+                    Name = p.Name,
+                    IsHost = p.IsHost,
+                    IsGuest = p.IsGuest
+                }).ToList()
+            };
+
+            return View(viewModel);
         }
     }
 }

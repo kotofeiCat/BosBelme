@@ -28,7 +28,8 @@ namespace BosBelme.Service.Service
             var gameSession = new GameSession
             {
                 GameHub = gameHub,
-                IdPlayer = userId
+                IdPlayer = userId,
+                IsHost = true
             };
 
             await _context.GameSessions.AddAsync(gameSession);

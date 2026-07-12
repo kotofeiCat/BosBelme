@@ -49,7 +49,8 @@ namespace BosBelme.Service.Service
             {
                 Name = login,
                 Email = null,
-                PasswordHash = null
+                PasswordHash = null,
+                IsGuest = true
             };
 
             await _context.Users.AddAsync(user);
