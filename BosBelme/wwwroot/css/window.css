@@ -1,0 +1,63 @@
+
+/* Все что ниже верхней панели */
+.window-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px 40px 20px;
+}
+
+/* Окно ОС */
+.window {
+    width: 100%;
+    max-width: 760px;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-black);
+    box-shadow: 6px 6px 0px var(--color-black);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Верхняя часть окна */
+.window-titlebar {
+    height: 28px;
+    background-color: var(--color-white);
+    border-bottom: 2px solid var(--color-black);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Тройные линии в верхней части окна */
+.titlebar-lines {
+    flex-grow: 1;
+    height: 12px;
+    margin: 0 8px;
+    background: repeating-linear-gradient(0deg, var(--color-black), var(--color-black) 2px, transparent 2px, transparent 4px );
+}
+
+/* Квадрат в верхней части окна */
+.empty-square {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-black);
+    margin-left: 8px;
+    background-color: var(--color-white);
+}
+
+/* Заголовок верхней части окна */
+.window-title {
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0 8px;
+    background-color: var(--color-white);
+    white-space: nowrap;
+}
+
+/* Тело окна */
+.window-body {
+    padding: 30px;
+    background-color: var(--color-white);
+}

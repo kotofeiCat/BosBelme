@@ -2,20 +2,20 @@
     ViewData["Title"] = "Hub";
 }
 
-<h1 class="first-text">Добро пожаловать в RoomBox OS</h1>
+<h1 class="large-text">Добро пожаловать в RoomBox OS</h1>
 <p class="other-text">
     Выберите действие для управления комнатами. Вы можете создать новое пространство или подключиться к уже существующему по коду доступа.
 </p>
 
-<hr class="line" />
+<hr/>
 
 <div style="display: flex; flex-direction: column; gap: 15px; max-width: 350px;">
 
-    <a asp-controller="Hub" asp-action="CreateRoom" class="retro-btn">
+    <a asp-controller="Hub" asp-action="CreateRoom" class="btn">
         [+] Создать комнату
     </a>
 
-    <a asp-controller="Hub" asp-action="JoinRoom" class="retro-btn">
+    <a asp-controller="Hub" asp-action="JoinRoom" class="btn">
         [->] Присоединиться
     </a>
 

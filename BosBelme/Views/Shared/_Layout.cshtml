@@ -1,13 +1,23 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RoomBox</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/components.css" />
+    <link rel="stylesheet" href="~/css/window.css" />
+
+    <link rel="stylesheet" href="~/css/layout/header.css" />
+    <link rel="stylesheet" href="~/css/layout/sidebar.css" />
+    <link rel="stylesheet" href="~/css/layout/background.css" />
+    <link rel="stylesheet" href="~/css/layout/footer.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <link rel="shortcut icon" href="~/old-computer.ico" type="image/x-icon" />
     <link rel="icon" href="~/old-computer.ico" type="image/x-icon" />
 </head>
@@ -18,7 +28,7 @@
     <div class="window-container">
         <main class="window" role="main">
             <div class="window-titlebar">
-                <div class="close-box"></div>
+                <div class="empty-square"></div>
                 <div class="titlebar-lines"></div>
                 <div class="window-title">RoomBox OS — @ViewData["Title"]</div>
                 <div class="titlebar-lines"></div>

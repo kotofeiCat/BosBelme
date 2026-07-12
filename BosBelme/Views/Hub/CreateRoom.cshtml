@@ -3,22 +3,24 @@
     ViewData["Title"] = "Создание комнаты";
 }
 
-<h2 class="first-text">Создание новой комнаты</h2>
-<div class="line"></div>
+<h2 class="large-text">Создание новой комнаты</h2>
+<hr/>
 
 <p class="other-text">Введите ваше имя системы для инициализации выделенного пространства.</p>
 
-<form asp-controller="Hub" asp-action="CreateRoom" method="post" class="retro-form">
+<form asp-controller="Hub" asp-action="CreateRoom" method="post">
     <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 10px;"></div>
 
     <div class="input-group">
         <label asp-for="PlayerName">Ваш Игровoй Никнейм:</label>
-        <input asp-for="PlayerName" class="retro-input" placeholder="User_777" autocomplete="off" />
+        <input asp-for="PlayerName" placeholder="User_777" autocomplete="off" />
         <span asp-validation-for="PlayerName" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
     </div>
 
-    <div class="form-footer">
-        <button class="retro-btn" type="submit">[+] Создать</button>
-        <a class="form-link" asp-controller="Hub" asp-action="Index">Назад в Хаб</a>
+    <div class="btn-container">
+        <button class="btn" type="submit">
+            [+] Создать
+        </button>
+        <a class="small-link" asp-controller="Hub" asp-action="Index">Назад в Хаб</a>
     </div>
 </form>

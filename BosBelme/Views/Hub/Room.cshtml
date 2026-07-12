@@ -1,15 +1,15 @@
 ﻿@model BosBelme.ViewModels.RoomViewModel
 
-<h1 class="first-text">@Model.RoomName</h1>
-<div class="line"></div>
+<h1 class="large-text">@Model.RoomName</h1>
+<hr/>
 
 <div style="display: flex; flex-direction: column; gap: 20px;">
 
-    <div class="profile-card" style="max-width: 100%;">
-        <div class="profile-avatar">
+    <div class="info-card" style="max-width: 100%;">
+        <div class="avatar-container">
             <span style="font-size: 32px;">💾</span>
         </div>
-        <div class="profile-info">
+        <div class="info-container">
             <div class="info-row">
                 <span class="info-label">Код подключения:</span>
                 <span class="info-value" style="font-weight: bold; letter-spacing: 1px;">@Model.RoomCode</span>
@@ -20,14 +20,14 @@
             </div>
             <div class="info-row">
                 <span class="info-label">Статус Ядра:</span>
-                <div class="profile-meta">
+                <div class="status-container">
                     <span class="status-badge">@Model.Status</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <h2 class="first-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (@Model.Players.Count):</h2>
+    <h2 class="large-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (@Model.Players.Count):</h2>
 
     <ul style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px;">
         @foreach (var player in Model.Players)
@@ -58,10 +58,10 @@
     </ul>
 
     <div style="margin-top: 20px; display: flex; gap: 15px;">
-        <a asp-controller="Hub" asp-action="Index" class="retro-btn" style="color: #ff0000;">
+        <a asp-controller="Hub" asp-action="Index" class="btn" style="color: #ff0000;">
             [x] Выйти
         </a>
-        <button class="retro-btn" onclick="location.reload();">
+        <button class="btn" onclick="location.reload();">
             Обновить данные
         </button>
     </div>

@@ -1,35 +1,28 @@
-<header class="menu-bar">
-    <div class="menu-brand">
-        <span class="menu-item logo-icon">
+<header class="header">
+    <div class="header-brand">
+        <div class="header-item logo-icon">
             <img src="~/img/old-computer.png" alt="RoomBox Logo" />
-        </span>
-        <span class="menu-item brand-name" onclick="location.href='@Url.Action("Index", "Home")'"><b>RoomBox</b></span>
+        </div>
+        <div class="header-item" onclick="location.href='@Url.Action("Index", "Home")'">
+            <h2>RoomBox</h2>
+        </div>
     </div>
 
-    <div class="menu-desktop-nav">
-        <a class="menu-item" asp-controller="Home" asp-action="Help">
-            Помощь
-        </a>
+    <div class="header-nav">
         @if (User?.Identity?.IsAuthenticated == true)
         {
-            <a class="menu-item" asp-controller="Account" asp-action="Profile">
-                Профиль
-            </a>
-            <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
-                <button type="submit" class="menu-item logout-btn">
-                    Выйти
-                </button>
-            </form>
+            <a class="header-item" asp-controller="Account" asp-action="Profile">Профиль</a>
         }
         else
         {
-            <a class="menu-item" asp-controller="Account" asp-action="Login">Вход</a>
-            <a class="menu-item" asp-controller="Account" asp-action="Register">Регистрация</a>
+            <a class="header-item" asp-controller="Account" asp-action="Login">Вход</a>
+            <a class="header-item" asp-controller="Account" asp-action="Register">Регистрация</a>
         }
+        <a class="header-item" asp-controller="Home" asp-action="Help">Помощь</a>
     </div>
 
-    <div class="menu-right-panel">
-        <span class="menu-item" id="system-clock">12:00 PM</span>
+    <div class="header-actions">
+        <span class="header-item" id="system-clock">12:00 PM</span>
         <button class="burger-btn" onclick="toggleSidebar()" aria-label="Открыть меню">
             <span class="burger-line"></span>
             <span class="burger-line"></span>
@@ -38,35 +31,37 @@
     </div>
 </header>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <nav class="sidebar" id="sidebarMenu">
     <div class="sidebar-header">
-        <button class="sidebar-close-box" onclick="toggleSidebar()">×</button>
+        <button class="sidebar-cross" onclick="toggleSidebar()">×</button>
         <div class="sidebar-titlebar-lines"></div>
         <span class="sidebar-title">MENU</span>
     </div>
     <div class="sidebar-content">
-        <a class="sidebar-item" asp-controller="Home" asp-action="Help">
-            Помощь
+        <a class="sidebar-item" asp-controller="Hub" asp-action="Index">
+            Создание хаба
         </a>
-        <div class="sidebar-divider"></div>
         @if (User?.Identity?.IsAuthenticated == true)
         {
             <a class="sidebar-item" asp-controller="Account" asp-action="Profile">
-                Личный кабинет
+                Профиль
             </a>
-            <form asp-controller="Account" asp-action="Logout" method="post">
-                <button type="submit" class="sidebar-item sidebar-logout-btn">
-                    Выйти
-                </button>
-            </form>
         }
         else
         {
-            <a class="sidebar-item" asp-controller="Account" asp-action="Login">Войти</a>
-            <a class="sidebar-item" asp-controller="Account" asp-action="Register">Регистрация</a>
+            <a class="sidebar-item" asp-controller="Account" asp-action="Register">
+                Регистрация
+            </a>
+            <a class="sidebar-item" asp-controller="Account" asp-action="Login">
+                Войти
+            </a>
         }
+        <hr>
+        <a class="sidebar-item" asp-controller="Home" asp-action="Help">
+            Помощь
+        </a>
     </div>
 </nav>
 

@@ -2,15 +2,15 @@
     ViewData["Title"] = "Профиль";
 }
 
-<h1 class="first-text">Терминал Пользователя</h1>
-<hr class="line" />
+<h1 class="large-text">Терминал Пользователя</h1>
+<hr/>
 
-<div class="profile-card">
-    <div class="profile-avatar">
+<div class="info-card">
+    <div class="avatar-container">
         @* <img src="~/img/user-avatar-pixel.png" alt="Avatar" style="width: 64px; height: 64px; image-rendering: pixelated;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /> *@
         <span style="font-size: 48px; display: none;">💾</span>
     </div>
-    <div class="profile-info">
+    <div class="info-container">
         <div class="info-row">
             <span class="info-label">Пользователь:</span>
             <span class="info-value">@ViewBag.UserName</span>
@@ -25,17 +25,21 @@
         </div>
         <div class="info-row">
             <span class="info-label">Статус доступа:</span>
-            <div class="profile-meta">
+            <div class="status-container">
                 <span class="status-badge">USER</span>
             </div>
         </div>
     </div>
 </div>
 
-<div style="margin-top: 30px; display: flex; gap: 15px;" class="form-footer">
-    <a asp-controller="Hub" asp-action="Index" class="retro-btn btn-with-icon">
-        <span>[._.] В игровой хаб</span>
+<div style="margin-top: 30px; display: flex; gap: 15px;" class="btn-container">
+    <a asp-controller="Hub" asp-action="Index" class="btn">
+        [._.] В игровой хаб
     </a>
-    <a asp-controller="Home" asp-action="Index" class="retro-btn">[*] На главную</a>
-    <a class="form-link" asp-controller="Account" asp-action="Logout">Выйти из профиля</a>
+    <a asp-controller="Home" asp-action="Index" class="btn">
+        [*] На главную
+    </a>
+    <a class="small-link" asp-controller="Account" asp-action="Logout">
+        Выйти из профиля
+    </a>
 </div>

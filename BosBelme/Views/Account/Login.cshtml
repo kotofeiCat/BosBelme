@@ -4,26 +4,26 @@
     ViewData["Title"] = "Авторизация";
 }
 
-<h2 class="first-text">Вход в систему</h2>
-<div class="line"></div>
+<h2 class="large-text">Вход в систему</h2>
+<hr/>
 
-<div asp-validation-summary="ModelOnly" class="form-link" style="color: red; margin-bottom: 15px;"></div>
+<div asp-validation-summary="ModelOnly" class="small-link" style="color: red; margin-bottom: 15px;"></div>
 
-<form asp-controller="Account" asp-action="Login" method="post" class="retro-form">
+<form asp-controller="Account" asp-action="Login" method="post">
     <div class="input-group">
         <label for="NameOrEmail">Имя пользователя или Email:</label>
-        <input asp-for="NameOrEmail" class="retro-input" placeholder="Введите логин..." required>
+        <input asp-for="NameOrEmail" placeholder="Введите логин..." required>
     </div>
 
     <div class="input-group">
         <label for="Password">Пароль:</label>
-        <input asp-for="Password" class="retro-input" placeholder="••••••••" required>
+        <input asp-for="Password" placeholder="••••••••" required>
     </div>
 
-    <div class="form-footer">
-        <button class="retro-btn btn-with-icon" type="submit">
-            <span>[>] Войти</span>
+    <div class="btn-container">
+        <button class="btn" type="submit">
+            [>] Войти
         </button>
-        <a class="form-link" asp-controller="Account" asp-action="Register">Нет аккаунта?</a>
+        <a class="small-link" asp-controller="Account" asp-action="Register">Нет аккаунта?</a>
     </div>
 </form>

@@ -1,0 +1,17 @@
+/* Пиксельный фон за оконом */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-image: radial-gradient(rgba(0,0,0,0.5) 15%, transparent 15%);
+    background-size: 4px 4px;
+    z-index: 140;
+}
+
+    .overlay.open {
+        display: block;
+    }

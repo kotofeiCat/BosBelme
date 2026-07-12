@@ -4,36 +4,36 @@
     ViewData["Title"] = "Регистрация";
 }
 
-<h2 class="first-text">Создание аккаунта</h2>
-<div class="line"></div>
+<h2 class="large-text">Создание аккаунта</h2>
+<hr/>
 
-<div asp-validation-summary="ModelOnly" class="form-link" style="color: red; margin-bottom: 15px;"></div>
+<div asp-validation-summary="ModelOnly" class="small-link" style="color: red; margin-bottom: 15px;"></div>
 
-<form asp-controller="Account" asp-action="Register" method="post" class="retro-form">
+<form asp-controller="Account" asp-action="Register" method="post">
     <div class="input-group">
         <label for="Name">Имя пользователя:</label>
-        <input asp-for="Name" class="retro-input" placeholder="User123" required/>
+        <input asp-for="Name" placeholder="User123" required/>
     </div>
 
     <div class="input-group">
         <label for="Email">Электронная почта:</label>
-        <input asp-for="Email" class="retro-input" placeholder="example@roombox.com" required>
+        <input asp-for="Email" placeholder="example@roombox.com" required>
     </div>
 
     <div class="input-group">
         <label for="Password">Пароль:</label>
-        <input asp-for="Password" class="retro-input" placeholder="••••••••" required>
+        <input asp-for="Password" placeholder="••••••••" required>
     </div>
 
     <div class="input-group">
         <label for="ConfirmPassword">Подтверждение пароля:</label>
-        <input asp-for="ConfirmPassword" class="retro-input" placeholder="••••••••" required>
+        <input asp-for="ConfirmPassword" placeholder="••••••••" required>
     </div>
 
-    <div class="form-footer">
-        <button class="retro-btn btn-with-icon" type="submit">
-            <span>[+] Создать</span>
+    <div class="btn-container">
+        <button class="btn" type="submit">
+            [+] Создать
         </button>
-        <a class="form-link" asp-controller="Account" asp-action="Login">Уже есть аккаунт?</a>
+        <a class="small-link" asp-controller="Account" asp-action="Login">Уже есть аккаунт?</a>
     </div>
 </form>
