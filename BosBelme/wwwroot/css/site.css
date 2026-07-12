@@ -296,6 +296,7 @@ ul {
 
 .info-value {
     color: var(--color-black);
+    margin-top: 3px;
 }
 
 /* Фикс для кнопки выхода в меню */

@@ -1,5 +1,4 @@
-﻿<!-- Account/Profile.cshtml -->
-@{
+﻿@{
     ViewData["Title"] = "Профиль";
 }
 
@@ -8,17 +7,21 @@
 
 <div class="profile-card">
     <div class="profile-avatar">
-        <img src="~/img/user-avatar-pixel.png" alt="Avatar" style="width: 64px; height: 64px; image-rendering: pixelated;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        @* <img src="~/img/user-avatar-pixel.png" alt="Avatar" style="width: 64px; height: 64px; image-rendering: pixelated;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /> *@
         <span style="font-size: 48px; display: none;">💾</span>
     </div>
     <div class="profile-info">
         <div class="info-row">
             <span class="info-label">Пользователь:</span>
-            <span class="info-value">@User?.Identity?.Name</span>
+            <span class="info-value">@ViewBag.UserName</span>
         </div>
         <div class="info-row">
             <span class="info-label">Системный ID:</span>
-            <span class="info-value">#04892-X</span>
+            <span class="info-value">#@ViewBag.UserId</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Почта:</span>
+            <span class="info-value">@ViewBag.Email</span>
         </div>
         <div class="info-row">
             <span class="info-label">Статус доступа:</span>
@@ -29,10 +32,10 @@
     </div>
 </div>
 
-<div style="margin-top: 30px; display: flex; gap: 15px;">
+<div style="margin-top: 30px; display: flex; gap: 15px;" class="form-footer">
     <a asp-controller="Hub" asp-action="Index" class="retro-btn btn-with-icon">
-        <img src="~/img/joystick-icon.png" class="btn-icon" alt="" />
-        <span>В игровой хаб</span>
+        <span>[._.] В игровой хаб</span>
     </a>
-    <a asp-controller="Home" asp-action="Index" class="retro-btn">На главную</a>
+    <a asp-controller="Home" asp-action="Index" class="retro-btn">[*] На главную</a>
+    <a class="form-link" asp-controller="Account" asp-action="Logout">Выйти из профиля</a>
 </div>

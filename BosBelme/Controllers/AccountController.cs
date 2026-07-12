@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace BosBelme.Controllers
 {
     public class AccountController : Controller
@@ -17,17 +19,38 @@ namespace BosBelme.Controllers
             _cookieAuthService = cookieAuthService;
         }
 
-
         // Методы для отображения страниц регистрации и входа
         public IActionResult Register() => View();
         public IActionResult Login() => View();
-        public IActionResult Profile() => View();
 
+        // Метод для отображения профиля
+        public IActionResult Profile()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var email = User.FindFirstValue(ClaimTypes.Email);
+                var name = User.FindFirstValue(ClaimTypes.Name);
+                
+                ViewBag.UserId = userid;
+                ViewBag.Email = email;
+                ViewBag.UserName = name;
 
-        // Методы для обработки POST-запросов регистрации
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Register", "Account");
+            }
+        }
+
+        // Метод для обработки POST-запросов регистрации
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            // Если пользователь уже авторизован выгоняем в профиль
+            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
+
             if (!ModelState.IsValid) return View(model);
 
             if ((!ModelState.IsValid) || (model.Password != model.ConfirmPassword)) return View(model);
@@ -39,52 +62,36 @@ namespace BosBelme.Controllers
 
                 await _cookieAuthService.SignInAsync(user.FromUser());
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Profile", "Account");
             }
-            catch (UserAlreadyExistsException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-            catch (UserNameAlreadyExistsException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-            catch (Exception ex)
+            catch (Exception ex) when
+            (ex is UserAlreadyExistsException or UserNameAlreadyExistsException)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
         }
 
-
-        // Методы для обработки POST-запросов входа
+        // Метод для обработки POST-запросов входа
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            // Если пользователь уже авторизован выгоняем в профиль
+            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
+
             if (!ModelState.IsValid) return View(model);
 
             try
             {
-                //Авторизация нового пользователя
+                // Авторизация нового пользователя
                 var user = await _authService.AuthenticationUserAsync(model.NameOrEmail, model.Password);
 
                 await _cookieAuthService.SignInAsync(user.FromUser());
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Profile", "Account");
             }
-            catch (UserNotExistsException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-            catch (UserPasswordWrongException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-            catch (Exception ex)
+            catch (Exception ex) when 
+            (ex is UserNotExistsException or UserPasswordWrongException)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
