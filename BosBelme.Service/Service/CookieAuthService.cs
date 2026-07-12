@@ -17,13 +17,13 @@ namespace BosBelme.Service.Service
             {
                 new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
                 new Claim(ClaimTypes.Name, dto.Name),
-                new Claim(ClaimTypes.Email, dto.Email) 
+                new Claim(ClaimTypes.Email, dto?.Email ?? string.Empty) 
             };
 
-            ClaimsIdentity identity = new ClaimsIdentity(claims,
+            var identity = new ClaimsIdentity(claims,
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            var principal = new ClaimsPrincipal(identity);
 
             await _httpContextAccessor.HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,

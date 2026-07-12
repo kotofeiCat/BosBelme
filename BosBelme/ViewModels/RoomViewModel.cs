@@ -13,7 +13,6 @@
     {
         public string Name { get; set; } = string.Empty;
         public bool IsHost { get; set; }
-
         public bool IsGuest { get; set; }
     }
 }

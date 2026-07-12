@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace BosBelme.Controllers
 {
     // Контроллер для управления игровыми комнатами и взаимодействия с пользователями.
     public class HubController : Controller
     {
-        private readonly AppDbContext _context;
         private readonly IRegService _registeredServices;
         private readonly IRoomService _roomService;
+        private readonly ICookieAuthService _cookieAuthService;
 
-        public HubController(AppDbContext context, IRegService registeredServices, IRoomService roomService)
+        public HubController(IRegService registeredServices, IRoomService roomService, ICookieAuthService cookieAuthService)
         {
-            _context = context;
             _registeredServices = registeredServices;
             _roomService = roomService;
+            _cookieAuthService = cookieAuthService;
         }
 
         // Отображает главную страницу контроллера.
@@ -24,33 +22,31 @@ namespace BosBelme.Controllers
 
         public IActionResult JoinRoom() => View();
 
-        public async Task<IActionResult> CreateRoom()
-        {
-            if (User?.Identity?.IsAuthenticated == true)
-            {
-                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-
-                var gameHub = await _roomService.CreateRoomAsync(userId);
-
-                return RedirectToAction("Room", new { code = gameHub.ConnectionKey });
-            }
-
-
-            return View();
-        }
-
+        public async Task<IActionResult> CreateRoom() => View();
 
         // POST: Создает новую игровую комнату и перенаправляет пользователя в нее.
         [HttpPost]
         public async Task<IActionResult> CreateRoom(CreateRoomViewModel model)
         {
+
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+                var authHub = await _roomService.CreateRoomAsync(userId);
+
+                return RedirectToAction("Room", new { code = authHub.ConnectionKey });
+            }
+
             if (!ModelState.IsValid) return View(model);
 
             var user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
 
-            var gameHub = await _roomService.CreateRoomAsync(user.Id);
+            await _cookieAuthService.SignInAsync(user);
 
-            return RedirectToAction("Room", new {code = gameHub.ConnectionKey});
+            var guestHub = await _roomService.CreateRoomAsync(user.Id);
+
+            return RedirectToAction("Room", new {code = guestHub.ConnectionKey});
         }
 
         // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду.
@@ -86,6 +82,17 @@ namespace BosBelme.Controllers
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LeaveRoom(string code)
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                await _roomService.LeaveRoomAsync(userId, code);
+            }
+            return RedirectToAction("Index");
         }
     }
 }

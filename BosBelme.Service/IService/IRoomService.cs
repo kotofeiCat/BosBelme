@@ -9,5 +9,9 @@ namespace BosBelme.Service.IService
         public Task InviteUserToRoomAsync(int gameHubId, int userId);
 
         Task<RoomDto?> GetRoomDetailsAsync(string code);
+
+        Task LeaveRoomAsync(int userId, string roomCode);
+
+        Task DeleteRoomAsync(string roomCode);
     }
 }

@@ -88,5 +88,47 @@ namespace BosBelme.Service.Service
                     .ToList()
             };
         }
+
+        // Удаляет пользователя из комнаты. Если пользователь является хостом, удаляет всю комнату и все сессии.
+        public async Task LeaveRoomAsync(int userId, string roomCode)
+        {
+            var gameHub = await _context.GameHubs
+                .Include(gs => gs.GameSessions)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode);
+
+            if (gameHub == null) return;
+
+            var userSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IdPlayer == userId);
+
+            if (userSession == null) return;
+
+            if (userSession.IsHost)
+            {
+                _context.GameSessions.RemoveRange(gameHub.GameSessions);
+                _context.GameHubs.Remove(gameHub);
+            }
+            else
+            {
+                _context.GameSessions.Remove(userSession);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        // Удаляет комнату и все связанные сессии по коду комнаты
+        public async Task DeleteRoomAsync(string roomCode)
+        {
+            var gameHub = await _context.GameHubs
+                .Include(gs => gs.GameSessions)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode);
+
+            if (gameHub != null)
+            {
+                _context.GameSessions.RemoveRange(gameHub.GameSessions);
+                _context.GameHubs.Remove(gameHub);
+
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
