@@ -4,70 +4,97 @@
     ViewData["Title"] = "Хаб";
 }
 
-<h1 class="large-text">@Model.RoomName</h1>
-<hr />
+<div style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 25px; width: 100%;">
 
-<div style="display: flex; flex-direction: column; gap: 20px;">
+    <h1 class="large-text" style="margin-bottom: 5px;">@Model.RoomName</h1>
+    <hr style="border: 1px solid var(--color-black); margin-top: 0;" />
 
-    <div class="info-card" style="max-width: 100%;">
-        <div class="avatar-container">
-            <span style="font-size: 32px;">💾</span>
+    <div class="info-card" style="max-width: 100%; padding: 20px; border: 2px solid var(--color-black); background: var(--color-white); box-shadow: 4px 4px 0px var(--color-black);">
+        <div class="avatar-container" style="align-self: center;">
+            <span style="font-size: 40px;">💾</span>
         </div>
-        <div class="info-container">
-            <div class="info-row">
-                <span class="info-label">Код подключения:</span>
-                <span class="info-value" style="font-weight: bold; letter-spacing: 1px;">@Model.RoomCode</span>
+        <div class="info-container" style="flex-grow: 1;">
+
+            <div class="info-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <span class="info-label" style="font-weight: bold;">Код подключения:</span>
+
+                <!-- Новая цельная панель-кнопка для копирования -->
+                <div onclick="copyTextToClipboard('@Model.RoomCode', this, 'code')"
+                     style="cursor: pointer; display: inline-flex; align-items: center; gap: 12px; border: 2px solid var(--color-black); box-shadow: 3px 3px 0px var(--color-black); background: var(--color-white); padding: 6px 14px; transition: all 0.1s ease;"
+                     onmouseover="if(this.style.background !== 'var(--color-black)') this.style.background='var(--color-gray-light)'"
+                     onmouseout="if(this.style.background !== 'var(--color-black)') this.style.background='var(--color-white)'"
+                     title="Кликните в любое место панели, чтобы скопировать код">
+                    <span id="display-room-code" style="font-family: 'Courier Prime', monospace; font-weight: bold; letter-spacing: 2px; font-size: 16px; user-select: all; margin: 0;">@Model.RoomCode</span>
+                    <span id="code-icon" style="font-size: 14px; color: var(--color-gray-medium); transition: color 0.1s;">📋</span>
+                </div>
             </div>
-            <div class="info-row">
+
+            <div class="info-row" style="margin-top: 8px;">
                 <span class="info-label">Создатель (Host):</span>
-                <span class="info-value">@Model.HostName</span>
+                <span class="info-value" style="font-weight: 500;">@Model.HostName</span>
             </div>
-            <div class="info-row">
+            <div class="info-row" style="margin-top: 8px;">
                 <span class="info-label">Статус Ядра:</span>
                 <div class="status-container">
-                    <span class="status-badge">@Model.Status</span>
+                    <span class="status-badge" style="font-weight: bold;">@Model.Status</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <h2 class="large-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (<span id="player-count">@Model.Players.Count</span>):</h2>
+    <div>
+        <h2 class="large-text" style="font-size: 14px; margin-bottom: 10px; font-weight: bold;">
+            Авторизованные терминалы (<span id="player-count">@Model.Players.Count</span>):
+        </h2>
+        <ul id="player-list" style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px; list-style: none; box-shadow: 4px 4px 0px var(--color-black);">
+            @foreach (var player in Model.Players)
+            {
+                <li style="padding: 12px 10px; border-bottom: 1px dashed var(--color-gray-medium); font-family: 'Courier Prime', monospace; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>👤</span>
+                        <strong>@player.Name</strong>
+                        @if (player.IsGuest)
+                        {
+                            <span style="color: var(--color-gray-medium); font-size: 11px;">[Временный гость]</span>
+                        }
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        @if (player.IsHost)
+                        {
+                            <span class="status-badge" style="background-color: var(--color-black); color: var(--color-white); padding: 2px 8px; font-weight: bold;">HOST</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge" style="background-color: var(--color-gray-light); color: var(--color-black); border: 1px solid var(--color-black); padding: 2px 8px;">PLAYER</span>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
 
-    <ul id="player-list" style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px;">
-        @foreach (var player in Model.Players)
-        {
-            <li style="padding: 10px; border-bottom: 1px dashed var(--color-gray-medium); font-family: 'Courier Prime', monospace; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span>👤</span>
-                    <strong>@player.Name</strong>
+    <!-- Компактная панель генератора доступа -->
+    <div style="border: 2px solid var(--color-black); box-shadow: 3px 3px 0px var(--color-black); background: var(--color-white); padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 22px;">🔗</span>
+            <div>
+                <div style="font-family: 'Press Start 2P', monospace; font-size: 9px; font-weight: bold; margin-bottom: 2px;">ССЫЛКА ДОСТУПА</div>
+                <div style="font-family: 'Courier Prime', monospace; font-size: 13px; color: var(--color-gray-dark);">Для быстрого входа в текущую сессию</div>
+            </div>
+        </div>
+        <button type="button" class="btn" style="margin: 0; padding: 6px 14px; font-size: 10px;"
+                onclick="copyTextToClipboard('@Url.Action("EnterName", "Hub", new { roomCode = Model.RoomCode }, Context.Request.Scheme)', this, 'link')">
+            Поделиться
+        </button>
+    </div>
 
-                    @if (player.IsGuest)
-                    {
-                        <span style="color: var(--color-gray-medium); font-size: 11px;">[Временный гость]</span>
-                    }
-                </div>
-
-                <div style="display: flex; gap: 5px;">
-                    @if (player.IsHost)
-                    {
-                        <span class="status-badge" style="background-color: var(--color-black); color: var(--color-white);">HOST</span>
-                    }
-                    else
-                    {
-                        <span class="status-badge" style="background-color: var(--color-gray-light); color: var(--color-black); border: 1px solid var(--color-black)">PLAYER</span>
-                    }
-                </div>
-            </li>
-        }
-    </ul>
-
-    <div style="margin-top: 20px; display: flex; gap: 15px;">
+    <div style="margin-top: 10px; display: flex; gap: 15px;">
         <form asp-controller="Hub" asp-action="LeaveRoom" asp-route-code="@Model.RoomCode" method="post" style="display:inline;">
-            <button type="submit" class="btn" style="color: #ff0000;">
+            <button type="submit" class="btn" style="color: #ff0000; margin: 0;">
                 [x] Выйти из комнаты
             </button>
         </form>
-        <button class="btn" onclick="location.reload();">
+        <button class="btn" style="margin: 0;" onclick="location.reload();">
             Обновить данные
         </button>
     </div>
@@ -82,6 +109,8 @@
         redirectUrl: "@Url.Action("Index", "Hub")"
         };
     </script>
+
+    <script src="~/js/room-copy.js" asp-append-version="true"></script>
 
     <script src="~/js/room.js" asp-append-version="true"></script>
 }

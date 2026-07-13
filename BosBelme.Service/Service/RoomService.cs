@@ -103,6 +103,7 @@ namespace BosBelme.Service.Service
         {
             var gameHub = await _context.GameHubs
                 .Include(gs => gs.GameSessions)
+                    .ThenInclude(gs => gs.Player)
                 .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
                 ?? throw new Exception("Игровая комната не найдена");
 
@@ -111,18 +112,25 @@ namespace BosBelme.Service.Service
 
             if (userSession.IsHost)
             {
+                var guestSessions = gameHub.GameSessions.Where(gs => gs.Player != null && gs.Player.IsGuest).ToList();
+                foreach (var gs in guestSessions)
+                {
+                    _context.Remove(gs.Player);
+                }
+
                 _context.GameSessions.RemoveRange(gameHub.GameSessions);
                 _context.GameHubs.Remove(gameHub);
 
-                await _hubContext.Clients.Group(roomCode).SendAsync("RoomDelete");
             }
             else
             {
+                if (userSession.Player != null && userSession.Player.IsGuest)
+                {
+                    _context.Remove(userSession.Player);
+                }
+
                 _context.GameSessions.Remove(userSession);
 
-                var updatedRoom = await GetRoomDetailsAsync(roomCode);
-
-                await _hubContext.Clients.Group(roomCode).SendAsync("UpdateRoom", updatedRoom);
             }
 
             await _context.SaveChangesAsync();
@@ -143,11 +151,18 @@ namespace BosBelme.Service.Service
         public async Task DeleteRoomAsync(string roomCode)
         {
             var gameHub = await _context.GameHubs
-                .Include(gs => gs.GameSessions)
+                .Include(gh => gh.GameSessions)
+                    .ThenInclude(gs => gs.Player)
                 .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode);
 
             if (gameHub != null)
             {
+                var guestSessions = gameHub.GameSessions.Where(gs => gs.Player != null && gs.Player.IsGuest).ToList();
+                foreach (var gs in guestSessions)
+                {
+                    _context.Remove(gs.Player);
+                }
+
                 _context.GameSessions.RemoveRange(gameHub.GameSessions);
                 _context.GameHubs.Remove(gameHub);
 
