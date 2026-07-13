@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 namespace BosBelme.Service.Service
 {
     // Сервис для работы с куки
@@ -25,7 +27,7 @@ namespace BosBelme.Service.Service
 
             var principal = new ClaimsPrincipal(identity);
 
-            await _httpContextAccessor.HttpContext.SignInAsync(
+            await _httpContextAccessor.HttpContext!.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal,
                 new AuthenticationProperties
@@ -38,7 +40,7 @@ namespace BosBelme.Service.Service
         // Метод для выхода пользователя из системы
         public async Task SignOutAsync()
         {
-            await _httpContextAccessor.HttpContext.SignOutAsync(
+            await _httpContextAccessor.HttpContext!.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
