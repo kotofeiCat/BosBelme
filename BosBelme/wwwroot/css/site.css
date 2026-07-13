@@ -27,6 +27,7 @@ body {
     display: flex;
     flex-direction: column;
     user-select: none;
+    overflow-x: hidden;
 }
 
 a {

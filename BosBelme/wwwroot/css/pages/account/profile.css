@@ -21,4 +21,9 @@
     #long-email {
         flex-direction: column;
     }
+    .window-container {
+        min-height: 110vh;
+    }
 }
+
+
