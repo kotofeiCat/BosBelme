@@ -9,3 +9,4 @@ global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Http;
 global using BosBelme.Service.Dto;
+global using Microsoft.AspNetCore.SignalR;

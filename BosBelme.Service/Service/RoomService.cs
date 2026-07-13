@@ -56,6 +56,7 @@ namespace BosBelme.Service.Service
             await _context.SaveChangesAsync();
         }
 
+        //Метод для получения данных о комнате
         public async Task<RoomDto?> GetRoomDetailsAsync(string code)
         {
             if (string.IsNullOrEmpty(code)) return null;
