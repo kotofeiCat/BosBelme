@@ -22,7 +22,15 @@ namespace BosBelme.Controllers
 
         public IActionResult JoinRoom() => View();
 
-        public async Task<IActionResult> CreateRoom() => View();
+        public IActionResult EnterName()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View();
+        }
 
         // POST: Создает новую игровую комнату и перенаправляет пользователя в нее.
         [HttpPost]
@@ -38,6 +46,12 @@ namespace BosBelme.Controllers
                 return RedirectToAction("Room", new { code = authHub.ConnectionKey });
             }
 
+            return RedirectToAction("EnterName");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnterName(CreateRoomViewModel model)
+        {
             if (!ModelState.IsValid) return View(model);
 
             var user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
@@ -46,7 +60,7 @@ namespace BosBelme.Controllers
 
             var guestHub = await _roomService.CreateRoomAsync(user.Id);
 
-            return RedirectToAction("Room", new {code = guestHub.ConnectionKey});
+            return RedirectToAction("Room", new { code = guestHub.ConnectionKey });
         }
 
         // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду.

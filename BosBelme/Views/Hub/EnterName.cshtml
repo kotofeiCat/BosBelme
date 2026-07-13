@@ -9,16 +9,14 @@
 
 <p class="other-text">Введите ваше имя системы для инициализации выделенного пространства.</p>
 
-<form asp-controller="Hub" asp-action="CreateRoom" method="post">
+<form asp-controller="Hub" asp-action="EnterRoom" method="post">
     <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 10px;"></div>
-    @if(User?.Identity?.IsAuthenticated == false)
-    {
-        <div class="input-group">
-            <label asp-for="PlayerName">Ваш Игровoй Никнейм:</label>
-            <input asp-for="PlayerName" placeholder="User_777" autocomplete="off" />
-            <span asp-validation-for="PlayerName" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
-        </div>
-    }
+    <div class="input-group">
+        <label asp-for="PlayerName">Ваш Игровoй Никнейм:</label>
+        <input asp-for="PlayerName" placeholder="User_777" autocomplete="off" />
+        <span asp-validation-for="PlayerName" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
+    </div>
+
     <div class="btn-container">
         <button class="btn" type="submit">
             [+] Создать

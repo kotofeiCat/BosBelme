@@ -1,4 +1,6 @@
-﻿@{
+﻿@model BosBelme.ViewModels.ProfileViewModel;
+
+@{
     ViewData["Title"] = "Профиль";
 }
 
@@ -17,15 +19,15 @@
     <div class="info-container">
         <div class="info-row">
             <span class="info-label">Пользователь:</span>
-            <span class="info-value">@ViewBag.UserName</span>
+            <span class="info-value">@Model.Name</span>
         </div>
         <div class="info-row">
             <span class="info-label">Системный ID:</span>
-            <span class="info-value">#@ViewBag.UserId</span>
+            <span class="info-value">#@Model.Id</span>
         </div>
         <div class="info-row" id="long-email">
             <span class="info-label">Почта:</span>
-            <span class="info-value">@ViewBag.Email</span>
+            <span class="info-value">@Model.Email</span>
         </div>
         <div class="info-row">
             <span class="info-label">Статус доступа:</span>

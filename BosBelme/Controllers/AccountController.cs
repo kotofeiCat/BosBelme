@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace BosBelme.Controllers
@@ -24,24 +25,17 @@ namespace BosBelme.Controllers
         public IActionResult Login() => View();
 
         // Метод для отображения профиля
+        [Authorize]
         public IActionResult Profile()
         {
-            if (User.Identity?.IsAuthenticated == true)
+            var model = new ProfileViewModel
             {
-                var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var email = User.FindFirstValue(ClaimTypes.Email);
-                var name = User.FindFirstValue(ClaimTypes.Name);
-                
-                ViewBag.UserId = userid;
-                ViewBag.Email = email;
-                ViewBag.UserName = name;
+                Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "-1",
+                Email = User.FindFirstValue(ClaimTypes.Email) ?? "unknow",
+                Name = User.FindFirstValue(ClaimTypes.Name) ?? "don jhon"
+            };
 
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Register", "Account");
-            }
+            return View(model);
         }
 
         // Метод для обработки POST-запросов регистрации

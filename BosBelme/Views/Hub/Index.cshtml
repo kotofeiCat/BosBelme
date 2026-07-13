@@ -15,9 +15,11 @@
 
 <div style="display: flex; flex-direction: column; gap: 15px; max-width: 350px;">
 
-    <a asp-controller="Hub" asp-action="CreateRoom" class="btn">
-        [+] Создать комнату
-    </a>
+    <form asp-controller="Hub" asp-action="CreateRoom" method="post" style="display:inline;">
+        <button type="submit" class="btn">
+            [+] Создать комнату
+        </button>
+    </form>
 
     <a asp-controller="Hub" asp-action="JoinRoom" class="btn">
         [->] Присоединиться

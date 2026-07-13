@@ -1,20 +1,23 @@
-﻿using System;
+﻿using BosBelme.Service.SignalR;
+using System;
 namespace BosBelme.Service.Service
 {
     // Сервис для работы с комнатами и игровыми сессиями
     public class RoomService : IRoomService
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<GameRoomHub> _hubContext;
 
-        public RoomService(AppDbContext context)
+        public RoomService(AppDbContext context, IHubContext<GameRoomHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // Создает новую игровую комнату и добавляет пользователя в нее
         public async Task<GameHubDto> CreateRoomAsync(int userId)
         {
-            var defaultGame = await _context.Games.FirstOrDefaultAsync()
+            var defaultGame = await _context.Games.AsNoTracking().FirstOrDefaultAsync()
                 ?? throw new Exception("Игра не найдена.");
 
             var gameHub = new GameHub
@@ -46,14 +49,20 @@ namespace BosBelme.Service.Service
             if (await _context.GameSessions.AnyAsync(gs => gs.PlayerId == userId))
                 throw new Exception($"Пользователь уже состоит в комнате.");
 
+            var gameHub = await _context.GameHubs.FirstOrDefaultAsync(gh => gh.Id == gameHubId)
+                ?? throw new Exception("Комната не найдена");
+
             var gameSession = new GameSession
             {
                 GameHubId = gameHubId,
                 PlayerId = userId
             };
 
-            await _context.GameSessions.AddAsync(gameSession);
+            _context.GameSessions.Add(gameSession);
             await _context.SaveChangesAsync();
+
+            var updateRoom = await GetRoomDetailsAsync(gameHub.ConnectionKey);
+            await _hubContext.Clients.Group(gameHub.ConnectionKey).SendAsync("UpdateRoom", updateRoom);
         }
 
         // Метод для получения данных о комнате
@@ -69,7 +78,9 @@ namespace BosBelme.Service.Service
 
             if (gameHub == null) throw new Exception("Такой комнаты не существует");
 
-            var hostSession = gameHub.GameSessions.First(gs => gs.IsHost);
+            var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost)
+                ?? throw new Exception("Хост в данной комнате не найден");
+
             var hostName = hostSession.Player?.Name
                 ?? throw new Exception("Хост не найден");
 
@@ -96,25 +107,40 @@ namespace BosBelme.Service.Service
         {
             var gameHub = await _context.GameHubs
                 .Include(gs => gs.GameSessions)
-                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode);
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
+                ?? throw new Exception("Игровая комната не найдена");
 
-            if (gameHub == null) return;
-
-            var userSession = gameHub.GameSessions.FirstOrDefault(gs => gs.PlayerId == userId);
-
-            if (userSession == null) return;
+            var userSession = gameHub.GameSessions.FirstOrDefault(gs => gs.PlayerId == userId)
+                ?? throw new Exception("Игровая сессия не найдена");
 
             if (userSession.IsHost)
             {
                 _context.GameSessions.RemoveRange(gameHub.GameSessions);
                 _context.GameHubs.Remove(gameHub);
+
+                await _hubContext.Clients.Group(roomCode).SendAsync("RoomDelete");
             }
             else
             {
                 _context.GameSessions.Remove(userSession);
+
+                var updatedRoom = await GetRoomDetailsAsync(roomCode);
+
+                await _hubContext.Clients.Group(roomCode).SendAsync("UpdateRoom", updatedRoom);
             }
 
             await _context.SaveChangesAsync();
+
+            if (userSession.IsHost)
+            {
+                await _hubContext.Clients.Group(roomCode).SendAsync("RoomDelete");
+            }
+            else
+            {
+                var updatedRoom = await GetRoomDetailsAsync(roomCode);
+
+                await _hubContext.Clients.Group(roomCode).SendAsync("UpdateRoom", updatedRoom);
+            }
         }
 
         // Удаляет комнату и все связанные сессии по коду комнаты
