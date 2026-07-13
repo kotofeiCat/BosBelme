@@ -8,11 +8,9 @@ global using System.ComponentModel.DataAnnotations;
 // Глобальные директивы using для БД
 global using Microsoft.EntityFrameworkCore;
 global using BosBelme.Data;
-global using BosBelme.Data.Entities;
 
 // Глобальные директивы using для сервисного слоя
 global using BosBelme.Service.Service;
 global using BosBelme.Service.IService;
-global using BosBelme.Service.Dto;
-global using BosBelme.Service.Extension;
+global using BosBelme.Service.SignalR;
 

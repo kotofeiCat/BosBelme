@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddSignalR();
+
 // Внедрение зависимостей для сервисов
 builder.Services.AddScoped<IAuthService, Authentication>();
 builder.Services.AddScoped<IRegService, Registration>();
@@ -41,6 +43,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapHub<GameRoomHub>("/gameRoomHub");
 
 app.MapControllerRoute(
     name: "default",
