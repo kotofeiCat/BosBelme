@@ -1,9 +1,11 @@
 ﻿namespace BosBelme.ViewModels
 {
-    public class CreateRoomViewModel
+    public class EnterNameViewModel
     {
+
+        public string? RoomCode { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Введите ваше имя")]
-        [StringLength(20, ErrorMessage = "Имя слишком длинное")]
         public string PlayerName { get; set; } = string.Empty;
     }
 }

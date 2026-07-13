@@ -5,7 +5,7 @@
 }
 
 <h1 class="large-text">@Model.RoomName</h1>
-<hr/>
+<hr />
 
 <div style="display: flex; flex-direction: column; gap: 20px;">
 
@@ -31,9 +31,9 @@
         </div>
     </div>
 
-    <h2 class="large-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (@Model.Players.Count):</h2>
+    <h2 class="large-text" style="font-size: 13px; margin-top: 15px;">Авторизованные терминалы (<span id="player-count">@Model.Players.Count</span>):</h2>
 
-    <ul style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px;">
+    <ul id="player-list" style="border: 2px solid var(--color-black); background: var(--color-white); padding: 5px;">
         @foreach (var player in Model.Players)
         {
             <li style="padding: 10px; border-bottom: 1px dashed var(--color-gray-medium); font-family: 'Courier Prime', monospace; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
@@ -72,3 +72,16 @@
         </button>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+
+    <script>
+        window.roomConfig = {
+        roomCode: "@Model.RoomCode",
+        redirectUrl: "@Url.Action("Index", "Hub")"
+        };
+    </script>
+
+    <script src="~/js/room.js" asp-append-version="true"></script>
+}

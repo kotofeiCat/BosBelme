@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
 
+//Подключение СигналР
 builder.Services.AddSignalR();
 
 // Внедрение зависимостей для сервисов
@@ -44,6 +45,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+//Настройка сигналР
 app.MapHub<GameRoomHub>("/gameRoomHub");
 
 app.MapControllerRoute(

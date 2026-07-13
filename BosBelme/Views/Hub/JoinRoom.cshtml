@@ -1,19 +1,20 @@
-﻿@model BosBelme.ViewModels.JoinRoomCodeViewModel
+﻿@model BosBelme.ViewModels.JoinRoomViewModel
 
 @{
     ViewData["Title"] = "Хаб";
 }
 
 <h2 class="large-text">Подключение по коду</h2>
-<hr/>
-
+<hr />
 <p class="other-text">Для входа в чужую операционную комнату введите ее уникальный 6-значный идентификатор.</p>
 
 <form asp-controller="Hub" asp-action="JoinRoom" method="post">
 
+    <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 15px; font-size: 13px;"></div>
+
     <div class="input-group">
         <label asp-for="RoomCode">Код Доступа (Код Комнаты):</label>
-        <input asp-for="RoomCode" placeholder="RM1234" style="text-transform: uppercase;" autocomplete="off" />
+        <input asp-for="RoomCode" placeholder="Rm34Xq" autocomplete="off" required />
         <span asp-validation-for="RoomCode" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
     </div>
 

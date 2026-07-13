@@ -22,6 +22,7 @@ namespace BosBelme.Service.SignalR
             var roomDetails = await _roomService.GetRoomDetailsAsync(roomCode);
 
             await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
+
         }
 
         //Метод для выхода из группы.
@@ -30,17 +31,6 @@ namespace BosBelme.Service.SignalR
             await _roomService.LeaveRoomAsync(userId, roomCode);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
-
-            try
-            {
-                var roomDetails = await _roomService.GetRoomDetailsAsync(roomCode);
-
-                await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
-            }
-            catch
-            {
-                await Clients.Group(roomCode).SendAsync("RoomDelete");
-            }
         }
     }
 }

@@ -20,8 +20,8 @@ namespace BosBelme.Service.Service
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
-                new Claim(ClaimTypes.Name, dto.Name),
-                new Claim(ClaimTypes.Email, dto.Email)
+                new Claim(ClaimTypes.Name, dto?.Name ?? string.Empty),
+                new Claim(ClaimTypes.Email, dto?.Email ?? string.Empty)
             };
 
             var identity = new ClaimsIdentity(claims,

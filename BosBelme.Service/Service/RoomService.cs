@@ -43,25 +43,22 @@ namespace BosBelme.Service.Service
         }
 
         // Добавляет пользователя в существующую игровую комнату
-        public async Task InviteUserToRoomAsync(int gameHubId, int userId)
+        public async Task InviteUserToRoomAsync(string roomCode, int userId)
         {
             if (await _context.GameSessions.AnyAsync(gs => gs.PlayerId == userId))
                 throw new Exception($"Пользователь уже состоит в комнате.");
 
-            var gameHub = await _context.GameHubs.FirstOrDefaultAsync(gh => gh.Id == gameHubId)
+            var gameHub = await _context.GameHubs.FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
                 ?? throw new Exception("Комната не найдена");
 
             var gameSession = new GameSession
             {
-                GameHubId = gameHubId,
+                GameHubId = gameHub.Id,
                 PlayerId = userId
             };
 
             _context.GameSessions.Add(gameSession);
             await _context.SaveChangesAsync();
-
-            var updateRoom = await GetRoomDetailsAsync(gameHub.ConnectionKey);
-            await _hubContext.Clients.Group(gameHub.ConnectionKey).SendAsync("UpdateRoom", updateRoom);
         }
 
         // Метод для получения данных о комнате

@@ -22,19 +22,30 @@ namespace BosBelme.Controllers
 
         public IActionResult JoinRoom() => View();
 
-        public IActionResult EnterName()
+        public async Task<IActionResult> EnterName(string? roomCode = null)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
+                if (!string.IsNullOrEmpty(roomCode))
+                {
+                    int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                    try
+                    {
+                        await _roomService.InviteUserToRoomAsync(roomCode, userId);
+                    }
+                    catch { }
+                    return RedirectToAction("Room", new { code = roomCode });
+                }
                 return RedirectToAction("Index");
             }
 
-            return View();
+            var model = new EnterNameViewModel { RoomCode = roomCode };
+            return View(model);
         }
 
         // POST: Создает новую игровую комнату и перенаправляет пользователя в нее.
         [HttpPost]
-        public async Task<IActionResult> CreateRoom(CreateRoomViewModel model)
+        public async Task<IActionResult> CreateRoom(JoinRoomViewModel model)
         {
 
             if (User.Identity?.IsAuthenticated == true)
@@ -49,26 +60,56 @@ namespace BosBelme.Controllers
             return RedirectToAction("EnterName");
         }
 
+        // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду.
         [HttpPost]
-        public async Task<IActionResult> EnterName(CreateRoomViewModel model)
+        public async Task<IActionResult> JoinRoom(JoinRoomViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Код комнаты не может быть пустым.");
+                return View(model);
+            }
+
+            try
+            {
+                var room = await _roomService.GetRoomDetailsAsync(model.RoomCode);
+
+                return RedirectToAction("EnterName", new { roomCode = model.RoomCode });
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Такой комнаты не существует. Проверьте код.");
+                return View(model);
+            }
+        }
+
+        // POST: Подтверждает входа гостя в комнату
+        [HttpPost]
+        public async Task<IActionResult> EnterName(EnterNameViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
             var user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
-
             await _cookieAuthService.SignInAsync(user);
 
-            var guestHub = await _roomService.CreateRoomAsync(user.Id);
+            if (!string.IsNullOrEmpty(model.RoomCode))
+            {
+                try
+                {
+                    await _roomService.InviteUserToRoomAsync(model.RoomCode, user.Id);
+                    return RedirectToAction("Room", new { code = model.RoomCode });
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+            }
 
+            var guestHub = await _roomService.CreateRoomAsync(user.Id);
             return RedirectToAction("Room", new { code = guestHub.ConnectionKey });
         }
 
-        // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду.
-        [HttpPost]
-        public async Task<IActionResult> JoinRoom(JoinRoomCodeViewModel model)
-        {
-            return View();
-        }
 
         // GET: Отображает страницу игровой комнаты по коду.
         public async Task<IActionResult> Room(string code)
