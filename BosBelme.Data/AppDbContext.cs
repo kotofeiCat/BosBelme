@@ -29,7 +29,7 @@ namespace BosBelme.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<GameSession>()
-                .HasKey(gs => new { gs.GameHubId, gs.IdPlayer });
+                .HasKey(gs => new { gs.GameHubId, gs.PlayerId });
 
             modelBuilder.Entity<GameSession>()
                 .HasOne(gs => gs.GameHub)
@@ -40,7 +40,7 @@ namespace BosBelme.Data
             modelBuilder.Entity<GameSession>()
                 .HasOne(gs => gs.Player)
                 .WithMany(p => p.GameSessions)
-                .HasForeignKey(gs => gs.IdPlayer)
+                .HasForeignKey(gs => gs.PlayerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

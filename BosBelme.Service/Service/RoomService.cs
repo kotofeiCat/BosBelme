@@ -14,7 +14,8 @@ namespace BosBelme.Service.Service
         // Создает новую игровую комнату и добавляет пользователя в нее
         public async Task<GameHub> CreateRoomAsync(int userId)
         {
-            var defaultGame = await _context.Games.FirstOrDefaultAsync() ?? throw new GameNotFoundException("Игра не найдена.");
+            var defaultGame = await _context.Games.FirstOrDefaultAsync()
+                ?? throw new Exception("Игра не найдена.");
 
             var gameHub = new GameHub
             {
@@ -28,7 +29,7 @@ namespace BosBelme.Service.Service
             var gameSession = new GameSession
             {
                 GameHub = gameHub,
-                IdPlayer = userId,
+                PlayerId = userId,
                 IsHost = true
             };
 
@@ -38,26 +39,26 @@ namespace BosBelme.Service.Service
             return gameHub;
         }
 
-
-        // Приглашает пользователя в существующую игровую комнату
+        // Добавляет пользователя в существующую игровую комнату
         public async Task InviteUserToRoomAsync(int gameHubId, int userId)
         {
-            if (await _context.GameSessions.AnyAsync(gs => gs.IdPlayer == userId))
-                throw new UserAlreadyInRoomException($"Пользователь уже состоит в комнате.");
+            if (await _context.GameSessions.AnyAsync(gs => gs.PlayerId == userId))
+                throw new Exception($"Пользователь уже состоит в комнате.");
 
             var gameSession = new GameSession
             {
                 GameHubId = gameHubId,
-                IdPlayer = userId
+                PlayerId = userId
             };
 
             await _context.GameSessions.AddAsync(gameSession);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<RoomDto?> GetRoomDetailsAsync(string code)
+        // Возвращает информацию о комнате
+        public async Task<RoomDto> GetRoomDetailsAsync(string code)
         {
-            if (string.IsNullOrEmpty(code)) return null;
+            if (string.IsNullOrEmpty(code)) throw new Exception("Укажите код комнаты");
 
             var gameHub = await _context.GameHubs
                 .AsNoTracking()
@@ -65,10 +66,11 @@ namespace BosBelme.Service.Service
                     .ThenInclude(gs => gs.Player)
                 .FirstOrDefaultAsync(gh => gh.ConnectionKey == code);
 
-            if (gameHub == null) return null;
+            if (gameHub == null) throw new Exception("Такой комнаты не существует");
 
-            var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost);
-            string hostName = hostSession?.Player?.Name ?? "Не назначен";
+            var hostSession = gameHub.GameSessions.First(gs => gs.IsHost);
+            var hostName = hostSession.Player?.Name
+                ?? throw new Exception("Хост не найден");
 
             return new RoomDto
             {
@@ -80,9 +82,9 @@ namespace BosBelme.Service.Service
                 Players = gameHub.GameSessions
                     .Select(gs => new RoomPlayerDto
                     {
-                        Name = gs.Player?.Name ?? "Неизвестный",
+                        Name = gs.Player.Name,
                         IsHost = gs.IsHost,
-                        IsGuest = gs.Player?.IsGuest ?? true
+                        IsGuest = gs.Player.IsGuest
                     })
                     .ToList()
             };

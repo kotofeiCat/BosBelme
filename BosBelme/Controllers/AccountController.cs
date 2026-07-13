@@ -70,8 +70,7 @@ namespace BosBelme.Controllers
 
                 return RedirectToAction("Profile", "Account");
             }
-            catch (Exception ex) when
-            (ex is UserAlreadyExistsException or UserNameAlreadyExistsException)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
@@ -97,8 +96,7 @@ namespace BosBelme.Controllers
 
                 return RedirectToAction("Profile", "Account");
             }
-            catch (Exception ex) when 
-            (ex is UserNotExistsException or UserPasswordWrongException)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
