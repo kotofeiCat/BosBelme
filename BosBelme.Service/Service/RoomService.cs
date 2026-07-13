@@ -100,7 +100,7 @@ namespace BosBelme.Service.Service
 
             if (gameHub == null) return;
 
-            var userSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IdPlayer == userId);
+            var userSession = gameHub.GameSessions.FirstOrDefault(gs => gs.PlayerId == userId);
 
             if (userSession == null) return;
 
