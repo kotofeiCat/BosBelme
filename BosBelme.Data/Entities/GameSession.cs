@@ -9,11 +9,12 @@ namespace BosBelme.Data.Entities
     {
         public int GameHubId { get; set; }
 
-        public int IdPlayer { get; set; }
+        public int PlayerId { get; set; }
 
         public bool IsWinner { get; set; } = false;
 
         public bool IsHost { get; set; } = false;
+
 
         public virtual GameHub GameHub { get; set; } = null!;
 

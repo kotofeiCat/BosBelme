@@ -23,6 +23,7 @@ namespace BosBelme.Data.Entities
 
         public DateTime? FinishedAt { get; set; }
 
+        
         public virtual Game Game { get; set; } = null!;
 
         public virtual ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();

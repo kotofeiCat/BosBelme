@@ -16,7 +16,8 @@ namespace BosBelme.Data.Entities
         public string? Email { get; set; } = string.Empty;
 
         public bool IsGuest { get; set; } = false;
-
+        
+        
         public virtual ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
     }
 }

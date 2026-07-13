@@ -14,6 +14,5 @@ global using BosBelme.Data.Entities;
 global using BosBelme.Service.Service;
 global using BosBelme.Service.IService;
 global using BosBelme.Service.Dto;
-global using BosBelme.Service.Exceptions;
 global using BosBelme.Service.Extension;
 

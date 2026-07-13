@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using BosBelme.Data;
 using BosBelme.Data.Entities;
-using BosBelme.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BosBelme.Service.Service
@@ -19,18 +18,20 @@ namespace BosBelme.Service.Service
             _context = context;
         }
 
-        //Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
+        // Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
         public async Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
 
             if (user == null)
             {
-                throw new UserNotExistsException("Пользователя не существует.");
+                throw new Exception("Пользователя не существует.");
             }
             if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                throw new UserPasswordWrongException("Неверный пароль при авторизации.");
+                throw new Exception("Неверный пароль при авторизации.");
             }
 
             return user.FromUser();

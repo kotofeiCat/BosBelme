@@ -18,12 +18,12 @@ namespace BosBelme.Service.Service
             if(await _context.Users.AnyAsync(u => u.Email == email))
             {
                 // Если пользователь с таким email уже существует, выбрасывается исключение.
-                throw new UserAlreadyExistsException("Пользователь с такой почтой уже существует.");
+                throw new Exception("Пользователь с такой почтой уже существует.");
             }
             if(await _context.Users.AnyAsync(u => u.Name == login))
             {
                 // Если пользователь с таким именем уже существует, выбрасывается другое исключение.
-                throw new UserNameAlreadyExistsException("Пользователь с таким именем уже существует.");
+                throw new Exception("Пользователь с таким именем уже существует.");
             }
 
             Users user = new Users
@@ -43,7 +43,7 @@ namespace BosBelme.Service.Service
         public async Task<RegisterDto> RegistrationUserAsync(string login)
         {
             if (await _context.Users.AnyAsync(u => u.Name == login))
-                throw new UserNameAlreadyExistsException("Пользователь с таким именем уже существует.");
+                throw new Exception("Пользователь с таким именем уже существует.");
 
             Users user = new Users
             {

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using BosBelme.Service.Dto;
+
 
 namespace BosBelme.Service.Service
 {
@@ -19,7 +21,7 @@ namespace BosBelme.Service.Service
             {
                 new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
                 new Claim(ClaimTypes.Name, dto.Name),
-                new Claim(ClaimTypes.Email, dto?.Email ?? string.Empty) 
+                new Claim(ClaimTypes.Email, dto.Email)
             };
 
             var identity = new ClaimsIdentity(claims,

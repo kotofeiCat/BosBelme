@@ -17,6 +17,7 @@ namespace BosBelme.Data.Entities
 
         public int MinPlayers { get; set; }
 
+        
         public virtual ICollection<GameHub> GameHubs { get; set; } = new List<GameHub>();
     }
 }

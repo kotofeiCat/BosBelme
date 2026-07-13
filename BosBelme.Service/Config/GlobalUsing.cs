@@ -1,7 +1,6 @@
 ﻿global using BosBelme.Data;
 global using BosBelme.Data.Entities;
 global using BosBelme.Service.Extension;
-global using BosBelme.Service.Exceptions;
 global using BosBelme.Service.IService;
 global using Microsoft.EntityFrameworkCore;
 global using System.Security.Claims;
