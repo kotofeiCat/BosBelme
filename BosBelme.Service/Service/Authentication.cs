@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using BosBelme.Data;
 using BosBelme.Data.Entities;
-using BosBelme.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BosBelme.Service.Service
@@ -26,11 +25,11 @@ namespace BosBelme.Service.Service
 
             if (user == null)
             {
-                throw new UserNotExistsException("Пользователя не существует.");
+                throw new Exception("Пользователя не существует.");
             }
             if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                throw new UserPasswordWrongException("Неверный пароль при авторизации.");
+                throw new Exception("Неверный пароль при авторизации.");
             }
 
             return user;

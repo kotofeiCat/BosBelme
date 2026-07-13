@@ -1,3 +1,5 @@
+using BosBelme.Service.Dto;
+
 namespace BosBelme.Service.Service
 {
     // Сервис для работы с куки
@@ -17,7 +19,7 @@ namespace BosBelme.Service.Service
             {
                 new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
                 new Claim(ClaimTypes.Name, dto.Name),
-                new Claim(ClaimTypes.Email, dto.Email) 
+                new Claim(ClaimTypes.Email, dto.Email)
             };
 
             ClaimsIdentity identity = new ClaimsIdentity(claims,
