@@ -1,0 +1,185 @@
+﻿@using System.Security.Claims
+@model BosBelme.ViewModels.RoomViewModel
+@{
+    var currentUserName = User.FindFirstValue(ClaimTypes.Name);
+    bool isAmIHost = Model.HostName == currentUserName;
+    ViewData["Title"] = Model.RoomName;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/hub/hub.css">
+}
+
+<h1 class="large-text">@Model.RoomName</h1>
+<hr/>
+
+<!-- Контейнер для двух столбцов -->
+<div class="hub-container">
+
+    <!-- Первый столбец -->
+    <div class="hub-column">
+        <!-- Карточка информации о комнате -->
+        <div class="info-card shadow-item">
+
+            <!-- Иконка дискеты -->
+            <div class="avatar-container">
+                <span class="floppy-emoji">💾</span>
+            </div>
+
+            <!-- Контейнер с данными -->
+            <div class="info-container">
+
+                <!-- Код подключения -->
+                <div class="info-row">
+                    <span class="info-label">Код подключения:</span>
+                    <button class="copy-container btn" data-copy-text="@Model.RoomCode">
+                        <span id="display-room-code">@Model.RoomCode</span>
+                        <span id="code-icon">📋</span>
+                    </button>
+                </div>
+
+                <!-- Статус Ядра -->
+                <div class="info-row">
+                    <span class="info-label">Статус Ядра:</span>
+                    <div class="status-container">
+                        <span class="status-badge core-status">@Model.Status</span>
+                    </div>
+                </div>
+
+                <!-- Выбор игры -->
+                <div class="info-column">
+                    <span class="info-label">Выбранное ПО:</span>
+                    @if (isAmIHost)
+                    {
+                        <select id="game-selector" class="retro-select">
+                            @foreach (var game in Model.AvailableGames)
+                            {
+                                <option value="@game.Id" selected="@(game.Id == Model.GameId ? "selected" : null)">@game.Name</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <span id="current-game-name" class="retro-read-only-value">@Model.GameName</span>
+                    }
+                </div>
+
+                <!-- Лимиты игроков -->
+                @* <div class="info-row m-top-4">
+                    <span class="info-label">Лимиты терминалов:</span>
+                    <span class="info-value terminal-limits">
+                        [ MIN: <span id="min-players" class="color-blue">@Model.MinPlayers</span> ]
+                        [ MAX: <span id="max-players" class="color-red">@Model.MaxPlayers</span> ]
+                    </span>
+                </div> *@
+
+            </div>
+        </div>
+
+        <!-- Панель приглашения -->
+        <div class="invite-panel shadow-item">
+            <div class="invite-info-side">
+                <span class="invite-icon">🔗</span>
+                <div>
+                    <div class="invite-title">БЫСТРОЕ ПРИГЛАШЕНИЕ</div>
+                    <div class="invite-desc">Скопируйте URL-адрес терминала для игроков</div>
+                </div>
+            </div>
+            <button type="button" class="btn invite-btn"
+                    onclick="copyTextToClipboard('@Url.Action("EnterName", "Hub", new { roomCode = Model.RoomCode }, Context.Request.Scheme)', this, 'link')">
+                КОПИРОВАТЬ ССЫЛКУ
+            </button>
+        </div>
+
+        <!-- Кнопки управления комнатой -->
+        <div class="btn-container">
+            @if (isAmIHost)
+            {
+                <button id="btn-start-game" class="btn green-btn">
+                    [e] НАЧАТЬ ИГРУ
+                </button>
+
+                <form asp-controller="Hub" asp-action="LeaveRoom" asp-route-code="@Model.RoomCode" method="post">
+                    <button type="submit" class="btn red-btn">
+                        [x] УДАЛИТЬ
+                    </button>
+                </form>
+            }
+            else
+            {
+                <button id="btn-toggle-ready" class="btn btn-ready-retro">
+                    [READY] Я ГОТОВ
+                </button>
+
+                <form asp-controller="Hub" asp-action="LeaveRoom" asp-route-code="@Model.RoomCode" method="post">
+                    <button type="submit" class="btn red-btn">
+                        [x] ВЫЙТИ
+                    </button>
+                </form>
+            }
+
+            @* <button class="btn btn-refresh-retro" onclick="location.reload();">
+                ОБНОВИТЬ
+            </button> *@
+        </div>
+    </div>
+
+    <!-- Второй столбец -->
+    <div class="hub-column">
+        <!-- Терминал -->
+        <div>
+            <div class="monitor-header">
+                <h2 class="large-text monitor-title">ROOMBOX OS V1.06 - SYSTEM LOG MONITOR:</h2>
+                <span class="monitor-status-tag">[ONLINE]</span>
+            </div>
+            <div class="monitor-crt-screen">
+                <div id="room-console">
+                    <div class="sys-log-muted">[SYSTEM] Инициализация протоколов шифрования... OK.</div>
+                    <div class="sys-log-accent">[SYSTEM] Терминал готов к приему пакетов данных.</div>
+                    <div id="console-prompt">[IDLE] Запрос отправлен. Ожидание участников<span class="blink-cursor">_</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список игроков -->
+        <div class="terminals-section">
+            <h2 class="large-text terminal-section-title">
+                ПОДКЛЮЧЕННЫЕ ТЕРМИНАЛЫ (<span id="player-count">@Model.Players.Count</span>)
+            </h2>
+            <ul id="player-list" class="retro-list-group">
+                @foreach (var player in Model.Players)
+                {
+                    var badgeColorClass = (player.IsReady || player.IsHost) ? "status-ready" : "status-not-ready";
+                    var statusText = player.IsHost ? "[HOST]" : (player.IsReady ? "[ГОТОВ]" : "[НЕ ГОТОВ]");
+
+                    <li class="retro-list-item">
+                        <div class="player-info-side">
+                            <span class="terminal-icon">🖥️</span>
+                            <strong class="player-name-text">@player.Name</strong>
+                            @if (player.IsGuest)
+                            {
+                                <span class="guest-tag">[GUEST]</span>
+                            }
+                        </div>
+                        <div class="player-status-side">
+                            <span class="ready-status-badge @badgeColorClass">@statusText</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        window.roomConfig = {
+        roomCode: "@Model.RoomCode",
+        isHost: "@isAmIHost" === "True",
+        currentUserName: "@currentUserName"
+        };
+    </script>
+    <script src="~/js/room-copy.js" asp-append-version="true"></script>
+    <script src="~/js/room.js" asp-append-version="true"></script>
+}

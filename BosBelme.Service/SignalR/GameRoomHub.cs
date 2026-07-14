@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BosBelme.Service.SignalR
 {
-    //Класс для игровых комнат сигналР
+    // Класс для игровых комнат SignalR
     public class GameRoomHub : Hub
     {
         private readonly IRoomService _roomService;
@@ -14,7 +14,7 @@ namespace BosBelme.Service.SignalR
             _roomService = roomService;
         }
 
-        //Метод для добовления пользователей в группу.
+        // Метод для добавления пользователей в группу
         public async Task JoinRoom(string roomCode)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
@@ -30,7 +30,7 @@ namespace BosBelme.Service.SignalR
             await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
         }
 
-        //Метод для выхода из группы.
+        // Метод для выхода из группы
         public async Task LeaveRoom(string roomCode, int userId)
         {
             await _roomService.LeaveRoomAsync(userId, roomCode);
@@ -38,7 +38,7 @@ namespace BosBelme.Service.SignalR
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
         }
 
-        // Метод смена игры
+        // Метод для смены игры
         public async Task ChangeGame(string roomCode, int gameId)
         {
             try
@@ -68,7 +68,7 @@ namespace BosBelme.Service.SignalR
             }
         }
 
-        // Метод начала игры
+        // Метод для начала игры
         public async Task StartGame(string roomCode)
         {
             try
