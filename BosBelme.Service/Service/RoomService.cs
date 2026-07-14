@@ -6,11 +6,13 @@ namespace BosBelme.Service.Service
     {
         private readonly AppDbContext _context;
         private readonly IHubContext<GameRoomHub> _hubContext;
+        private readonly ICookieAuthService _cookieAuthService;
 
-        public RoomService(AppDbContext context, IHubContext<GameRoomHub> hubContext)
+        public RoomService(AppDbContext context, IHubContext<GameRoomHub> hubContext, ICookieAuthService cookieAuthService)
         {
             _context = context;
             _hubContext = hubContext;
+            _cookieAuthService = cookieAuthService;
         }
 
         // Создает новую игровую комнату и добавляет пользователя в нее
@@ -123,6 +125,7 @@ namespace BosBelme.Service.Service
                 foreach (var gs in guestSessions)
                 {
                     _context.Remove(gs.Player);
+                    await _cookieAuthService.SignOutAsync();
                 }
 
                 _context.GameSessions.RemoveRange(gameHub.GameSessions);
@@ -134,6 +137,7 @@ namespace BosBelme.Service.Service
                 if (userSession.Player != null && userSession.Player.IsGuest)
                 {
                     _context.Remove(userSession.Player);
+                    await _cookieAuthService.SignOutAsync();
                 }
 
                 _context.GameSessions.Remove(userSession);
