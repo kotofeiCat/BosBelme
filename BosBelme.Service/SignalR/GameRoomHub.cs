@@ -19,10 +19,15 @@ namespace BosBelme.Service.SignalR
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
 
+            await BroadcastRoomUpdate(roomCode);
+
+        }
+
+        // Метод обновления информации
+        private async Task BroadcastRoomUpdate(string roomCode)
+        {
             var roomDetails = await _roomService.GetRoomDetailsAsync(roomCode);
-
             await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
-
         }
 
         //Метод для выхода из группы.
@@ -31,6 +36,58 @@ namespace BosBelme.Service.SignalR
             await _roomService.LeaveRoomAsync(userId, roomCode);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
+        }
+
+        // Метод смена игры
+        public async Task ChangeGame(string roomCode, int gameId)
+        {
+            try
+            {
+                int userId = GetCurrentUserId();
+                await _roomService.ChangeGameAsync(roomCode, gameId, userId);
+                await BroadcastRoomUpdate(roomCode);
+            }
+            catch (Exception ex)
+            {
+                await Clients.Caller.SendAsync("OnError", ex.Message);
+            }
+        }
+
+        // Метод игрок нажал готово
+        public async Task ToggleReady(string roomCode)
+        {
+            try
+            {
+                int userId = GetCurrentUserId();
+                await _roomService.ToggleReadyAsync(roomCode, userId);
+                await BroadcastRoomUpdate(roomCode);
+            }
+            catch (Exception ex)
+            {
+                await Clients.Caller.SendAsync("OnError", ex.Message);
+            }
+        }
+
+        // Метод начала игры
+        public async Task StartGame(string roomCode)
+        {
+            try
+            {
+                int userId = GetCurrentUserId();
+                await _roomService.StartGameAsync(roomCode, userId);
+
+                await Clients.Group(roomCode).SendAsync("GameStarted");
+            }
+            catch (Exception ex)
+            {
+                await Clients.Caller.SendAsync("OnError", ex.Message);
+            }
+        }
+
+        // Метод для получения ID пользователя
+        private int GetCurrentUserId()
+        {
+            return int.Parse(Context.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
         }
     }
 }

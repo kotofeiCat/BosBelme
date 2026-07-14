@@ -15,6 +15,7 @@ namespace BosBelme.Data.Entities
 
         public bool IsHost { get; set; } = false;
 
+        public bool IsReady { get; set; } = false;
 
         public virtual GameHub GameHub { get; set; } = null!;
 

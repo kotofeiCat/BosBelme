@@ -10,14 +10,31 @@ namespace BosBelme.Service.Dto
         public string RoomName { get; set; } = string.Empty;
         public string HostName { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+
+
+        public int GameId { get; set; }
+        public string GameName { get; set; } = string.Empty;
+        public int MinPlayers { get; set; }
+        public int MaxPlayers { get; set; }
+
+
+        public List<GameSelectDto> AvailableGames { get; set; } = new();
+
         public List<RoomPlayerDto> Players { get; set; } = new();
     }
 
     public record RoomPlayerDto
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsHost { get; set; }
-
         public bool IsGuest { get; set; }
+        public bool IsReady { get; set; }
+    }
+
+    public record GameSelectDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -128,12 +128,28 @@ namespace BosBelme.Controllers
                 RoomName = model.RoomName,
                 HostName = model.HostName,
                 Status = model.Status,
+
+                GameId = model.GameId,
+                GameName = model.GameName,
+                MinPlayers = model.MinPlayers,
+                MaxPlayers = model.MaxPlayers,
+
+                AvailableGames = model.AvailableGames.Select(g => new GameSelectViewModel
+                {
+                    Id = g.Id,
+                    Name = g.Name 
+                })
+                .ToList(),
+
                 Players = model.Players.Select(p => new RoomPlayerViewModel
                 {
+                    Id = p.Id,
                     Name = p.Name,
                     IsHost = p.IsHost,
-                    IsGuest = p.IsGuest
-                }).ToList()
+                    IsGuest = p.IsGuest,
+                    IsReady = p.IsReady
+                })
+                .ToList()
             };
 
             return View(viewModel);

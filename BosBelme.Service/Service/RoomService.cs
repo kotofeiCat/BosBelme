@@ -68,33 +68,40 @@ namespace BosBelme.Service.Service
 
             var gameHub = await _context.GameHubs
                 .AsNoTracking()
+                .Include(gh => gh.Game) 
                 .Include(gh => gh.GameSessions)
                     .ThenInclude(gs => gs.Player)
-                .FirstOrDefaultAsync(gh => gh.ConnectionKey == code);
-
-            if (gameHub == null) throw new Exception("Такой комнаты не существует");
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == code)
+                ?? throw new Exception("Такой комнаты не существует");
 
             var hostSession = gameHub.GameSessions.FirstOrDefault(gs => gs.IsHost)
                 ?? throw new Exception("Хост в данной комнате не найден");
 
-            var hostName = hostSession.Player?.Name
-                ?? throw new Exception("Хост не найден");
+            var allGames = await _context.Games
+                .AsNoTracking()
+                .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame })
+                .ToListAsync();
 
             return new RoomDto
             {
                 RoomCode = gameHub.ConnectionKey,
                 RoomName = gameHub.Name,
-                HostName = hostName,
+                HostName = hostSession.Player?.Name ?? "Неизвестно",
                 Status = gameHub.Status.ToString(),
-
+                GameId = gameHub.GameId,
+                GameName = gameHub.Game.NameGame,
+                MinPlayers = gameHub.Game.MinPlayers,
+                MaxPlayers = gameHub.Game.MaxPlayers,
+                AvailableGames = allGames,
                 Players = gameHub.GameSessions
                     .Select(gs => new RoomPlayerDto
                     {
+                        Id = gs.PlayerId,
                         Name = gs.Player.Name,
                         IsHost = gs.IsHost,
-                        IsGuest = gs.Player.IsGuest
-                    })
-                    .ToList()
+                        IsGuest = gs.Player.IsGuest,
+                        IsReady = gs.IsReady
+                    }).ToList()
             };
         }
 
@@ -168,6 +175,68 @@ namespace BosBelme.Service.Service
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        //Метод смены игры
+        public async Task ChangeGameAsync(string roomCode, int gameId, int userId)
+        {
+            var hub = await _context.GameHubs
+                .Include(gh => gh.GameSessions)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
+                ?? throw new Exception("Комната не найдена");
+
+            var userSession = hub.GameSessions.FirstOrDefault(gs => gs.PlayerId == userId);
+            if (userSession == null || !userSession.IsHost)
+                throw new Exception("Только хост может менять игру");
+
+            var game = await _context.Games.FindAsync(gameId)
+                ?? throw new Exception("Игра не найдена");
+
+            hub.GameId = game.Id;
+            await _context.SaveChangesAsync();
+        }
+
+        // Метод готовности игрока
+        public async Task ToggleReadyAsync(string roomCode, int userId)
+        {
+            var session = await _context.GameSessions
+                .FirstOrDefaultAsync(gs => gs.GameHub.ConnectionKey == roomCode && gs.PlayerId == userId)
+                ?? throw new Exception("Сессия не найдена");
+
+
+            session.IsReady = !session.IsReady;
+            await _context.SaveChangesAsync();
+        }
+
+        // Метод старта игры
+        public async Task StartGameAsync(string roomCode, int userId)
+        {
+            var hub = await _context.GameHubs
+                .Include(gh => gh.Game)
+                .Include(gh => gh.GameSessions)
+                .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
+                ?? throw new Exception("Комната не найдена");
+
+            var userSession = hub.GameSessions.FirstOrDefault(gs => gs.PlayerId == userId);
+            if (userSession == null || !userSession.IsHost)
+                throw new Exception("Только хост может начать игру");
+
+            int playersCount = hub.GameSessions.Count;
+
+            if (playersCount < hub.Game.MinPlayers)
+                throw new Exception($"Недостаточно игроков! Миномум для этой игры: {hub.Game.MinPlayers}");
+
+            if (playersCount > hub.Game.MaxPlayers)
+                throw new Exception($"Слишком много игроков! Максимум для этой игры: {hub.Game.MaxPlayers}");
+
+            var ordinaryPlayers = hub.GameSessions.Where(gs => !gs.IsHost);
+            if (ordinaryPlayers.Any(gs => !gs.IsReady))
+                throw new Exception("Не все игроки готовы!");
+
+            hub.Status = GameStatus.Playing;
+            hub.StartedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

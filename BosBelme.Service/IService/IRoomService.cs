@@ -14,5 +14,11 @@ namespace BosBelme.Service.IService
 
         Task DeleteRoomAsync(string roomCode);
 
+        Task ChangeGameAsync(string roomCode, int gameId, int userId);
+
+        Task ToggleReadyAsync(string roomCode, int userId);
+
+        Task StartGameAsync(string roomCode, int userId);
+
     }
 }
