@@ -20,6 +20,7 @@
 
 /* Контейнер для логотипа и названия */
 .header-brand {
+    font-family: 'Press Start 2P', monospace;
     display: flex;
     align-items: center;
 }

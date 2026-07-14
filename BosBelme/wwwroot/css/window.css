@@ -10,13 +10,13 @@
 
 /* Окно ОС */
 .window {
-    width: 100%;
-    max-width: 760px;
+    width: min(760px, calc(100% - 40px));
     background-color: var(--color-white);
     border: 2px solid var(--color-black);
     box-shadow: 6px 6px 0px var(--color-black);
     display: flex;
     flex-direction: column;
+    position: absolute;
 }
 
 /* Верхняя часть окна */
@@ -44,7 +44,16 @@
     border: 2px solid var(--color-black);
     margin-left: 8px;
     background-color: var(--color-white);
+    touch-action: manipulation;
 }
+
+    .empty-square:hover {
+        background-color: var(--color-gray-light);
+    }
+
+    .empty-square:active {
+        background-color: var(--color-gray-light);
+    }
 
 /* Заголовок верхней части окна */
 .window-title {
