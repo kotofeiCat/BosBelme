@@ -2,7 +2,7 @@
 
 namespace BosBelme.Controllers
 {
-    // Контроллер для управления игровыми комнатами и взаимодействия с пользователями.
+    // Контроллер для управления игровыми комнатами и взаимодействия с пользователями
     public class HubController : Controller
     {
         private readonly IRegService _registeredServices;
@@ -16,8 +16,7 @@ namespace BosBelme.Controllers
             _cookieAuthService = cookieAuthService;
         }
 
-        // Отображает главную страницу контроллера.
-
+        // Отображает главную страницу контроллера
         public IActionResult Index() => View();
 
         public IActionResult JoinRoom() => View();
@@ -34,7 +33,7 @@ namespace BosBelme.Controllers
                         await _roomService.InviteUserToRoomAsync(roomCode, userId);
                     }
                     catch { }
-                    return RedirectToAction("Room", new { code = roomCode });
+                    return RedirectToAction("Hub", new { code = roomCode });
                 }
                 return RedirectToAction("Index");
             }
@@ -43,7 +42,7 @@ namespace BosBelme.Controllers
             return View(model);
         }
 
-        // POST: Создает новую игровую комнату и перенаправляет пользователя в нее.
+        // POST: Создает новую игровую комнату и перенаправляет пользователя в нее
         [HttpPost]
         public async Task<IActionResult> CreateRoom(JoinRoomViewModel model)
         {
@@ -54,13 +53,13 @@ namespace BosBelme.Controllers
 
                 var authHub = await _roomService.CreateRoomAsync(userId);
 
-                return RedirectToAction("Room", new { code = authHub.ConnectionKey });
+                return RedirectToAction("Hub", new { code = authHub.ConnectionKey });
             }
 
             return RedirectToAction("EnterName");
         }
 
-        // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду.
+        // POST: Позволяет пользователю присоединиться к существующей игровой комнате по коду
         [HttpPost]
         public async Task<IActionResult> JoinRoom(JoinRoomViewModel model)
         {
@@ -97,7 +96,7 @@ namespace BosBelme.Controllers
                 try
                 {
                     await _roomService.InviteUserToRoomAsync(model.RoomCode, user.Id);
-                    return RedirectToAction("Room", new { code = model.RoomCode });
+                    return RedirectToAction("Hub", new { code = model.RoomCode });
                 }
                 catch (Exception ex)
                 {
@@ -107,12 +106,11 @@ namespace BosBelme.Controllers
             }
 
             var guestHub = await _roomService.CreateRoomAsync(user.Id);
-            return RedirectToAction("Room", new { code = guestHub.ConnectionKey });
+            return RedirectToAction("Hub", new { code = guestHub.ConnectionKey });
         }
 
-
-        // GET: Отображает страницу игровой комнаты по коду.
-        public async Task<IActionResult> Room(string code)
+        // GET: Отображает страницу игровой комнаты по коду
+        public async Task<IActionResult> Hub(string code)
         {
             if (string.IsNullOrEmpty(code)) return RedirectToAction("Index");
 

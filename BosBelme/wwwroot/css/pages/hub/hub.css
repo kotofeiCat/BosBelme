@@ -1,0 +1,357 @@
+
+/* Это чтоб все красиво было */
+.window-container {
+    min-height: 120vh;
+}
+
+.window {
+    width: 1100px;
+}
+
+.large-text {
+    line-height: 1.2;
+    margin-bottom: 15px;
+}
+
+/* Главный контейнер для колонок */
+.hub-container {
+    display: flex;
+    gap: 25px;
+}
+
+/* Колонка */
+.hub-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Элемент колонки с тенью */
+.shadow-item {
+    box-shadow: 6px 6px 0px var(--color-black);
+    border: 2px solid var(--color-black);
+    padding: 25px;
+}
+
+/* Контейнер для копируемого текста */
+.copy-container {
+    cursor: pointer;
+    display: inline-flex;
+    gap: 10px;
+    padding: 6px 14px;
+    transition: all 0.05s ease;
+    font-weight: bold;
+}
+
+    .copy-container:hover {
+        background: var(--color-gray-light);
+    }
+
+    .copy-container:active {
+        transform: translate(3px, 3px);
+        box-shadow: 0px 0px 0px var(--color-black);
+    }
+
+/* Статус ядра */
+.core-status {
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    padding: 4px 12px;
+    box-shadow: 3px 3px 0px var(--color-black);
+}
+
+/* Классы для смены цветов кнопок */
+.red-btn.btn {
+    color: #ff0000;
+}
+
+    .red-btn.btn:hover {
+        color: var(--color-white);
+        background-color: #ff0000;
+    }
+
+    .red-btn.btn:active {
+        box-shadow: 0px 0px 0px;
+        transform: translate(4px, 4px);
+    }
+
+.green-btn.btn {
+    color: #008800;
+}
+    .green-btn.btn:hover {
+        color: var(--color-white);
+        background-color: #008800;
+    }
+
+    .green-btn.btn:active {
+        box-shadow: 0px 0px 0px;
+        transform: translate(4px, 4px);
+    }
+
+
+
+#display-room-code {
+    font-family: 'Courier Prime', monospace;
+    letter-spacing: 2px;
+    font-size: 16px;
+    margin: 0;
+}
+
+#code-icon {
+    font-size: 14px;
+    color: var(--color-gray-medium);
+}
+
+/* Кастомные баджи данных */
+.host-name-badge {
+    color: var(--color-black);
+    font-weight: bold;
+    background: var(--color-gray-light);
+    padding: 4px 10px;
+    border: 2px solid var(--color-black);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+/* Ретро Селектор */
+.retro-select {
+    min-width: 260px;
+    padding: 6px 10px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid var(--color-black);
+    outline: none;
+    background: var(--color-white);
+    cursor: pointer;
+    box-shadow: 3px 3px 0px var(--color-black);
+    border-radius: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 5px) center;
+}
+
+    .retro-select:focus {
+        background-color: var(--color-gray-light);
+    }
+
+.retro-read-only-value {
+    font-weight: bold;
+    color: #000;
+    background: #fff;
+    border: 2px solid var(--color-black);
+    padding: 4px 12px;
+    box-shadow: 2px 2px 0px var(--color-black);
+}
+
+.terminal-limits {
+    color: var(--color-black);
+    font-weight: bold;
+}
+
+.color-blue {
+    color: #0055ff;
+    font-weight: bold;
+}
+
+.color-red {
+    color: #ff0055;
+    font-weight: bold;
+}
+
+/* Список подключенных терминалов */
+.terminal-section-title {
+    font-size: 13px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.retro-list-group {
+    border: 2px solid var(--color-black);
+    background: var(--color-white);
+    padding: 0;
+    list-style: none;
+    box-shadow: 5px 5px 0px var(--color-black);
+    margin: 0;
+}
+
+.retro-list-item {
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--color-black);
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .retro-list-item:last-child {
+        border-bottom: none;
+    }
+
+.player-info-side {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.terminal-icon {
+    font-size: 16px;
+}
+
+.player-name-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    letter-spacing: -0.5px;
+}
+
+.guest-tag {
+    color: var(--color-gray-medium);
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.player-status-side {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Статусы игроков */
+.ready-status-badge {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+}
+
+.status-ready {
+    color: #00aa00;
+}
+
+.status-not-ready {
+    color: #ff0000;
+}
+
+/* Монитор CRT */
+.monitor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.monitor-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #222;
+    margin: 0;
+}
+
+.monitor-status-tag {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: #555;
+    font-weight: bold;
+}
+
+.monitor-crt-screen {
+    background-color: #050b05;
+    border: 3px solid #222;
+    border-radius: 4px;
+    box-shadow: 5px 5px 0px var(--color-black);
+    padding: 4px;
+    max-width: 520px;
+}
+
+#room-console {
+    width: 100%;
+    height: 150px;
+    background-color: #000000;
+    color: #33ff33;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    padding: 12px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1px solid #113311;
+    text-shadow: 0 0 4px rgba(51, 255, 51, 0.45);
+}
+
+.sys-log-muted {
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.sys-log-accent {
+    color: #00ffaa;
+    margin-bottom: 4px;
+}
+
+#console-prompt {
+    color: #33ff33;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* Панель приглашения */
+.invite-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.invite-info-side {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: auto;
+}
+
+.invite-icon {
+    font-size: 24px;
+}
+
+.invite-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.invite-desc {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    color: var(--color-gray-dark);
+}
+
+.invite-btn {
+    margin: 0;
+    padding: 10px 18px;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+/* Кнопки управления */
+.control-actions-bar {
+    margin-top: 5px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+    .control-actions-bar .btn {
+        padding: 12px 22px;
+        white-space: nowrap;
+        margin: 0;
+    }
+
+.blink-cursor {
+    animation: blink 1s infinite;
+}
