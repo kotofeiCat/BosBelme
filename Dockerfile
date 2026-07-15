@@ -11,7 +11,6 @@ COPY ["BosBelme.Data/BosBelme.Data.csproj", "BosBelme.Data/"]
 
 RUN dotnet restore "BosBelme/BosBelme.csproj"
 
-# 3. Копируем абсолютно весь исходный код решения
 COPY . .
 
 WORKDIR "/src/BosBelme"
