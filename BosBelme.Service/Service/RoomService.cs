@@ -181,7 +181,7 @@ namespace BosBelme.Service.Service
             }
         }
 
-        //Метод смены игры
+        // Метод смены игры
         public async Task ChangeGameAsync(string roomCode, int gameId, int userId)
         {
             var hub = await _context.GameHubs
@@ -241,6 +241,25 @@ namespace BosBelme.Service.Service
             hub.StartedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+        }
+
+        // Проверяет находится ли игрок в комнате
+        public async Task<bool> IsInRoom(int userId)
+        {
+            return await _context.GameSessions.AnyAsync(gs => gs.PlayerId == userId);
+        }
+
+        // Возвращает код комнаты по Id игрока
+        public async Task<string?> RoomCode(int userId)
+        {
+            if (await IsInRoom(userId))
+            {
+                var gameSession = await _context.GameSessions.FirstAsync(gs => gs.PlayerId == userId);
+                var gameHub = await _context.GameHubs.FirstAsync(gh => gh.Id == gameSession.GameHubId);
+                return gameHub.ConnectionKey;
+            }
+
+            return null;
         }
     }
 }

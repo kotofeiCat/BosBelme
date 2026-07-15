@@ -28,11 +28,18 @@ namespace BosBelme.Controllers
         [Authorize]
         public IActionResult Profile()
         {
+            string IsPersistent = User.FindFirstValue(ClaimTypes.IsPersistent) ?? "";
+            
+            if (IsPersistent == "False")
+            {
+                return RedirectToAction("Register");
+            }
+
             var model = new ProfileViewModel
             {
-                Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "-1",
-                Email = User.FindFirstValue(ClaimTypes.Email) ?? "unknow",
-                Name = User.FindFirstValue(ClaimTypes.Name) ?? "don jhon"
+                Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "",
+                Email = User.FindFirstValue(ClaimTypes.Email) ?? "",
+                Name = User.FindFirstValue(ClaimTypes.Name) ?? "",
             };
 
             return View(model);

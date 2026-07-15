@@ -12,4 +12,4 @@ document.addEventListener('DOMContentLoaded', function() {
     const text = btn.getAttribute('data-copy-text');
     
     btn.addEventListener('click', () => copyTextFromButton(text));
-})function
+});

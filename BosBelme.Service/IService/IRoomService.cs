@@ -4,9 +4,9 @@ namespace BosBelme.Service.IService
 {
     public interface IRoomService
     {
-        public Task<GameHubDto> CreateRoomAsync(int userId);
+        Task<GameHubDto> CreateRoomAsync(int userId);
 
-        public Task InviteUserToRoomAsync(string roomCode, int userId);
+        Task InviteUserToRoomAsync(string roomCode, int userId);
 
         Task<RoomDto> GetRoomDetailsAsync(string code);
 
@@ -20,5 +20,8 @@ namespace BosBelme.Service.IService
 
         Task StartGameAsync(string roomCode, int userId);
 
+        Task<bool> IsInRoom(int userId);
+
+        Task<string?> RoomCode(int userId);
     }
 }

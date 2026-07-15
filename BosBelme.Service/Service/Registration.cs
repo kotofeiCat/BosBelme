@@ -12,7 +12,7 @@ namespace BosBelme.Service.Service
             _context = context;
         }
 
-        //Реализация метода регистрации нового пользователя. Возращает нового зарегестрировонного пользователя.
+        // Реализация метода регистрации нового пользователя. Возращает нового зарегестрировонного пользователя.
         public async Task<RegisterDto> RegistrationUserAsync(string login, string email, string password)
         {
             if(await _context.Users.AnyAsync(u => u.Email == email))
@@ -39,7 +39,7 @@ namespace BosBelme.Service.Service
             return user.FromUser();
         }
 
-        //Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
+        // Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
         public async Task<RegisterDto> RegistrationUserAsync(string login)
         {
             if (await _context.Users.AnyAsync(u => u.Name == login))
