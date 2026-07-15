@@ -3,6 +3,7 @@
 namespace BosBelme.Controllers
 {
     // Контроллер для управления игровыми комнатами и взаимодействия с пользователями
+    // [Authorize]
     public class HubController : Controller
     {
         private readonly IRegService _registeredServices;
@@ -17,10 +18,27 @@ namespace BosBelme.Controllers
         }
 
         // Отображает главную страницу контроллера
-        public IActionResult Index() => View();
+        public async Task<IActionResult> Index()
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is not null)
+            {
+                string? roomCode = await _roomService.RoomCode(int.Parse(userId));
+                if (roomCode is not null)
+                {
+                    return RedirectToAction("Hub",  new { code = roomCode });
+                }
 
+                return View();
+            }
+
+            return View();
+        } 
+
+        // 
         public IActionResult JoinRoom() => View();
 
+        [AllowAnonymous]
         public async Task<IActionResult> EnterName(string? roomCode = null)
         {
             if (User.Identity?.IsAuthenticated == true)
@@ -65,7 +83,7 @@ namespace BosBelme.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Код комнаты не может быть пустым.");
+                ModelState.AddModelError(String.Empty, "Код комнаты не может быть пустым.");
                 return View(model);
             }
 
@@ -77,7 +95,7 @@ namespace BosBelme.Controllers
             }
             catch
             {
-                ModelState.AddModelError("", "Такой комнаты не существует. Проверьте код.");
+                ModelState.AddModelError(String.Empty, "Такой комнаты не существует. Проверьте код.");
                 return View(model);
             }
         }
@@ -113,6 +131,8 @@ namespace BosBelme.Controllers
         public async Task<IActionResult> Hub(string code)
         {
             if (string.IsNullOrEmpty(code)) return RedirectToAction("Index");
+
+    
 
             var model = await _roomService.GetRoomDetailsAsync(code);
 

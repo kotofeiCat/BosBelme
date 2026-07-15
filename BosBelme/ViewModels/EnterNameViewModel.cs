@@ -2,7 +2,6 @@
 {
     public class EnterNameViewModel
     {
-
         public string? RoomCode { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Введите ваше имя")]

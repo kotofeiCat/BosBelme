@@ -10,6 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthorization();
 
 //Подключение СигналР
 builder.Services.AddSignalR();
