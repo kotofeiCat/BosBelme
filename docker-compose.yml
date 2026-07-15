@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: game_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "441234"
+      POSTGRES_DB: BosBelmeDb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    image: bosbelme_app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: game_backend_app
+    restart: always
+    ports:
+      - "80:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__PostgresConnection=Host=db;Port=5432;Database=BosBelmeDb;Username=postgres;Password=441234;
+      - DOTNET_SYSTEM_GC_SERVER=0
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
