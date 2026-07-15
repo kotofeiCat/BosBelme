@@ -53,4 +53,17 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+// Автоматическая миграция бд
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        context.Database.Migrate();
+        Console.WriteLine("Миграции применина");
+    }
+    catch (Exception ex) { Console.WriteLine($"Ошибка миграции - {ex.Message}"); }
+}
+
 app.Run();
