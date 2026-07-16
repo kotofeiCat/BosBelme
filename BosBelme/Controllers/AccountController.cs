@@ -21,8 +21,21 @@ namespace BosBelme.Controllers
         }
 
         // Методы для отображения страниц регистрации и входа
-        public IActionResult Register() => View();
-        public IActionResult Login() => View();
+        public IActionResult Register()
+        {
+            // Если пользователь уже авторизован выгоняем в профиль 
+            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+
+            return View();
+        }
+
+        public IActionResult Login()
+        {
+            // Если пользователь уже авторизован выгоняем в профиль 
+            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+
+            return View();
+        }
 
         // Метод для отображения профиля
         [Authorize]
@@ -49,8 +62,8 @@ namespace BosBelme.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            // Если пользователь уже авторизован выгоняем в профиль
-            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
+            // Если пользователь уже авторизован выгоняем в профиль 
+            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
 
             // Проверка валидности данных от пользователя
             if (!ModelState.IsValid) return View(model);
@@ -82,9 +95,9 @@ namespace BosBelme.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            // Если пользователь уже авторизован выгоняем в профиль
-            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Profile", "Account");
-
+            // Если пользователь уже авторизован выгоняем в профиль 
+            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+            
             // Проверка валидности данных от пользователя
             if (!ModelState.IsValid) return View(model);
 
@@ -94,7 +107,7 @@ namespace BosBelme.Controllers
                 var user = await _authService.AuthenticationUserAsync(model.NameOrEmail, model.Password);
 
                 await _cookieAuthService.SignInAsync(user);
-
+                
                 return RedirectToAction("Profile", "Account");
             }
             catch (Exception ex)
@@ -104,6 +117,7 @@ namespace BosBelme.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _cookieAuthService.SignOutAsync();

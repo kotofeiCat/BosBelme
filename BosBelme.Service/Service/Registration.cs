@@ -30,7 +30,8 @@ namespace BosBelme.Service.Service
             {
                 Name = login,
                 Email = email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                IsGuest = false
             };
 
             await _context.Users.AddAsync(user);
