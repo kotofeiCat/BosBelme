@@ -64,3 +64,10 @@ hr {
     background-color: var(--color-black);
     margin-bottom: 25px;
 }
+
+button, span, select {
+    color: var(--color-black);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
