@@ -108,7 +108,7 @@ namespace BosBelme.Controllers
             return View(viewModel);
         }
 
-        // 
+        // Метод для отображения страницы ввода имени
         public async Task<IActionResult> EnterName(string? roomCode = null)
         {
             if (User.Identity?.IsAuthenticated == true)
