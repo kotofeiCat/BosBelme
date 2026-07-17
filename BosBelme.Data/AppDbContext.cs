@@ -9,13 +9,15 @@ namespace BosBelme.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         // Создание таблиц
-        public DbSet<Users> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DbSet<Game> Games { get; set; }
 
         public DbSet<GameHub> GameHubs { get; set; }
 
         public DbSet<GameSession> GameSessions { get; set; }
+
+        public DbSet<PlayersCount> PlayersCounts { get; set; }
 
         // Метод для установки связей между таблицами
         protected override void OnModelCreating(ModelBuilder modelBuilder)

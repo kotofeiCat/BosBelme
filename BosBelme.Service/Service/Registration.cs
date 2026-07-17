@@ -26,7 +26,7 @@ namespace BosBelme.Service.Service
                 throw new Exception("Пользователь с таким именем уже существует.");
             }
 
-            Users user = new Users
+            User user = new User
             {
                 Name = login,
                 Email = email,
@@ -46,7 +46,7 @@ namespace BosBelme.Service.Service
             if (await _context.Users.AnyAsync(u => u.Name == login))
                 throw new Exception("Пользователь с таким именем уже существует.");
 
-            Users user = new Users
+            User user = new User
             {
                 Name = login,
                 Email = null,

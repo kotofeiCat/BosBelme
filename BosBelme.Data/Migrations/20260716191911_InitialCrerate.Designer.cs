@@ -3,6 +3,7 @@ using System;
 using BosBelme.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BosBelme.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716191911_InitialCrerate")]
+    partial class InitialCrerate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,10 +126,10 @@ namespace BosBelme.Data.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("PlayersCounts");
+                    b.ToTable("PlayersCount");
                 });
 
-            modelBuilder.Entity("BosBelme.Data.Entities.User", b =>
+            modelBuilder.Entity("BosBelme.Data.Entities.Users", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,7 +174,7 @@ namespace BosBelme.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BosBelme.Data.Entities.User", "Player")
+                    b.HasOne("BosBelme.Data.Entities.Users", "Player")
                         .WithMany("GameSessions")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -205,7 +208,7 @@ namespace BosBelme.Data.Migrations
                     b.Navigation("GameSessions");
                 });
 
-            modelBuilder.Entity("BosBelme.Data.Entities.User", b =>
+            modelBuilder.Entity("BosBelme.Data.Entities.Users", b =>
                 {
                     b.Navigation("GameSessions");
                 });

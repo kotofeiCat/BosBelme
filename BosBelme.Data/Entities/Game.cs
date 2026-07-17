@@ -13,11 +13,10 @@ namespace BosBelme.Data.Entities
 
         public string Discription { get; set; } = string.Empty;
 
-        public int MaxPlayers { get; set; }
-
-        public int MinPlayers { get; set; }
-
         
         public virtual ICollection<GameHub> GameHubs { get; set; } = new List<GameHub>();
+
+        public virtual ICollection<PlayersCount> PlayersCount { get; set; } = new List<PlayersCount>();
+    
     }
 }

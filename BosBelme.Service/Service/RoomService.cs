@@ -70,7 +70,8 @@ namespace BosBelme.Service.Service
 
             var gameHub = await _context.GameHubs
                 .AsNoTracking()
-                .Include(gh => gh.Game) 
+                .Include(gh => gh.Game)
+                    .ThenInclude(gh => gh.PlayersCount)
                 .Include(gh => gh.GameSessions)
                     .ThenInclude(gs => gs.Player)
                 .FirstOrDefaultAsync(gh => gh.ConnectionKey == code)
@@ -84,6 +85,10 @@ namespace BosBelme.Service.Service
                 .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame })
                 .ToListAsync();
 
+            List<int> playersCounts = gameHub.Game.PlayersCount
+                .Select(pc => pc.Count)
+                .ToList();
+
             return new RoomDto
             {
                 RoomCode = gameHub.ConnectionKey,
@@ -92,8 +97,7 @@ namespace BosBelme.Service.Service
                 Status = gameHub.Status.ToString(),
                 GameId = gameHub.GameId,
                 GameName = gameHub.Game.NameGame,
-                MinPlayers = gameHub.Game.MinPlayers,
-                MaxPlayers = gameHub.Game.MaxPlayers,
+                PlayersCounts = playersCounts,
                 AvailableGames = allGames,
                 Players = gameHub.GameSessions
                     .Select(gs => new RoomPlayerDto
@@ -227,11 +231,11 @@ namespace BosBelme.Service.Service
 
             int playersCount = hub.GameSessions.Count;
 
-            if (playersCount < hub.Game.MinPlayers)
-                throw new Exception($"Недостаточно игроков! Миномум для этой игры: {hub.Game.MinPlayers}");
+            // if (playersCount < hub.Game.MinPlayers)
+            //     throw new Exception($"Недостаточно игроков! Миномум для этой игры: {hub.Game.MinPlayers}");
 
-            if (playersCount > hub.Game.MaxPlayers)
-                throw new Exception($"Слишком много игроков! Максимум для этой игры: {hub.Game.MaxPlayers}");
+            // if (playersCount > hub.Game.MaxPlayers)
+            //     throw new Exception($"Слишком много игроков! Максимум для этой игры: {hub.Game.MaxPlayers}");
 
             var ordinaryPlayers = hub.GameSessions.Where(gs => !gs.IsHost);
             if (ordinaryPlayers.Any(gs => !gs.IsReady))

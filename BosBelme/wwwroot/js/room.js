@@ -58,10 +58,38 @@ connection.on("UpdateRoom", function (room) {
     const gameNameEl = document.getElementById("current-game-name");
     if (gameNameEl) gameNameEl.textContent = room.gameName;
 
-    const minPlEl = document.getElementById("min-players");
-    const maxPlEl = document.getElementById("max-players");
-    if (minPlEl) minPlEl.textContent = room.minPlayers;
-    if (maxPlEl) maxPlEl.textContent = room.maxPlayers;
+    function countPlayersInText(list) {
+        function isConsecutive(list) {
+            for (let i = 1; 1 < list.length; i++) {
+                if (list[i] !== (list[i - 1] + 1)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        const sorted = [...list].sort((a, b) => a - b);
+        let numbers_text = '';
+        if (sorted.length === 1) {
+            numbers_text = sorted[0];
+        } else {
+            if (sorted.length === 2) {
+                numbers_text = sorted[0] + ' или ' + sorted[1];;
+            } else {
+                if (isConsecutive(sorted)) {
+                    numbers_text = sorted.join(',');
+                } else {
+                    numbers_text = sorted[0] + '-' + sorted[sorted.length - 1];
+                }
+            }
+        }
+        
+        return 'для ' + numbers_text + ' игроков';
+    }
+
+    const countPlayersText = document.getElementById("player-count-text");
+    if (countPlayersText) countPlayersText.textContent = countPlayersInText(room.playersCounts);
 
     // Синхронизация селектора хоста
     const selector = document.getElementById("game-selector");

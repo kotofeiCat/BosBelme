@@ -5,7 +5,7 @@ using System.Text;
 namespace BosBelme.Data.Entities
 {
     // Модель таблица в нашей бд для хранения информации о пользователях, которая будет использоваться для аутентификации и авторизации
-    public class Users
+    public class User
     {
         public int Id { get; set; }
 

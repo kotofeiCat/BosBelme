@@ -49,30 +49,23 @@
                 <!-- Выбор игры -->
                 <div class="info-column">
                     <span class="info-label">Выбранное ПО:</span>
-                    @if (isAmIHost)
-                    {
-                        <select id="game-selector" class="retro-select">
-                            @foreach (var game in Model.AvailableGames)
-                            {
-                                <option value="@game.Id" selected="@(game.Id == Model.GameId ? "selected" : null)">@game.Name</option>
-                            }
-                        </select>
-                    }
-                    else
-                    {
-                        <span id="current-game-name" class="retro-read-only-value">@Model.GameName</span>
-                    }
+                    <div class="select-container">
+                        @if (isAmIHost)
+                        {
+                            <select id="game-selector" class="select">
+                                @foreach (var game in Model.AvailableGames)
+                                {
+                                    <option value="@game.Id">@game.Name</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <span id="current-game-name" class="retro-read-only-value">@Model.GameName</span>
+                        }
+                        <span id="player-count-text" class="other-select">для 2 или 3 игроков</span>
+                    </div>
                 </div>
-
-                <!-- Лимиты игроков -->
-                @* <div class="info-row m-top-4">
-                    <span class="info-label">Лимиты терминалов:</span>
-                    <span class="info-value terminal-limits">
-                        [ MIN: <span id="min-players" class="color-blue">@Model.MinPlayers</span> ]
-                        [ MAX: <span id="max-players" class="color-red">@Model.MaxPlayers</span> ]
-                    </span>
-                </div> *@
-
             </div>
         </div>
 
@@ -85,8 +78,8 @@
                     <div class="invite-desc">Скопируйте URL-адрес терминала для игроков</div>
                 </div>
             </div>
-            <button type="button" class="btn invite-btn"
-                    onclick="copyTextToClipboard('@Url.Action("EnterName", "Hub", new { roomCode = Model.RoomCode }, Context.Request.Scheme)', this, 'link')">
+            <button type="button" class="btn copy-container"
+                data-copy-text="@Url.Action("EnterName", "Hub", new { roomCode = Model.RoomCode }, Context.Request.Scheme)">
                 КОПИРОВАТЬ ССЫЛКУ
             </button>
         </div>
@@ -180,6 +173,5 @@
         currentUserName: "@currentUserName"
         };
     </script>
-    <script src="~/js/room-copy.js" asp-append-version="true"></script>
     <script src="~/js/room.js" asp-append-version="true"></script>
 }

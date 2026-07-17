@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using BosBelme.Service.Dto;
 
 namespace BosBelme.Controllers
 {
@@ -52,7 +53,7 @@ namespace BosBelme.Controllers
             return View();
         }
 
-        //Отображает страницу игровой комнаты по коду
+        // Отображает страницу игровой комнаты по коду
         [Authorize]
         public async Task<IActionResult> Hub(string code)
         {
@@ -84,8 +85,7 @@ namespace BosBelme.Controllers
 
                 GameId = model.GameId,
                 GameName = model.GameName,
-                MinPlayers = model.MinPlayers,
-                MaxPlayers = model.MaxPlayers,
+                PlayersCounts = model.PlayersCounts,
 
                 AvailableGames = model.AvailableGames.Select(g => new GameSelectViewModel
                 {
@@ -186,8 +186,20 @@ namespace BosBelme.Controllers
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index");
 
             if (!ModelState.IsValid) return View(model);
+            
 
-            var user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
+            RegisterDto user;
+
+            try
+            {
+                user = await _registeredServices.RegistrationUserAsync(model.PlayerName);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
+            }
+
             await _cookieAuthService.SignInAsync(user);
 
             if (!string.IsNullOrEmpty(model.RoomCode))

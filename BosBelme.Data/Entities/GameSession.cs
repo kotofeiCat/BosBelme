@@ -19,6 +19,6 @@ namespace BosBelme.Data.Entities
 
         public virtual GameHub GameHub { get; set; } = null!;
 
-        public virtual Users Player { get; set; } = null!;
+        public virtual User Player { get; set; } = null!;
     }
 }
