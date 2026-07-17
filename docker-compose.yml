@@ -6,9 +6,9 @@ services:
     container_name: game_postgres_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "441234"
-      POSTGRES_DB: BosBelmeDb
+      POSTGRES_USER: ${DB_USER}        
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -25,7 +25,7 @@ services:
       - "80:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__PostgresConnection=Host=db;Port=5432;Database=BosBelmeDb;Username=postgres;Password=441234;
+      - ConnectionStrings__PostgresConnection=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};
       - DOTNET_SYSTEM_GC_SERVER=0
     depends_on:
       - db

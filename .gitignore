@@ -10,3 +10,4 @@ appsettings.Development.json
 .idea/
 .vscode/
 *.log
+.env
