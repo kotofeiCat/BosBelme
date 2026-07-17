@@ -102,6 +102,8 @@
 
 .avatar-container {
     min-width: 85px;
+    max-width: 85px;
+    min-height: 85px;
     max-height: 85px;
     border: 2px solid var(--color-black);
     display: flex;

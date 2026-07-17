@@ -1,4 +1,7 @@
 
+
+
+
 /* Это чтоб все красиво было */
 .window-container {
     min-height: 120vh;
@@ -68,31 +71,7 @@
         transform: translate(4px, 4px);
     }
 
-
-
-#display-room-code {
-    font-family: 'Courier Prime', monospace;
-    letter-spacing: 2px;
-    font-size: 16px;
-    margin: 0;
-}
-
-#code-icon {
-    font-size: 14px;
-    color: var(--color-gray-medium);
-}
-
-/* Кастомные баджи данных */
-.host-name-badge {
-    color: var(--color-black);
-    font-weight: bold;
-    background: var(--color-gray-light);
-    padding: 4px 10px;
-    border: 2px solid var(--color-black);
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-}
-
-/* Ретро Селектор */
+/* Выбор игры */
 .select-container {
     display: flex;
     flex-direction: column;
@@ -130,6 +109,30 @@
     color: var(--color-gray-dark);
     padding-bottom: 6px;
     padding-left: 12px;
+}
+
+
+
+#display-room-code {
+    font-family: 'Courier Prime', monospace;
+    letter-spacing: 2px;
+    font-size: 16px;
+    margin: 0;
+}
+
+#code-icon {
+    font-size: 14px;
+    color: var(--color-gray-medium);
+}
+
+/* Кастомные баджи данных */
+.host-name-badge {
+    color: var(--color-black);
+    font-weight: bold;
+    background: var(--color-gray-light);
+    padding: 4px 10px;
+    border: 2px solid var(--color-black);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 }
 
 .retro-read-only-value {
@@ -348,4 +351,37 @@
 
 .blink-cursor {
     animation: blink 1s infinite;
+}
+
+
+@media (max-width: 1150px) {
+
+    .hub-container {
+        flex-direction: column;
+    }
+
+    .window {
+        max-width: fit-content;
+    }
+
+    .info-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .window-container {
+        min-height: 190vh;
+    }
+}
+
+@media (max-width: 450px) {
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .window-container {
+        min-height: 210vh;
+    }
+    
 }
