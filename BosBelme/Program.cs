@@ -1,4 +1,6 @@
 
+using Prometheus;
+
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("PostgresConnection")
@@ -66,5 +68,11 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex) { Console.WriteLine($"Ошибка миграции - {ex.Message}"); }
 }
+
+// Подключение прометеуса
+
+app.UseHttpMetrics();
+
+app.MapMetrics();
 
 app.Run();
