@@ -1,6 +1,3 @@
-
-using Prometheus;
-
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("PostgresConnection")

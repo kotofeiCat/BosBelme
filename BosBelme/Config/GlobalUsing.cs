@@ -5,7 +5,8 @@ global using Microsoft.AspNetCore.Mvc;
 global using System.Diagnostics;
 global using System.ComponentModel.DataAnnotations;
 global using Microsoft.AspNetCore.Authorization;
-
+global using Prometheus;
+ 
 // Глобальные директивы using для БД
 global using Microsoft.EntityFrameworkCore;
 global using BosBelme.Data;
