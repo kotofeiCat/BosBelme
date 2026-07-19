@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Games/">
+    <Project Path="One_Shot_Bounce/One_Shot_Bounce.csproj" Id="2623e253-53bb-4645-a093-6b1828954dc8" />
+  </Folder>
   <Project Path="BosBelme.Data/BosBelme.Data.csproj" Id="e81d414c-7590-435d-bed6-8d31d0fb80a5" />
   <Project Path="BosBelme.Service/BosBelme.Service.csproj" />
   <Project Path="BosBelme/BosBelme.csproj" />
