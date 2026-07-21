@@ -1,39 +1,48 @@
 async function handleCopy(btn) {
     const text = btn.getAttribute('data-copy-text');
+    if (!text) return;
 
-    try {
-        await navigator.clipboard.writeText(text);
+    let success = false;
 
-        if (btn.copyTimeout) {
-            clearTimeout(btn.copyTimeout);
-        } else {
-            btn.dataset.originalText = btn.textContent;
-            btn.style.minWidth = `${btn.offsetWidth}px`;
-            btn.style.minHeight = `${btn.offsetHeight}px`;
+    // 1. Попытка скопировать через modern API (работает только на HTTPS / localhost)
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(text);
+            success = true;
+        } catch (err) {
+            console.warn('Clipboard API недоступен, переключаемся на fallback:', err);
         }
+    }
 
-        btn.classList.add('copy-container-active');
-        btn.textContent = 'Скопировано!';
+    // 2. Резервный метод (работает по HTTP на боевом сервере)
+    if (!success) {
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+        } catch (err) {
+            console.error('Ошибка копирования:', err);
+        }
+    }
 
-        btn.copyTimeout = setTimeout(() => {
-            btn.classList.remove('copy-container-active');
-            btn.textContent = btn.dataset.originalText;
-
-            btn.style.minWidth = '';
-            btn.style.minHeight = '';
-
-            btn.copyTimeout = null;
-        }, 3000);
-
-    } catch (err) {
-        console.error('Не удалось скопировать текст:', err);
+    // 3. Визуальный отклик без разрушения HTML-структуры кнопки
+    if (success) {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            const originalClass = icon.className;
+            icon.className = 'fa-solid fa-check';
+            setTimeout(() => icon.className = originalClass, 1500);
+        }
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btns = document.querySelectorAll(".copy-container");
-
-    btns.forEach(btn => {
+    document.querySelectorAll(".copy-container").forEach(btn => {
         btn.addEventListener('click', () => handleCopy(btn));
     });
 });

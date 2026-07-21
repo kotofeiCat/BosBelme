@@ -21,7 +21,13 @@
         <div asp-validation-summary="ModelOnly" style="color: #f85149; margin-bottom: 16px; font-size: 12px;"></div>
 
         <div class="input-group">
-            <input asp-for="RoomCode" class="input" required placeholder=" " autocomplete="off" style="text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 2px; text-align: center; font-size: 16px; font-weight: 700;" />
+            <input asp-for="RoomCode"
+                   class="input"
+                   required
+                   placeholder=" "
+                   autocomplete="off"
+                   oninput="this.value = this.value.toUpperCase()"
+                   style="font-family: var(--font-mono); letter-spacing: 2px; text-align: center; font-size: 16px; font-weight: 700;" />
             <label class="user-label" asp-for="RoomCode">Код комнаты (напр. RM34XQ)</label>
             <span asp-validation-for="RoomCode" style="color: #f85149; font-size: 11px; margin-top: 4px; display: block;"></span>
         </div>
