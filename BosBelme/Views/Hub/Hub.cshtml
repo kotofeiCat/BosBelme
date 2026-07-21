@@ -140,6 +140,30 @@
         });
         }
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+        // Находим все элементы с классом copy-container
+        document.querySelectorAll(".copy-container").forEach(button => {
+        button.addEventListener("click", async () => {
+        const textToCopy = button.getAttribute("data-copy-text");
+        if (!textToCopy) return;
+
+        try {
+        await navigator.clipboard.writeText(textToCopy);
+
+        // Анимация/визуальный отклик при успешном копировании
+        const icon = button.querySelector("i");
+        if (icon) {
+        const originalClass = icon.className;
+        icon.className = "fa-solid fa-check"; // меняем иконку на галочку
+        setTimeout(() => icon.className = originalClass, 1500);
+        }
+        } catch (err) {
+        console.error("Ошибка копирования в буфер обмена:", err);
+        }
+        });
+        });
+        });
     </script>
     <script src="~/js/room.js" asp-append-version="true"></script>
 }
