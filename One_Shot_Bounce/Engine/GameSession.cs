@@ -196,48 +196,54 @@ public class GameSession
 
             Vector2 currentPos = bullet.Position;
             Vector2 currentDir = bullet.Direction;
-            if (Physics2D.HandleBoundaryCollision(ref currentPos, ref currentDir, mapWidth, mapHeight, _bulletRadius))
+
+            bool bounced = Physics2D.HandleBoundaryCollision(ref currentPos, ref currentDir, mapWidth, mapHeight, _bulletRadius);
+            if (bounced)
             {
                 bullet.Position = currentPos;
                 bullet.Direction = currentDir;
                 bullet.BounceCount++;
-
                 bullet.Speed = MathF.Min(bullet.Speed * _speedMultiplierPerBounce, 1000f);
             }
-
-            int centerCol = (int)(bullet.Position.X / blockSize);
-            int centerRow = (int)(bullet.Position.Y / blockSize);
-
-            for (int dc = -1; dc <= 1; dc++)
+            else
             {
-                for (int dr = -1; dr <= 1; dr++)
+                int centerCol = (int)(bullet.Position.X / blockSize);
+                int centerRow = (int)(bullet.Position.Y / blockSize);
+
+                for (int dc = -1; dc <= 1; dc++)
                 {
-                    int col = centerCol + dc;
-                    int row = centerRow + dr;
-
-                    if (col >= 0 && col < State.CurrentMap.Columns && row >= 0 && row < State.CurrentMap.Rows)
+                    for (int dr = -1; dr <= 1; dr++)
                     {
-                        var blockType = State.CurrentMap.Grid[col][row];
-                        if (blockType != BlockType.Empty)
+                        int col = centerCol + dc;
+                        int row = centerRow + dr;
+
+                        if (col >= 0 && col < State.CurrentMap.Columns && row >= 0 && row < State.CurrentMap.Rows)
                         {
-                            currentPos = bullet.Position;
-                            currentDir = bullet.Direction;
-
-                            if (Physics2D.HandleBlockCollision(ref currentPos, ref currentDir, previousPosition, col, row, blockSize, _bulletRadius))
+                            var blockType = State.CurrentMap.Grid[col][row];
+                            if (blockType != BlockType.Empty)
                             {
-                                bullet.Position = currentPos;
-                                bullet.Direction = currentDir;
-                                bullet.BounceCount++;
+                                currentPos = bullet.Position;
+                                currentDir = bullet.Direction;
 
-                                bullet.Speed = MathF.Min(bullet.Speed * _speedMultiplierPerBounce, 1000f);
-
-                                if (blockType == BlockType.Destructible)
+                                if (Physics2D.HandleBlockCollision(ref currentPos, ref currentDir, previousPosition, col, row, blockSize, _bulletRadius))
                                 {
-                                    State.CurrentMap.Grid[col][row] = BlockType.Empty;
+                                    bullet.Position = currentPos;
+                                    bullet.Direction = currentDir;
+                                    bullet.BounceCount++;
+                                    bullet.Speed = MathF.Min(bullet.Speed * _speedMultiplierPerBounce, 1000f);
+
+                                    if (blockType == BlockType.Destructible)
+                                    {
+                                        State.CurrentMap.Grid[col][row] = BlockType.Empty;
+                                    }
+
+                                    bounced = true;
+                                    break; 
                                 }
                             }
                         }
                     }
+                    if (bounced) break; 
                 }
             }
 
@@ -246,11 +252,7 @@ public class GameSession
             if (CheckBulletPlayerCollision(ref bullet, State.Player1) || CheckBulletPlayerCollision(ref bullet, State.Player2))
             {
                 _bulletsToRemove.Add(currentBulletId);
-
-                if (State.Status == MatchStatus.RoundEnded || State.Status == MatchStatus.MatchOver)
-                {
-                    return;
-                }
+                if (State.Status == MatchStatus.RoundEnded || State.Status == MatchStatus.MatchOver) return;
             }
         }
 

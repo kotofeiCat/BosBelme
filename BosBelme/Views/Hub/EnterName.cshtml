@@ -10,6 +10,55 @@
     </script>
 }
 
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+{
+    <div id="validation-toast-container" class="toast-container-fixed">
+        <div class="toast-item toast-animate-in">
+            <div class="error-alert-toast">
+                <div style="display: flex; align-items: center;">
+                    <div class="error-icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"></path>
+                        </svg>
+                    </div>
+                    <div class="error-body">
+                        <p class="error-title">Ошибка авторизации</p>
+                        <p class="error-desc">
+                            @foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                @foreach (var error in modelState.Errors)
+                                {
+                                    <span>@error.ErrorMessage</span>
+                                }
+                            }
+                        </p>
+                    </div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').remove()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const container = document.getElementById('validation-toast-container');
+            if (container) {
+                const toast = container.querySelector('.toast-item');
+                if (toast) {
+                    toast.classList.remove('toast-animate-in');
+                    toast.classList.add('toast-animate-out');
+                    setTimeout(() => container.remove(), 400); 
+                }
+            }
+        }, 5000);
+    </script>
+}
+
+
 <div class="auth-card">
     <div class="auth-header-icon">
         <i class="fa-solid fa-user-astronaut"></i>

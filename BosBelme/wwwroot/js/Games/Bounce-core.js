@@ -1,23 +1,33 @@
 ﻿const COLS = 20;
 const ROWS = 15;
 const BLOCK_SIZE = 40;
+
 const canvas = document.getElementById("gameCanvas");
 canvas.width = COLS * BLOCK_SIZE;
 canvas.height = ROWS * BLOCK_SIZE;
 const ctx = canvas.getContext("2d");
+
+// Offscreen Canvas (кэш для фоновой карты)
+const mapCanvas = document.createElement("canvas");
+mapCanvas.width = canvas.width;
+mapCanvas.height = canvas.height;
+const mapCtx = mapCanvas.getContext("2d");
+let isMapDirty = true;
+
 const roomCode = window.gameRoomConfig.roomCode;
 const currentUserName = window.gameRoomConfig.currentUserName;
 
 let gameState = null;
 let lastInputVector = { x: 0, y: 0 };
 let myConnectionId = null;
+let isGameEnded = false;
 
-// Хранилище позиций и углов корпусов для плавного отслеживания движения
 let prevPositions = { p1: null, p2: null };
 let bodyAngles = { p1: 0, p2: Math.PI };
 
 const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false };
 
+// --- SignalR Подключение ---
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/bouncehub")
     .withAutomaticReconnect()
@@ -34,6 +44,12 @@ function writeLog(message, isAlert = false) {
     term.scrollTop = term.scrollHeight;
 }
 
+window.addEventListener("beforeunload", () => {
+    if (connection) {
+        connection.stop();
+    }
+});
+
 connection.start().then(() => {
     writeLog("Связь с игровым шлюзом установлена.");
     myConnectionId = connection.connectionId;
@@ -42,20 +58,80 @@ connection.start().then(() => {
     writeLog("Сбой рукопожатия: " + err.toString(), true);
 });
 
-connection.on("InitGame", (state) => { gameState = state; });
-connection.on("UpdateState", (state) => { gameState = state; updateHUD(); });
-connection.on("OnError", (err) => { writeLog("Ошибка: " + err, true); });
-
-connection.on("GameOver", (scores) => {
-    writeLog("МАТЧ ЗАВЕРШЕН! Финальный счет зафиксирован.", true);
-    if (gameState) { gameState.Status = 4; updateHUD(); }
-    setTimeout(() => {
-        const leaveForm = document.getElementById("mobile-leave-form");
-        if (leaveForm) leaveForm.submit();
-        else window.location.href = "/";
-    }, 5000);
+// Первичная инициализация состояния
+connection.on("InitGame", (state) => {
+    gameState = state;
+    isMapDirty = true;
 });
 
+// Прием легких обновлений состояния
+connection.on("UpdateState", (state) => {
+    if (isGameEnded) return;
+
+    if (!gameState) {
+        gameState = state;
+    } else {
+        gameState.player1 = state.player1 || state.Player1;
+        gameState.player2 = state.player2 || state.Player2;
+        gameState.activeBullets = state.activeBullets || state.ActiveBullets;
+        gameState.status = state.status !== undefined ? state.status : state.Status;
+        gameState.statusTimer = state.statusTimer !== undefined ? state.statusTimer : state.StatusTimer;
+        gameState.scores = state.scores || state.Scores;
+
+        // Перерисовка буфера карты только если с сервера пришла новая сетка (разрушился блок)
+        const newGrid = state.grid || state.Grid;
+        if (newGrid) {
+            if (!gameState.currentMap) gameState.currentMap = {};
+            gameState.currentMap.grid = newGrid;
+            gameState.currentMap.Grid = newGrid;
+            isMapDirty = true;
+        }
+    }
+    updateHUD();
+});
+
+connection.on("OnError", (err) => { writeLog("Ошибка: " + err, true); });
+
+connection.on("OpponentDisconnected", () => {
+    isGameEnded = true;
+    writeLog("Соперник покинул игру. Сессия завершена.", true);
+
+    if (gameState) {
+        gameState.status = 4;
+        gameState.Status = 4;
+        updateHUD();
+    }
+
+    setTimeout(() => {
+        leaveGameAndRedirect();
+    }, 1500);
+});
+
+connection.on("GameOver", (scores) => {
+    isGameEnded = true;
+    writeLog("МАТЧ ЗАВЕРШЕН! Финальный счет зафиксирован.", true);
+
+    if (gameState) {
+        gameState.status = 4;
+        gameState.Status = 4;
+        updateHUD();
+    }
+
+    setTimeout(() => {
+        leaveGameAndRedirect();
+    }, 4000);
+});
+
+function leaveGameAndRedirect() {
+    const leaveForm = document.getElementById("mobile-leave-form");
+    if (leaveForm && typeof leaveForm.submit === "function") {
+        leaveForm.submit();
+    } else {
+        window.location.href = "/";
+    }
+}
+
+// --- Обработка ввода (Клавиатура & Мышь) ---
 window.addEventListener("keydown", (e) => {
     if (["KeyW", "KeyA", "KeyS", "KeyD"].includes(e.code)) {
         keys[e.code] = true;
@@ -72,7 +148,7 @@ window.addEventListener("keyup", (e) => {
 });
 
 window.addEventListener("mousedown", (e) => {
-    if (e.button === 0 && gameState) {
+    if (e.button === 0 && gameState && !isGameEnded) {
         const rect = canvas.getBoundingClientRect();
         if (e.clientX >= rect.left && e.clientX <= rect.right &&
             e.clientY >= rect.top && e.clientY <= rect.bottom) {
@@ -97,6 +173,7 @@ window.addEventListener("mousedown", (e) => {
     }
 });
 
+// --- Мобильное управление ---
 function setupMobileControls() {
     const bindDir = (id, codeStr) => {
         const el = document.getElementById(id);
@@ -109,7 +186,7 @@ function setupMobileControls() {
     document.getElementById("m-shield")?.addEventListener("touchstart", (e) => { e.preventDefault(); triggerShield(); });
     document.getElementById("m-shoot")?.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        if (!gameState) return;
+        if (!gameState || isGameEnded) return;
         const p1 = gameState.player1 || gameState.Player1;
         const p2 = gameState.player2 || gameState.Player2;
         const p1Id = p1?.id || p1?.Id;
@@ -123,13 +200,16 @@ function setupMobileControls() {
 
     document.getElementById("m-exit")?.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        document.getElementById("mobile-leave-form")?.submit();
+        leaveGameAndRedirect();
     });
 }
 
-function triggerShield() { connection.invoke("ActivateShield", roomCode); }
+function triggerShield() {
+    if (!isGameEnded) connection.invoke("ActivateShield", roomCode);
+}
 
 function sendMovementIfNeeded() {
+    if (isGameEnded) return;
     let dx = 0; let dy = 0;
     if (keys["KeyW"]) dy -= 1;
     if (keys["KeyS"]) dy += 1;
@@ -142,7 +222,7 @@ function sendMovementIfNeeded() {
     }
 }
 
-// 📐 Расчет реального направления движения шасси
+// --- Расчет углов и обновление интерфейса ---
 function updateBodyAngle(p, key) {
     if (!p) return;
     const pos = p.position || p.Position;
@@ -153,7 +233,7 @@ function updateBodyAngle(p, key) {
     if (prevPositions[key]) {
         const dx = px - prevPositions[key].x;
         const dy = py - prevPositions[key].y;
-        // Поворачиваем только если сдвиг ощутимый (исключает дрожание сетки)
+
         if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
             bodyAngles[key] = Math.atan2(dy, dx);
         }
@@ -203,37 +283,48 @@ function updateHUD() {
     }
 }
 
-function draw() {
-    ctx.fillStyle = "#9bbc0f";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+// --- Отрисовка Canvas ---
+function renderMapToBuffer() {
+    mapCtx.fillStyle = "#9bbc0f";
+    mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
 
-    if (!gameState) { requestAnimationFrame(draw); return; }
-
+    if (!gameState) return;
     const map = gameState.currentMap || gameState.CurrentMap;
-    if (map && (map.grid || map.Grid)) {
-        const grid = map.grid || map.Grid;
-        for (let c = 0; c < COLS; c++) {
-            if (!grid[c]) continue;
-            for (let r = 0; r < ROWS; r++) {
-                if (grid[c][r] === 1) {
-                    ctx.fillStyle = "#0f380f";
-                    ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                    ctx.strokeStyle = "#9bbc0f"; ctx.lineWidth = 1;
-                    ctx.strokeRect(c * BLOCK_SIZE + 1, r * BLOCK_SIZE + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
-                } else if (grid[c][r] === 2) {
-                    ctx.fillStyle = "#306230";
-                    ctx.fillRect(c * BLOCK_SIZE + 2, r * BLOCK_SIZE + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
-                    ctx.strokeStyle = "#0f380f"; ctx.lineWidth = 1;
-                    ctx.strokeRect(c * BLOCK_SIZE + 2, r * BLOCK_SIZE + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
-                }
+    const grid = map?.grid || map?.Grid;
+    if (!grid) return;
+
+    for (let c = 0; c < COLS; c++) {
+        if (!grid[c]) continue;
+        for (let r = 0; r < ROWS; r++) {
+            if (grid[c][r] === 1) {
+                mapCtx.fillStyle = "#0f380f";
+                mapCtx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                mapCtx.strokeStyle = "#9bbc0f"; mapCtx.lineWidth = 1;
+                mapCtx.strokeRect(c * BLOCK_SIZE + 1, r * BLOCK_SIZE + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
+            } else if (grid[c][r] === 2) {
+                mapCtx.fillStyle = "#306230";
+                mapCtx.fillRect(c * BLOCK_SIZE + 2, r * BLOCK_SIZE + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
+                mapCtx.strokeStyle = "#0f380f"; mapCtx.lineWidth = 1;
+                mapCtx.strokeRect(c * BLOCK_SIZE + 2, r * BLOCK_SIZE + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
             }
         }
     }
+    isMapDirty = false;
+}
+
+function draw() {
+    if (isMapDirty) {
+        renderMapToBuffer();
+    }
+
+    // Мгновенная перенос готового изображения карты из буфера
+    ctx.drawImage(mapCanvas, 0, 0);
+
+    if (!gameState) { requestAnimationFrame(draw); return; }
 
     const p1Data = gameState.player1 || gameState.Player1;
     const p2Data = gameState.player2 || gameState.Player2;
 
-    // Вычисляем углы корпусов на основе дельты шагов
     updateBodyAngle(p1Data, 'p1');
     updateBodyAngle(p2Data, 'p2');
 
@@ -242,13 +333,16 @@ function draw() {
 
     const bullets = gameState.activeBullets || gameState.ActiveBullets;
     if (bullets) {
-        bullets.forEach(b => {
-            const pos = b.position || b.Position;
-            if (!pos) return;
+        ctx.fillStyle = "#0f380f";
+        for (let i = 0; i < bullets.length; i++) {
+            const pos = bullets[i].position || bullets[i].Position;
+            if (!pos) continue;
             const bx = pos.x !== undefined ? pos.x : pos.X;
             const by = pos.y !== undefined ? pos.y : pos.Y;
-            ctx.fillStyle = "#0f380f"; ctx.beginPath(); ctx.arc(bx, by, 7, 0, Math.PI * 2); ctx.fill();
-        });
+            ctx.beginPath();
+            ctx.arc(bx, by, 7, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
     requestAnimationFrame(draw);
 }
@@ -275,58 +369,50 @@ function drawPlayer(p, col, key) {
         return;
     }
 
-    // 🔄 СЛОЙ 1: ОТРИСОВКА КОРПУСА ТАНКА (Поворот по направлению перемещения)
+    // Гусеницы и корпус
     ctx.save();
     ctx.translate(px, py);
     ctx.rotate(bodyAngles[key] || 0);
 
-    // Гусеницы (ориентированы горизонтально)
     ctx.fillStyle = "#0f380f";
-    ctx.fillRect(-17, -19, 34, 6); // Верхняя гусеница
-    ctx.fillRect(-17, 13, 34, 6);  // Нижня гусеница
+    ctx.fillRect(-17, -19, 34, 6);
+    ctx.fillRect(-17, 13, 34, 6);
 
-    // Протекторы (насечки)
     ctx.strokeStyle = "#9bbc0f"; ctx.lineWidth = 1;
     for (let offset = -14; offset <= 14; offset += 6) {
         ctx.beginPath(); ctx.moveTo(offset, -19); ctx.lineTo(offset, -13); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(offset, 13); ctx.lineTo(offset, 19); ctx.stroke();
     }
 
-    // Броня шасси
     ctx.fillStyle = col;
     ctx.fillRect(-14, -13, 28, 26);
     ctx.strokeStyle = "#0f380f"; ctx.lineWidth = 2;
     ctx.strokeRect(-14, -13, 28, 26);
 
-    // Выхлопная решетка на корме (слева)
     ctx.fillStyle = "#0f380f";
     ctx.fillRect(-13, -7, 3, 14);
     ctx.restore();
 
-    // 🎯 СЛОЙ 2: ОТРИСОВКА БАШНИ И ОРУДИЯ (Независимый поворот по прицелу)
+    // Башня и дуло
     ctx.save();
     ctx.translate(px, py);
     ctx.rotate(turretAngle || 0);
 
-    // Ствол
     ctx.fillStyle = "#0f380f";
     ctx.fillRect(0, -3, 24, 6);
-    // Дульный тормоз
     ctx.fillStyle = col;
     ctx.fillRect(21, -5, 5, 10);
     ctx.strokeStyle = "#0f380f"; ctx.strokeRect(21, -5, 5, 10);
 
-    // Башня
     ctx.fillStyle = col;
     ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = "#0f380f"; ctx.lineWidth = 2; ctx.stroke();
 
-    // Люк командира
     ctx.fillStyle = "#0f380f";
     ctx.beginPath(); ctx.arc(-2, 0, 3, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    // 🛡 СЛОЙ 3: ВРАЩАЮЩИЙСЯ ЭНЕРГОЩИТ
+    // Отрисовка щита
     const isShieldActive = p.isShieldActive !== undefined ? p.isShieldActive : p.IsShieldActive;
     if (isShieldActive) {
         ctx.save(); ctx.translate(px, py);
@@ -337,5 +423,6 @@ function drawPlayer(p, col, key) {
     }
 }
 
+// Запуск контроллеров и анимационного цикла
 setupMobileControls();
 requestAnimationFrame(draw);

@@ -569,6 +569,18 @@ a.learn-more, button.learn-more {
             transform: translate3d(0, 0, -1em) !important;
         }
 
+    /* --- ВЕРТИКАЛЬНЫЙ ОТСТУП ДЛЯ СТЕКА 3D-КНОПОК (УМЕНЬШЕН ДО 13px) --- */
+    .button-name + .button-name,
+    .btn-uiverse-play + .btn-uiverse-play,
+    .button-name + .btn-uiverse-play,
+    .btn-uiverse-play + .button-name,
+    form + .button-name,
+    form + .btn-uiverse-play,
+    .button-name + form,
+    .btn-uiverse-play + form {
+        margin-top: 13px !important;
+    }
+
 /* --- ЧИСТЫЙ МИНИМАЛИСТИЧНЫЙ ПРОФИЛЬ --- */
 .profile-card {
     display: flex;
@@ -957,5 +969,133 @@ a.learn-more, button.learn-more {
         bottom: 50px !important;
         font-size: 11px !important;
         padding: 4px 8px !important;
+    }
+}
+
+/* ==========================================================================
+   TOAST ERROR ALERT SYSTEM (PURE CSS)
+   ========================================================================== */
+.toast-container-fixed {
+    position: fixed !important;
+    top: 24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    pointer-events: none !important;
+    width: 100% !important;
+    max-width: 380px !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+}
+
+.toast-item {
+    pointer-events: auto !important;
+    width: 100% !important;
+}
+
+.error-alert-toast {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 10px !important;
+    background-color: #232531 !important;
+    border: 1px solid #30363d !important;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.65) !important;
+    box-sizing: border-box !important;
+}
+
+    .error-alert-toast .error-icon-box {
+        color: #d65563 !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(12px) !important;
+        padding: 6px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .error-alert-toast svg {
+        width: 20px !important;
+        height: 20px !important;
+        display: block !important;
+        flex-shrink: 0 !important;
+    }
+
+    .error-alert-toast .error-body {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+    }
+
+    .error-alert-toast .error-title {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+    }
+
+    .error-alert-toast .error-desc {
+        color: #8b949e !important;
+        font-size: 11px !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    .error-alert-toast .toast-close-btn {
+        background: transparent !important;
+        border: none !important;
+        color: #6e7681 !important;
+        cursor: pointer !important;
+        padding: 4px !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: color 0.15s ease, background 0.15s ease !important;
+    }
+
+        .error-alert-toast .toast-close-btn:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+.toast-animate-in {
+    animation: toastSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.toast-animate-out {
+    animation: toastSlideUp 0.25s cubic-bezier(0.7, 0, 0.84, 0) forwards !important;
+}
+
+@keyframes toastSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes toastSlideUp {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
     }
 }

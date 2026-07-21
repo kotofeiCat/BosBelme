@@ -152,13 +152,14 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
         return isCallerGuest;
     }
 
-    // Удаляет комнату и все связанные сессии по коду комнаты
+    // Удаляет комнату и все связанные сессии по коду комнаты (Код нигде не используется)
     public async Task DeleteRoomAsync(string roomCode)
     {
         var gameHub = await context.GameHubs
             .Include(gh => gh.GameSessions)
                 .ThenInclude(gs => gs.Player)
-            .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode);
+            .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
+            ?? throw new Exception("Игровой хаб не найден");
 
         if (gameHub != null)
         {

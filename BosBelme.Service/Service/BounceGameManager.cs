@@ -158,20 +158,30 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
     public async Task<string?> HandlePlayerDisconnectAsync(string playerId)
     {
-        if (_playerToRoomMap.TryRemove(playerId, out var affectedRoomId))
+        string? affectedRoomId = null;
+
+        if (_playerToRoomMap.TryRemove(playerId, out var roomId))
         {
-            _ = Task.Run(async () =>
+            affectedRoomId = roomId;
+        }
+        else
+        {
+            var sessionEntry = _sessions.FirstOrDefault(s =>
+                s.Value.Session.State.Player1?.Id == playerId ||
+                s.Value.Session.State.Player2?.Id == playerId);
+
+            if (sessionEntry.Key != null)
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                affectedRoomId = sessionEntry.Key;
+            }
+        }
 
-                if (!_playerToRoomMap.TryGetKey(affectedRoomId, out _))
-                {
-                    RemoveSession(affectedRoomId);
-                }
-            });
-
+        if (!string.IsNullOrEmpty(affectedRoomId))
+        {
+            RemoveSession(affectedRoomId);
             return affectedRoomId;
         }
+
         return null;
     }
 
@@ -196,10 +206,21 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
                 {
                     using var scope = serviceProvider.CreateScope();
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    var hubEntity = await dbContext.GameHubs.FirstOrDefaultAsync(gh => gh.ConnectionKey == roomId);
+
+                    var hubEntity = await dbContext.GameHubs
+                        .Include(gh => gh.GameSessions)
+                            .ThenInclude(gs => gs.Player)
+                        .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomId);
+
                     if (hubEntity != null)
                     {
                         hubEntity.Status = GameStatus.Waiting;
+
+                        foreach (var gameSession in hubEntity.GameSessions)
+                        {
+                            gameSession.IsReady = false;
+                        }
+
                         await dbContext.SaveChangesAsync();
                     }
                 }
@@ -242,7 +263,18 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
                     session.Update(deltaTime);
 
-                    await hubContext.Clients.Group(roomId).SendAsync("UpdateState", session.State, cancellationToken: ct);
+                    var lightweightState = new
+                    {
+                        Player1 = session.State.Player1,
+                        Player2 = session.State.Player2,
+                        ActiveBullets = session.State.ActiveBullets,
+                        Status = session.State.Status,
+                        StatusTimer = session.State.StatusTimer,
+                        Scores = session.State.Scores,
+                        Grid = session.State.CurrentMap.Grid
+                    };
+
+                    await hubContext.Clients.Group(roomId).SendAsync("UpdateState", lightweightState, cancellationToken: ct);
 
                     if (session.State.Status == MatchStatus.MatchOver)
                     {
