@@ -1,4 +1,4 @@
-/* Пиксельный фон за оконом */
+﻿/* Глобальные оверлеи и системные подложки */
 .overlay {
     display: none;
     position: fixed;
@@ -6,12 +6,20 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    background-image: radial-gradient(rgba(0,0,0,0.5) 15%, transparent 15%);
-    background-size: 4px 4px;
-    z-index: 140;
+    background-color: rgba(0, 0, 0, 0.6); /* Чистое темное затемнение без цветного шума */
+    z-index: 1100;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
     .overlay.open {
         display: block;
+        opacity: 1;
     }
+
+/* Фиксированный фон для полноэкранных viewport-зон (например, в игре Bounce) */
+.fullscreen-bg {
+    background-color: var(--color-bg);
+    width: 100%;
+    height: 100%;
+}

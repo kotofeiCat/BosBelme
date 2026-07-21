@@ -1,13 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Главная";
+    ViewData["Title"] = "ГЛАВНАЯ";
 }
 
-<div>
-    <h1 class="large-text">Лучшие мини-игры для компании</h1>
-    <p class="other-text">Выбери игру прямо в браузере и начинай рубиться с друзьями в реальном времени!</p>
-    <div>
-        <a asp-controller="Hub" asp-action="Index" class="btn">
-            Запустить систему
+<div style="text-align: center; padding: 40px 0 20px 0;">
+    <span style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+        ⚡ Игровая система 2.0
+    </span>
+
+    <h1 class="large-text" style="font-size: 34px; margin: 20px 0 12px 0;">
+        Игровая экосистема RoomBox
+    </h1>
+
+    <p class="other-text" style="max-width: 520px; margin: 0 auto 36px auto; font-size: 14px;">
+        Создавайте приватные лобби, подключайтесь к комнатам друзей и играйте в браузерные сессионные игры в реальном времени.
+    </p>
+
+    <div style="display: flex; justify-content: center; margin-top: 24px;">
+        <a asp-controller="Hub" asp-action="Index" class="learn-more">
+            <span class="circle" aria-hidden="true">
+                <span class="icon arrow"></span>
+            </span>
+            <span class="button-text">Войти в лобби</span>
         </a>
     </div>
 </div>

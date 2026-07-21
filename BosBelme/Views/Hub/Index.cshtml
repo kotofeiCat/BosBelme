@@ -1,29 +1,38 @@
 ﻿@{
-    ViewData["Title"] = "Приветствие";
+    ViewData["Title"] = "ЦЕНТР ЛОББИ";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/hub/index.css">
+@section Scripts {
+    <script>
+        document.querySelector('.window')?.classList.add('window-auth');
+    </script>
 }
 
-<h1 class="large-text">Добро пожаловать в RoomBox OS</h1>
-<p class="other-text">
-    Выберите действие для управления комнатами. Вы можете создать новое пространство или подключиться к уже существующему по коду доступа.
-</p>
+<div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0;">
+    <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 20px; margin-bottom: 16px;">
+        <i class="fa-solid fa-gamepad"></i>
+    </div>
 
-<hr/>
+    <h2 class="large-text" style="font-size: 24px; margin-bottom: 6px;">Комнаты и Сессии</h2>
+    <p class="other-text" style="margin-bottom: 24px;">Выберите действие для начала игровой сессии</p>
 
-<div class="btn-collum-container">
-    <form asp-controller="Hub" asp-action="CreateRoom" method="post"">
-        <button class="btn" type="submit">
-            [+] Создать комнату
-        </button>
-    </form>
-    <a asp-controller="Hub" asp-action="JoinRoom" class="btn">
-        [->] Присоединиться
-    </a>
+    <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+        <!-- Кнопка 1: Создать комнату -->
+        <form asp-controller="Hub" asp-action="CreateRoom" method="post" style="width: 100%;">
+            <button type="submit" class="button-name" style="width: 100%; height: 46px;">
+                <i class="fa-solid fa-plus"></i>
+                <span>Создать комнату</span>
+            </button>
+        </form>
+
+        <!-- Кнопка 2: Присоединиться -->
+        <a asp-controller="Hub" asp-action="JoinRoom" class="button-name btn-ghost" style="width: 100%; height: 46px;">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Присоединиться</span>
+        </a>
+    </div>
+
+    <p class="other-text" style="font-size: 11px; margin-top: 20px; opacity: 0.7;">
+        * Для подключения к существующей сессии требуется 6-значный код комнаты.
+    </p>
 </div>
-
-<p class="other-text" style="margin-top: 25px; margin-bottom: 20px; font-size: 12px; color: var(--color-gray-dark);">
-    * Система работает в штатном режиме. Все каналы связи защищены.
-</p>

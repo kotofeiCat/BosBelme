@@ -1,3 +1,5 @@
+using One_Shot_Bounce.Engine;
+
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("PostgresConnection")
@@ -12,13 +14,20 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
 
 //Подключение СигналР
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Converters.Add(new Vector2JsonConverter());
+    });
 
 // Внедрение зависимостей для сервисов
 builder.Services.AddScoped<IAuthService, Authentication>();
 builder.Services.AddScoped<IRegService, Registration>();
 builder.Services.AddScoped<ICookieAuthService, CookieAuthService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
+
+// Интеграция игры
+builder.Services.AddSingleton<IBounceGameManager, BounceGameManager>();
 
 // Настройка куки
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -47,6 +56,7 @@ app.MapStaticAssets();
 
 //Настройка сигналР
 app.MapHub<GameRoomHub>("/gameRoomHub");
+app.MapHub<BounceHub>("/bouncehub");
 
 app.MapControllerRoute(
     name: "default",
@@ -62,14 +72,14 @@ using (var scope = app.Services.CreateScope())
 
         context.Database.Migrate();
         Console.WriteLine("Миграции применина");
+
+        BosBelme.Service.Service.DbInitializer.Seed(context);
     }
     catch (Exception ex) { Console.WriteLine($"Ошибка миграции - {ex.Message}"); }
 }
 
 // Подключение прометеуса
-
 app.UseHttpMetrics();
-
 app.MapMetrics();
 
 app.Run();

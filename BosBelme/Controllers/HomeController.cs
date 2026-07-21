@@ -1,13 +1,12 @@
-namespace BosBelme.Controllers
+namespace BosBelme.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
-    {
 
-        // Методы для отображения страниц
-        public IActionResult Index() => View();
+    // Методы для отображения страниц
+    public IActionResult Index() => View();
 
-        public IActionResult Help() => View();
+    public IActionResult Help() => View();
 
-        public IActionResult Home() => View();
-    }
+    public IActionResult Home() => View();
 }

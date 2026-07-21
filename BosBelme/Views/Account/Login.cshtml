@@ -1,29 +1,64 @@
 @model BosBelme.ViewModels.LoginViewModel
-
 @{
-    ViewData["Title"] = "Войти";
+    ViewData["Title"] = "Авторизация";
 }
 
-<h2 class="large-text">Вход в систему</h2>
-<hr/>
+@section Scripts {
+    <script>
+        document.querySelector('.window')?.classList.add('window-auth');
+    </script>
+}
 
-<div asp-validation-summary="ModelOnly" class="small-link" style="color: red; margin-bottom: 15px;"></div>
-
-<form asp-controller="Account" asp-action="Login" method="post">
-    <div class="input-group">
-        <label for="NameOrEmail">Имя пользователя или Email:</label>
-        <input asp-for="NameOrEmail" placeholder="Введите логин..." required>
+<div class="auth-card">
+    <div class="auth-header-icon">
+        <i class="fa-solid fa-right-to-bracket"></i>
     </div>
 
-    <div class="input-group">
-        <label for="Password">Пароль:</label>
-        <input asp-for="Password" placeholder="••••••••" required>
-    </div>
+    <h2 class="auth-title">Вход в аккаунт</h2>
+    <p class="auth-subtitle">Авторизуйтесь для доступа к платформе</p>
 
-    <div class="btn-container">
-        <button class="btn" type="submit">
-            [>] Войти
-        </button>
-        <a class="small-link" asp-controller="Account" asp-action="Register">Нет аккаунта?</a>
-    </div>
-</form>
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+    {
+        <div class="error-alert-wrapper">
+            <div class="error-alert">
+                <div class="error-alert-content">
+                    <div class="error-alert-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="error-alert-text">
+                        <p class="error-alert-title">Ошибка авторизации</p>
+                        <p class="error-alert-desc">
+                            @foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                @foreach (var error in modelState.Errors)
+                                {
+                                    <span>@error.ErrorMessage</span>
+                                }
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <form asp-controller="Account" asp-action="Login" method="post" style="width: 100%;">
+        <div class="input-group">
+            <input asp-for="NameOrEmail" class="input" required placeholder=" " autocomplete="off" />
+            <label class="user-label" asp-for="NameOrEmail">Логин или Email</label>
+        </div>
+
+        <div class="input-group">
+            <input asp-for="Password" type="password" class="input" required placeholder=" " />
+            <label class="user-label" asp-for="Password">Пароль</label>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+            <button class="button-name btn-orange" type="submit" style="width: 100%;">
+                <span>Войти</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <a class="small-link" asp-controller="Account" asp-action="Register" style="text-align: center; font-size: 12px; color: var(--color-cyan); text-decoration: none;">Нет аккаунта? Зарегистрироваться</a>
+        </div>
+    </form>
+</div>

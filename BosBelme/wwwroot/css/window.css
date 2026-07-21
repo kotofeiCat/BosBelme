@@ -1,72 +1,87 @@
+/* ==========================================================================
+   ROOMBOX ENGINE - WINDOW CONTAINER & MODALS
+   ========================================================================== */
 
-/* Все что ниже верхней панели */
 .window-container {
-    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 60px 20px 40px 20px;
+    padding: 24px 20px 100px 20px !important;
+    min-height: calc(100vh - 140px);
+    width: 100%;
+    position: relative;
+    z-index: 10;
 }
 
-/* Окно ОС */
 .window {
-    width: min(760px, calc(100% - 40px));
-    background-color: var(--color-white);
-    border: 2px solid var(--color-black);
-    box-shadow: 6px 6px 0px var(--color-black);
+    width: min(1080px, 100%);
+    background: rgba(22, 27, 34, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid #30363d;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    position: absolute;
+    overflow: hidden;
+    transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Верхняя часть окна */
+    .window.window-medium {
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    .window.window-auth {
+        max-width: 440px;
+        margin: 0 auto;
+    }
+
 .window-titlebar {
-    height: 28px;
-    background-color: var(--color-white);
-    border-bottom: 2px solid var(--color-black);
+    height: 42px;
+    background-color: #0d1117;
+    border-bottom: 1px solid #30363d;
     display: flex;
     align-items: center;
-    position: relative;
+    padding: 0 18px;
+    gap: 12px;
+    user-select: none;
 }
 
-/* Тройные линии в верхней части окна */
 .titlebar-lines {
     flex-grow: 1;
-    height: 12px;
-    margin: 0 8px;
-    background: repeating-linear-gradient(0deg, var(--color-black), var(--color-black) 2px, transparent 2px, transparent 4px );
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
 }
 
-/* Квадрат в верхней части окна */
 .empty-square {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--color-black);
-    margin-left: 8px;
-    background-color: var(--color-white);
-    touch-action: manipulation;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #8b949e;
 }
 
-    .empty-square:hover {
-        background-color: var(--color-gray-light);
-    }
-
-    .empty-square:active {
-        background-color: var(--color-gray-light);
-    }
-
-/* Заголовок верхней части окна */
 .window-title {
-    font-family: 'Courier Prime', monospace;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 0 8px;
-    background-color: var(--color-white);
-    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Тело окна */
 .window-body {
-    padding: 30px;
-    background-color: var(--color-white);
+    padding: 28px 32px 20px 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 640px) {
+    .window-container {
+        padding-bottom: 90px !important;
+    }
+
+    .window-body {
+        padding: 20px 16px 16px 16px;
+    }
 }

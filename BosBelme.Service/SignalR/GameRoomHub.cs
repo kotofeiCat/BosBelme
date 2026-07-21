@@ -1,93 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace BosBelme.Service.SignalR;
 
-namespace BosBelme.Service.SignalR
+// Класс для игровых комнат SignalR
+public class GameRoomHub : Hub
 {
-    // Класс для игровых комнат SignalR
-    public class GameRoomHub : Hub
+    private readonly IRoomService _roomService;
+
+    public GameRoomHub(IRoomService roomService)
     {
-        private readonly IRoomService _roomService;
+        _roomService = roomService;
+    }
 
-        public GameRoomHub(IRoomService roomService)
+    // Метод для добавления пользователей в группу
+    public async Task JoinRoom(string roomCode)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+
+        await BroadcastRoomUpdate(roomCode);
+
+    }
+
+    // Метод обновления информации
+    private async Task BroadcastRoomUpdate(string roomCode)
+    {
+        var roomDetails = await _roomService.GetRoomDetailsAsync(roomCode);
+        await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
+    }
+
+    // Метод для выхода из группы
+    public async Task LeaveRoom(string roomCode, int userId)
+    {
+        await _roomService.LeaveRoomAsync(userId, roomCode);
+
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
+    }
+
+    // Метод для смены игры
+    public async Task ChangeGame(string roomCode, int gameId)
+    {
+        try
         {
-            _roomService = roomService;
-        }
-
-        // Метод для добавления пользователей в группу
-        public async Task JoinRoom(string roomCode)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
-
+            int userId = GetCurrentUserId();
+            await _roomService.ChangeGameAsync(roomCode, gameId, userId);
             await BroadcastRoomUpdate(roomCode);
-
         }
-
-        // Метод обновления информации
-        private async Task BroadcastRoomUpdate(string roomCode)
+        catch (Exception ex)
         {
-            var roomDetails = await _roomService.GetRoomDetailsAsync(roomCode);
-            await Clients.Group(roomCode).SendAsync("UpdateRoom", roomDetails);
+            await Clients.Caller.SendAsync("OnError", ex.Message);
         }
+    }
 
-        // Метод для выхода из группы
-        public async Task LeaveRoom(string roomCode, int userId)
+    // Метод игрок нажал готово
+    public async Task ToggleReady(string roomCode)
+    {
+        try
         {
-            await _roomService.LeaveRoomAsync(userId, roomCode);
-
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
+            int userId = GetCurrentUserId();
+            await _roomService.ToggleReadyAsync(roomCode, userId);
+            await BroadcastRoomUpdate(roomCode);
         }
-
-        // Метод для смены игры
-        public async Task ChangeGame(string roomCode, int gameId)
+        catch (Exception ex)
         {
-            try
-            {
-                int userId = GetCurrentUserId();
-                await _roomService.ChangeGameAsync(roomCode, gameId, userId);
-                await BroadcastRoomUpdate(roomCode);
-            }
-            catch (Exception ex)
-            {
-                await Clients.Caller.SendAsync("OnError", ex.Message);
-            }
+            await Clients.Caller.SendAsync("OnError", ex.Message);
         }
+    }
 
-        // Метод игрок нажал готово
-        public async Task ToggleReady(string roomCode)
+    // Метод для начала игры
+    public async Task StartGame(string roomCode)
+    {
+        try
         {
-            try
-            {
-                int userId = GetCurrentUserId();
-                await _roomService.ToggleReadyAsync(roomCode, userId);
-                await BroadcastRoomUpdate(roomCode);
-            }
-            catch (Exception ex)
-            {
-                await Clients.Caller.SendAsync("OnError", ex.Message);
-            }
-        }
+            int userId = GetCurrentUserId();
+            await _roomService.StartGameAsync(roomCode, userId);
 
-        // Метод для начала игры
-        public async Task StartGame(string roomCode)
+            await Clients.Group(roomCode).SendAsync("GameStarted");
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                int userId = GetCurrentUserId();
-                await _roomService.StartGameAsync(roomCode, userId);
-
-                await Clients.Group(roomCode).SendAsync("GameStarted");
-            }
-            catch (Exception ex)
-            {
-                await Clients.Caller.SendAsync("OnError", ex.Message);
-            }
+            await Clients.Caller.SendAsync("OnError", ex.Message);
         }
+    }
 
-        // Метод для получения ID пользователя
-        private int GetCurrentUserId()
-        {
-            return int.Parse(Context.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-        }
+    // Метод для получения ID пользователя
+    private int GetCurrentUserId()
+    {
+        return int.Parse(Context.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
     }
 }

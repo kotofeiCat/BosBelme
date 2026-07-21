@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data.Entities;
-using BosBelme.Service.Dto;
+namespace BosBelme.Service.IService;
 
-namespace BosBelme.Service.IService
+// Интерфейс для реализации куки аунтификации
+public interface ICookieAuthService
 {
-    public interface ICookieAuthService
-    {
-        Task SignInAsync(RegisterDto dto);
+    Task SignInAsync(RegisterDto dto);
 
-        Task SignOutAsync();
-    }
+    Task SignOutAsync();
 }

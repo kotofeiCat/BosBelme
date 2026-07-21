@@ -1,97 +1,83 @@
+﻿.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1100;
+}
 
-/* Боковое меню */
+    .overlay.open {
+        display: block;
+    }
+
 .sidebar {
     position: fixed;
     top: 0;
     right: -280px;
     width: 260px;
     height: 100vh;
-    background-color: var(--color-white);
-    border-left: 2px solid var(--color-black);
-    z-index: 150;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    z-index: 1200;
     display: flex;
     flex-direction: column;
-    transition: right 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+    transition: right 0.25s ease;
 }
 
     .sidebar.open {
         right: 0;
     }
 
-/* Шапка бокового окна */
 .sidebar-header {
-    height: 34px;
-    border-bottom: 2px solid var(--color-black);
+    height: 56px;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     align-items: center;
-    padding: 0 10px;
-    background-color: var(--color-white);
+    padding: 0 16px;
+    gap: 12px;
 }
 
-/* Кнопка закрытия */
 .sidebar-cross {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--color-black);
-    background-color: var(--color-white);
-    color: var(--color-black);
-    font-family: 'Courier Prime', monospace;
-    font-size: 14px;
-    font-weight: bold;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-sm);
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    padding: 0;
 }
 
-    .sidebar-close-box:active {
-        background-color: var(--color-black);
-        color: var(--color-white);
-    }
-
-/* Тройные линии в верхней части меню */
-.sidebar-titlebar-lines {
-    flex-grow: 1;
-    height: 10px;
-    margin: 0 10px;
-    background: repeating-linear-gradient(0deg, var(--color-black), var(--color-black) 2px, transparent 2px, transparent 4px);
-}
-
-/* Заголовок меню */
 .sidebar-title {
-    font-family: 'Courier Prime', monospace;
-    font-size: 13px;
-    font-weight: bold;
-    background: var(--color-white);
-    padding-left: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
 }
 
-/* Содержимое меню */
 .sidebar-content {
-    padding: 15px 10px;
+    padding: 12px 8px;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-/* Ссылка в теле меню */
 .sidebar-item {
-    font-family: 'Courier Prime', monospace;
-    font-size: 15px;
-    font-weight: bold;
-    color: var(--color-black);
-    text-decoration: none;
     padding: 10px 12px;
-    border: 2px solid transparent;
-    display: block;
-    text-align: left;
-    width: 100%;
-    box-sizing: border-box;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    font-size: 13px;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
     .sidebar-item:hover {
-        background-color: var(--color-black);
-        color: var(--color-white);
-        border-color: var(--color-black);
+        background-color: var(--color-surface-hover);
+        color: var(--color-text-primary);
     }

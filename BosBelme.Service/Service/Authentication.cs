@@ -1,40 +1,31 @@
-﻿using BosBelme.Service.IService;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data;
-using BosBelme.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿namespace BosBelme.Service.Service;
 
-namespace BosBelme.Service.Service
+// Сервис для аутентификации пользователей реализует интерфейс IAuthService
+public class Authentication : IAuthService
 {
-    // Сервис для аутентификации пользователей реализует интерфейс IAuthService
-    public class Authentication : IAuthService
+    private readonly AppDbContext _context;
+
+    public Authentication(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public Authentication(AppDbContext context)
+    // Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
+    public async Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password)
+    {
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
+
+        if (user == null)
         {
-            _context = context;
+            throw new Exception("Пользователя не существует.");
+        }
+        if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        {
+            throw new Exception("Неверный пароль при авторизации.");
         }
 
-        // Метод для аутентификации пользователя. Проверяет наличие пользователя в базе данных по логину и email, а также проверяет соответствие пароля.
-        public async Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password)
-        {
-            var user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Name == loginOrEmail || u.Email == loginOrEmail);
-
-            if (user == null)
-            {
-                throw new Exception("Пользователя не существует.");
-            }
-            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            {
-                throw new Exception("Неверный пароль при авторизации.");
-            }
-
-            return user.FromUser();
-        }
+        return user.FromUser();
     }
 }

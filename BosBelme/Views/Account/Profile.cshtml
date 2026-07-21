@@ -1,51 +1,45 @@
-﻿@model BosBelme.ViewModels.ProfileViewModel;
-
+﻿@model BosBelme.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = "Профиль";
+    ViewData["Title"] = "ПРОФИЛЬ";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/account/profile.css">
+@section Scripts {
+    <script>
+        document.querySelector('.window')?.classList.add('window-medium');
+    </script>
 }
 
-<h1 class="large-text">Терминал Пользователя</h1>
-<hr/>
-
-<div class="info-card">
-    <div class="avatar-container">
-        @* <img src="~/img/user-avatar-pixel.png" alt="Avatar" style="width: 64px; height: 64px; image-rendering: pixelated;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /> *@
-        <span class="floppy-emoji">💾</span>
-    </div>
-    <div class="info-container">
-        <div class="info-row">
-            <span class="info-label">Пользователь:</span>
-            <span class="info-value">@Model.Name</span>
+<div class="profile-card">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fa-solid fa-user-astronaut"></i>
         </div>
-        <div class="info-row">
-            <span class="info-label">Системный ID:</span>
-            <span class="info-value">#@Model.Id</span>
-        </div>
-        <div class="info-row" id="long-email">
-            <span class="info-label">Почта:</span>
-            <span class="info-value">@Model.Email</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Статус доступа:</span>
-            <div class="status-container">
-                <span class="status-badge">USER</span>
-            </div>
+        <div class="profile-info">
+            <h2 class="profile-name">@Model.Name</h2>
+            <span class="profile-id">ID: @Model.Id</span>
         </div>
     </div>
-</div>
 
-<div style="margin-top: 30px; display: flex; gap: 15px;" class="btn-container">
-    <a asp-controller="Hub" asp-action="Index" class="btn">
-        [._.] В игровой хаб
-    </a>
-    <a asp-controller="Home" asp-action="Index" class="btn">
-        [*] На главную
-    </a>
-    <a class="small-link" asp-controller="Account" asp-action="Logout">
-        Выйти из профиля
-    </a>
+    <div class="profile-body">
+        <div class="profile-row">
+            <span class="profile-label"><i class="fa-regular fa-envelope"></i> Email адрес</span>
+            <span class="profile-value">@Model.Email</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label"><i class="fa-solid fa-shield-halved"></i> Статус</span>
+            <span class="profile-value status-active">Подтвержден</span>
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        <a asp-controller="Hub" asp-action="Index" class="button-name">
+            <i class="fa-solid fa-gamepad"></i> В Лобби
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="button-name btn-ghost">
+            <i class="fa-solid fa-house"></i> На главную
+        </a>
+        <a asp-controller="Account" asp-action="Logout" class="button-name btn-danger-ghost">
+            <i class="fa-solid fa-door-open"></i> Выйти
+        </a>
+    </div>
 </div>

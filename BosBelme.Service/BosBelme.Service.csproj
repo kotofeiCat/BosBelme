@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BosBelme.Data\BosBelme.Data.csproj" />
+    <ProjectReference Include="..\One_Shot_Bounce\One_Shot_Bounce.csproj" />
   </ItemGroup>
 
   <ItemGroup>

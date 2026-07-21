@@ -1,5 +1,57 @@
 @{
-    ViewData["Title"] = "Помощь";
+    ViewData["Title"] = "ПОМОЩЬ";
 }
 
-<p>Тут вам должны помочь</p>
+<div class="help-header">
+    <h1 class="large-text">База знаний и Поддержка</h1>
+    <p class="other-text">Ответы на популярные вопросы по работе сервиса и комнат RoomBox</p>
+</div>
+
+<hr style="border-color: #30363d; margin-bottom: 20px;" />
+
+<div class="help-grid">
+    <div class="help-card">
+        <div class="help-card-header">
+            <i class="fa-solid fa-plus-circle"></i>
+            <h3>Как создать комнату?</h3>
+        </div>
+        <p>Зайдите в раздел <strong>"Лобби"</strong> и нажмите <strong>"Создать комнату"</strong>. Вы получите 6-значный код для приглашения игроков.</p>
+    </div>
+
+    <div class="help-card">
+        <div class="help-card-header">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <h3>Как войти к другу?</h3>
+        </div>
+        <p>Нажмите <strong>"Присоединиться"</strong>, введите полученный код комнаты и укажите имя для входа.</p>
+    </div>
+
+    <div class="help-card">
+        <div class="help-card-header">
+            <i class="fa-solid fa-user-shield"></i>
+            <h3>Регистрация нужна?</h3>
+        </div>
+        <p>Нет! Вы можете играть анонимно под статусом <strong>Гость</strong>. Аккаунт нужен только для сохранения ника и профиля.</p>
+    </div>
+
+    <div class="help-card">
+        <div class="help-card-header">
+            <i class="fa-solid fa-wifi"></i>
+            <h3>Ошибка соединения?</h3>
+        </div>
+        <p>При потере связи с сессией обновите страницу клавишей <span class="help-kbd">F5</span> для перезапуска WebSocket соединения.</p>
+    </div>
+</div>
+
+<div class="help-banner">
+    <div class="help-banner-info">
+        <i class="fa-solid fa-gamepad"></i>
+        <div>
+            <h4>Управление в игре Bounce</h4>
+            <p><span class="help-kbd">WASD</span> — Движение | <span class="help-kbd">Пробел</span> — Щит | <span class="help-kbd">ЛКМ</span> — Выстрел</p>
+        </div>
+    </div>
+    <a asp-controller="Hub" asp-action="Index" class="button-name">
+        <i class="fa-solid fa-gamepad"></i> В Лобби
+    </a>
+</div>

@@ -14,14 +14,14 @@ namespace One_Shot_Bounce.Models
 
     public class GameMap
     {
-        public BlockType[,] Grid { get; set; } = new BlockType[0, 0];
+        public BlockType[][] Grid { get; set; } = Array.Empty<BlockType[]>();
 
         public float BlockSize { get; init; } = 40f;
 
         public Vector2 Player1SpawnPoint { get; set; }
         public Vector2 Player2SpawnPoint { get; set; }
 
-        public int Columns => Grid.GetLength(0);
-        public int Rows => Grid.GetLength(1);
+        public int Columns => Grid.Length;
+        public int Rows => Grid.Length > 0 ? Grid[0].Length : 0;
     }
 }

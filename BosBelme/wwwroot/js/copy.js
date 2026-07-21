@@ -1,28 +1,39 @@
+async function handleCopy(btn) {
+    const text = btn.getAttribute('data-copy-text');
 
-async function copyTextFromButton(text) {
     try {
         await navigator.clipboard.writeText(text);
-    } catch { }
+
+        if (btn.copyTimeout) {
+            clearTimeout(btn.copyTimeout);
+        } else {
+            btn.dataset.originalText = btn.textContent;
+            btn.style.minWidth = `${btn.offsetWidth}px`;
+            btn.style.minHeight = `${btn.offsetHeight}px`;
+        }
+
+        btn.classList.add('copy-container-active');
+        btn.textContent = 'Скопировано!';
+
+        btn.copyTimeout = setTimeout(() => {
+            btn.classList.remove('copy-container-active');
+            btn.textContent = btn.dataset.originalText;
+
+            btn.style.minWidth = '';
+            btn.style.minHeight = '';
+
+            btn.copyTimeout = null;
+        }, 3000);
+
+    } catch (err) {
+        console.error('Не удалось скопировать текст:', err);
+    }
 }
 
-function activateCopyButton(btn) {
-    const width = btn.offsetWidth;
-    const height = btn.offsetHeight;
-
-    btn.style.minWidth = width + 'px';
-    btn.style.minHeight = height + 'px';
-
-    btn.classList.add('copy-container-active');
-    btn.textContent = 'Скопировано!';
-}
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const btns = document.querySelectorAll(".copy-container");
 
     btns.forEach(btn => {
-        const text = btn.getAttribute('data-copy-text');
-    
-        btn.addEventListener('click', () => copyTextFromButton(text));
-        btn.addEventListener('click', () => activateCopyButton(btn));
+        btn.addEventListener('click', () => handleCopy(btn));
     });
 });

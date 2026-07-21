@@ -1,63 +1,53 @@
-﻿using System;
-namespace BosBelme.Service.Service
+﻿namespace BosBelme.Service.Service;
+
+//Класс для регистрации нового пользователя в системе. Реализует интерфейс IRegService.
+public class Registration(AppDbContext context) : IRegService
 {
-    //Класс для регистрации нового пользователя в системе. Реализует интерфейс IRegService.
-    public class Registration : IRegService
+    // Реализация метода регистрации нового пользователя. Возращает нового зарегестрировонного пользователя.
+    public async Task<RegisterDto> RegistrationUserAsync(string login, string email, string password)
     {
-        //Подключение к базе данных через контекст.
-        private readonly AppDbContext _context;
-
-        public Registration(AppDbContext context)
+        if(await context.Users.AnyAsync(u => u.Email == email))
         {
-            _context = context;
+            // Если пользователь с таким email уже существует, выбрасывается исключение.
+            throw new Exception("Пользователь с такой почтой уже существует.");
+        }
+        if(await context.Users.AnyAsync(u => u.Name == login))
+        {
+            // Если пользователь с таким именем уже существует, выбрасывается другое исключение.
+            throw new Exception("Пользователь с таким именем уже существует.");
         }
 
-        // Реализация метода регистрации нового пользователя. Возращает нового зарегестрировонного пользователя.
-        public async Task<RegisterDto> RegistrationUserAsync(string login, string email, string password)
+        User user = new User
         {
-            if(await _context.Users.AnyAsync(u => u.Email == email))
-            {
-                // Если пользователь с таким email уже существует, выбрасывается исключение.
-                throw new Exception("Пользователь с такой почтой уже существует.");
-            }
-            if(await _context.Users.AnyAsync(u => u.Name == login))
-            {
-                // Если пользователь с таким именем уже существует, выбрасывается другое исключение.
-                throw new Exception("Пользователь с таким именем уже существует.");
-            }
+            Name = login,
+            Email = email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+            IsGuest = false
+        };
 
-            User user = new User
-            {
-                Name = login,
-                Email = email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                IsGuest = false
-            };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+        return user.FromUser();
+    }
 
-            return user.FromUser();
-        }
+    // Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
+    public async Task<RegisterDto> RegistrationUserAsync(string login)
+    {
+        if (await context.Users.AnyAsync(u => u.Name == login))
+            throw new Exception("Пользователь с таким именем уже существует.");
 
-        // Реализация метода регистрации временного пользователя. Возращает нового зарегестрировонного временного пользователя.
-        public async Task<RegisterDto> RegistrationUserAsync(string login)
+        User user = new User
         {
-            if (await _context.Users.AnyAsync(u => u.Name == login))
-                throw new Exception("Пользователь с таким именем уже существует.");
+            Name = login,
+            Email = null,
+            PasswordHash = null,
+            IsGuest = true
+        };
 
-            User user = new User
-            {
-                Name = login,
-                Email = null,
-                PasswordHash = null,
-                IsGuest = true
-            };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return user.FromUser();
-        }
+        return user.FromUser();
     }
 }

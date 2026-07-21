@@ -1,127 +1,108 @@
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+namespace BosBelme.Controllers;
 
-namespace BosBelme.Controllers
+public class AccountController(IAuthService authService, IRegService regService, ICookieAuthService cookieAuthService) : Controller
 {
-    public class AccountController : Controller
+    // Методы для отображения страниц регистрации и входа
+    public IActionResult Register()
     {
-        // объекты сервисов
-        private readonly IAuthService _authService;
-        private readonly IRegService _regService;
-        private readonly ICookieAuthService _cookieAuthService;
+        // Если пользователь уже авторизован выгоняем в профиль 
+        if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
 
-        public AccountController(
-            IAuthService authService,
-            IRegService regService,
-            ICookieAuthService cookieAuthService)
+        return View();
+    }
+
+    public IActionResult Login()
+    {
+        // Если пользователь уже авторизован выгоняем в профиль 
+        if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+
+        return View();
+    }
+
+    // Метод для отображения профиля
+    [Authorize]
+    public IActionResult Profile()
+    {
+        string IsPersistent = User.FindFirstValue(ClaimTypes.IsPersistent) ?? "";
+        
+        if (IsPersistent == "False")
         {
-            _authService = authService;
-            _regService = regService;
-            _cookieAuthService = cookieAuthService;
+            return RedirectToAction("Register");
         }
 
-        // Методы для отображения страниц регистрации и входа
-        public IActionResult Register()
+        var model = new ProfileViewModel
         {
-            // Если пользователь уже авторизован выгоняем в профиль 
-            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+            Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "",
+            Email = User.FindFirstValue(ClaimTypes.Email) ?? "",
+            Name = User.FindFirstValue(ClaimTypes.Name) ?? "",
+        };
 
-            return View();
-        }
+        return View(model);
+    }
 
-        public IActionResult Login()
+    // Метод для обработки POST-запросов регистрации
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        // Если пользователь уже авторизован выгоняем в профиль 
+        if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+
+        // Проверка валидности данных от пользователя
+        if (!ModelState.IsValid) return View(model);
+
+        // Проверка совпадения паролей
+        if (model.Password != model.ConfirmPassword)
         {
-            // Если пользователь уже авторизован выгоняем в профиль 
-            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
-
-            return View();
-        }
-
-        // Метод для отображения профиля
-        [Authorize]
-        public IActionResult Profile()
-        {
-            string IsPersistent = User.FindFirstValue(ClaimTypes.IsPersistent) ?? "";
-            
-            if (IsPersistent == "False")
-            {
-                return RedirectToAction("Register");
-            }
-
-            var model = new ProfileViewModel
-            {
-                Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "",
-                Email = User.FindFirstValue(ClaimTypes.Email) ?? "",
-                Name = User.FindFirstValue(ClaimTypes.Name) ?? "",
-            };
-
+            ModelState.AddModelError(string.Empty, "Пароли не совпадают");
             return View(model);
         }
 
-        // Метод для обработки POST-запросов регистрации
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        try
         {
-            // Если пользователь уже авторизован выгоняем в профиль 
-            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+            // Регистрация нового пользователя
+            var user = await regService.RegistrationUserAsync(model.Name, model.Email, model.Password);
 
-            // Проверка валидности данных от пользователя
-            if (!ModelState.IsValid) return View(model);
+            await cookieAuthService.SignInAsync(user);
 
-            // Проверка совпадения паролей
-            if (model.Password != model.ConfirmPassword)
-            {
-                ModelState.AddModelError(string.Empty, "Пароли не совпадают");
-                return View(model);
-            }
-
-            try
-            {
-                // Регистрация нового пользователя
-                var user = await _regService.RegistrationUserAsync(model.Name, model.Email, model.Password);
-
-                await _cookieAuthService.SignInAsync(user);
-
-                return RedirectToAction("Profile", "Account");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
+            return RedirectToAction("Profile", "Account");
         }
-
-        // Метод для обработки POST-запросов входа
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        catch (Exception ex)
         {
-            // Если пользователь уже авторизован выгоняем в профиль 
-            if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+    }
+
+    // Метод для обработки POST-запросов входа
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        // Если пользователь уже авторизован выгоняем в профиль 
+        if ((User.FindFirstValue(ClaimTypes.IsPersistent) ?? "") == "True") return RedirectToAction("Profile", "Account");
+        
+        // Проверка валидности данных от пользователя
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            // Авторизация нового пользователя
+            var user = await authService.AuthenticationUserAsync(model.NameOrEmail, model.Password);
+
+            await cookieAuthService.SignInAsync(user);
             
-            // Проверка валидности данных от пользователя
-            if (!ModelState.IsValid) return View(model);
-
-            try
-            {
-                // Авторизация нового пользователя
-                var user = await _authService.AuthenticationUserAsync(model.NameOrEmail, model.Password);
-
-                await _cookieAuthService.SignInAsync(user);
-                
-                return RedirectToAction("Profile", "Account");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
+            return RedirectToAction("Profile", "Account");
         }
-
-        [Authorize]
-        public async Task<IActionResult> Logout()
+        catch (Exception ex)
         {
-            await _cookieAuthService.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
         }
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await cookieAuthService.SignOutAsync();
+        return RedirectToAction("Index", "Home");
     }
 }

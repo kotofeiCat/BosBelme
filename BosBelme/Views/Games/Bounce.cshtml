@@ -1,0 +1,76 @@
+﻿@using System.Security.Claims
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var roomCode = ViewData["RoomCode"] as string;
+    var roomName = ViewData["RoomName"] as string;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/games/bounce.css" asp-append-version="true" />
+}
+
+<div class="game-viewport">
+    <!-- Верхняя плашка HUD -->
+    <div class="global-hud-bar">
+        <div class="hud-left">
+            <span>Комната:</span>
+            <strong title="@roomName">@roomName</strong>
+        </div>
+
+        <div class="hud-status" id="warmup-timer">
+            <span class="status-dot"></span>
+            <span>LIVE</span>
+        </div>
+
+        <div class="hud-right">
+            <div class="hud-score">Счёт: <span id="score-text" style="color: var(--accent-green);">0 : 0</span></div>
+            <form asp-controller="Hub" asp-action="ReturnToLobby" asp-route-code="@roomCode" method="post" style="display:inline;">
+                <button type="submit" class="hud-exit-btn">
+                    <i class="fa-solid fa-door-open"></i>
+                    <span>Выйти</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Поле с игрой -->
+    <div class="game-layout-container">
+        <div class="canvas-screen-holder">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+    </div>
+
+    <!-- Сенсорное управление на мобилках -->
+    <div class="mobile-pure-controls">
+        <div class="m-dpad-grid">
+            <button type="button" class="m-btn m-up" id="m-up" aria-label="Вверх"><i class="fa-solid fa-caret-up"></i></button>
+            <button type="button" class="m-btn m-left" id="m-left" aria-label="Влево"><i class="fa-solid fa-caret-left"></i></button>
+            <button type="button" class="m-btn m-right" id="m-right" aria-label="Вправо"><i class="fa-solid fa-caret-right"></i></button>
+            <button type="button" class="m-btn m-down" id="m-down" aria-label="Вниз"><i class="fa-solid fa-caret-down"></i></button>
+        </div>
+
+        <div class="m-actions-wrapper">
+            <button type="button" class="m-action-btn m-shield" id="m-shield">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>ЩИТ</span>
+            </button>
+            <button type="button" class="m-action-btn m-shoot" id="m-shoot">
+                <i class="fa-solid fa-crosshair"></i>
+                <span>ОГОНЬ</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<form id="mobile-leave-form" asp-controller="Hub" asp-action="ReturnToLobby" asp-route-code="@roomCode" method="post" style="display:none;"></form>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        window.gameRoomConfig = {
+        roomCode: "@roomCode",
+        currentUserName: "@User.FindFirstValue(ClaimTypes.Name)"
+        };
+    </script>
+    <script src="~/js/Games/Bounce-core.js" asp-append-version="true"></script>
+}

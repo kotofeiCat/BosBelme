@@ -6,7 +6,8 @@ global using System.Diagnostics;
 global using System.ComponentModel.DataAnnotations;
 global using Microsoft.AspNetCore.Authorization;
 global using Prometheus;
- 
+global using System.Security.Claims;
+
 // Глобальные директивы using для БД
 global using Microsoft.EntityFrameworkCore;
 global using BosBelme.Data;
@@ -15,4 +16,5 @@ global using BosBelme.Data;
 global using BosBelme.Service.Service;
 global using BosBelme.Service.IService;
 global using BosBelme.Service.SignalR;
+global using BosBelme.Service.Dto;
 

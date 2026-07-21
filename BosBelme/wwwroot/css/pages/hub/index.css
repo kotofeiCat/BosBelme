@@ -1,10 +1,10 @@
-
-@media (max-width: 366px) {
-    .btn {
-        padding: 10px 12px;
-    }
+/* Стили главной страницы входа в хаб */
+.btn-collum-container form {
+    width: 100%;
 }
 
-.footer {
-    margin-top: 20px;
+.btn-collum-container .btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 14px 24px;
 }

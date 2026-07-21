@@ -4,6 +4,7 @@
 
 const roomCode = window.roomConfig.roomCode;
 let lastLoggedGameId = null;
+let currentRoom = null; // Локальный кэш состояния комнаты для определения запускаемой игры
 
 function logToTerminal(message, type = "info") {
     const consoleEl = document.getElementById("room-console");
@@ -44,13 +45,23 @@ connection.on("OnError", function (errorMessage) {
 connection.on("GameStarted", function () {
     logToTerminal("Пакет запуска принят. Развертывание игрового интерфейса...", "success");
     const promptEl = document.getElementById("console-prompt");
-    if (promptEl) promptEl.innerHTML = `[EXEC] Запуск процесса сессии...<span class="blink-cursor">_</span>`;
+    if (promptEl) {
+        promptEl.innerHTML = `[EXEC] Запуск процесса сессии...<span class="blink-cursor">_</span>`;
+    }
+
+    // Перенаправляем игроков на арену через 2 секунды после красивой лог-анимации
     setTimeout(() => {
-        // window.location.href = "/Game/Play?code=" + roomCode; 
+        if (currentRoom && currentRoom.gameName === "One-Shot Bounce") {
+            window.location.href = "/Games/Bounce/" + roomCode;
+        } else {
+            logToTerminal("Системная ошибка: Интерфейс для этой игры еще не зарегистрирован в системе.", "error");
+        }
     }, 2000);
 });
 
 connection.on("UpdateRoom", function (room) {
+    currentRoom = room; // Запоминаем текущую конфигурацию комнаты
+
     // Обновление счетчиков
     const countEl = document.getElementById("player-count");
     if (countEl) countEl.textContent = room.players.length;
@@ -60,12 +71,11 @@ connection.on("UpdateRoom", function (room) {
 
     function countPlayersInText(list) {
         function isConsecutive(list) {
-            for (let i = 1; 1 < list.length; i++) {
+            for (let i = 1; i < list.length; i++) {
                 if (list[i] !== (list[i - 1] + 1)) {
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -75,7 +85,7 @@ connection.on("UpdateRoom", function (room) {
             numbers_text = sorted[0];
         } else {
             if (sorted.length === 2) {
-                numbers_text = sorted[0] + ' или ' + sorted[1];;
+                numbers_text = sorted[0] + ' или ' + sorted[1];
             } else {
                 if (isConsecutive(sorted)) {
                     numbers_text = sorted.join(',');
@@ -84,7 +94,7 @@ connection.on("UpdateRoom", function (room) {
                 }
             }
         }
-        
+
         return 'для ' + numbers_text + ' игроков';
     }
 
@@ -131,6 +141,25 @@ connection.on("UpdateRoom", function (room) {
             playerList.appendChild(li);
         });
     }
+});
+
+connection.on("RoomDelete", function () {
+    logToTerminal("Хост распустил игровую комнату. Завершение сессии...", "warn");
+
+    const promptEl = document.getElementById("console-prompt");
+    if (promptEl) {
+        promptEl.innerHTML = `[SHUTDOWN] Соединение разорвано хостом...<span class="blink-cursor">_</span>`;
+    }
+
+    setTimeout(() => {
+        if (window.roomConfig.isGuest) {
+
+            window.location.href = "/Hub/LogoutClean";
+        } else {
+
+            window.location.href = "/Hub/Index";
+        }
+    }, 2000);
 });
 
 connection.start().then(function () {

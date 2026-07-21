@@ -1,43 +1,44 @@
 ﻿@model BosBelme.ViewModels.EnterNameViewModel
-
 @{
-    // Меняем заголовок в зависимости от того, входим мы или создаем
     bool isJoining = !string.IsNullOrEmpty(Model.RoomCode);
-    ViewData["Title"] = isJoining ? "Вход в комнату" : "Создание комнаты";
+    ViewData["Title"] = isJoining ? "Подключение" : "Создание игрока";
 }
 
-<h2 class="large-text">@ViewData["Title"]</h2>
-<hr />
+@section Scripts {
+    <script>
+        document.querySelector('.window')?.classList.add('window-auth');
+    </script>
+}
 
-<p class="other-text">
-    @(isJoining
-        ? $"Вы подключаетесь к комнате {Model.RoomCode}. Пожалуйста, введите ваше временное имя."
-        : "Введите ваше имя в системе для инициализации выделенного пространства.")
-</p>
-
-<form asp-controller="Hub" asp-action="EnterName" method="post">
-    <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 10px;"></div>
-
-    <input type="hidden" asp-for="RoomCode" />
-
-    <div class="input-group">
-        <label asp-for="PlayerName">Ваш Игровой Никнейм:</label>
-        <input asp-for="PlayerName" placeholder="User_777" autocomplete="off" required />
-        <span asp-validation-for="PlayerName" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
+<div class="auth-card">
+    <div class="auth-header-icon">
+        <i class="fa-solid fa-user-astronaut"></i>
     </div>
 
-    <div class="btn-container">
-        <button class="btn" type="submit">
-            @if (isJoining)
-            {
-                <text>[->] Войти</text>
-            }
-            else
-            {
+    <h2 class="auth-title">@ViewData["Title"]</h2>
+    <p class="auth-subtitle">
+        @(isJoining
+            ? $"Подключение к сессии {Model.RoomCode}. Укажите никнейм:"
+            : "Укажите отображаемое имя для входа:")
+    </p>
 
-                <text>[+] Создать</text>
-            }
-        </button>
-        <a class="small-link" asp-controller="Hub" asp-action="Index">Назад в Хаб</a>
-    </div>
-</form>
+    <form asp-controller="Hub" asp-action="EnterName" method="post" style="width: 100%;">
+        <input type="hidden" asp-for="RoomCode" />
+
+        <div class="input-group">
+            <input asp-for="PlayerName" class="input" required placeholder=" " autocomplete="off" />
+            <label class="user-label" asp-for="PlayerName">Ваше Имя / Никнейм</label>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <button class="button-name btn-orange" type="submit" style="width: 100%;">
+                <span>Продолжить</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <a class="button-name btn-ghost" asp-controller="Hub" asp-action="Index" style="width: 100%;">
+                <span>Отмена</span>
+            </a>
+        </div>
+    </form>
+</div>

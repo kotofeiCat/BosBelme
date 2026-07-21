@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BosBelme.Data.Entities;
+﻿namespace BosBelme.Service.IService;
 
-namespace BosBelme.Service.IService
+// Интерфейс для реализации аунтификации
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password);
-    }
+    Task<RegisterDto> AuthenticationUserAsync(string loginOrEmail, string password);
 }

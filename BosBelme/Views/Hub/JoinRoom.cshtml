@@ -1,27 +1,40 @@
 ﻿@model BosBelme.ViewModels.JoinRoomViewModel
-
 @{
-    ViewData["Title"] = "Хаб";
+    ViewData["Title"] = "ПОДКЛЮЧЕНИЕ";
 }
 
-<h2 class="large-text">Подключение по коду</h2>
-<hr />
-<p class="other-text">Для входа в чужую операционную комнату введите ее уникальный 6-значный идентификатор.</p>
+@section Scripts {
+    <script>
+        document.querySelector('.window')?.classList.add('window-auth');
+    </script>
+}
 
-<form asp-controller="Hub" asp-action="JoinRoom" method="post">
-
-    <div asp-validation-summary="ModelOnly" style="color: red; font-family: monospace; margin-bottom: 15px; font-size: 13px;"></div>
-
-    <div class="input-group">
-        <label asp-for="RoomCode">Код Доступа (Код Комнаты):</label>
-        <input asp-for="RoomCode" placeholder="Rm34Xq" autocomplete="off" required />
-        <span asp-validation-for="RoomCode" style="color: red; font-family: monospace; font-size: 11px; margin-top: 5px;"></span>
+<div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0;">
+    <div style="width: 50px; height: 50px; border-radius: 50%; background: #21262d; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; color: #f0f6fc; font-size: 20px; margin-bottom: 16px;">
+        <i class="fa-solid fa-right-to-bracket"></i>
     </div>
 
-    <div class="btn-container">
-        <button class="btn" type="submit">
-            [->] Далее
-        </button>
-        <a class="small-link" asp-controller="Hub" asp-action="Index">Отмена</a>
-    </div>
-</form>
+    <h2 class="auth-title">Войти в комнату</h2>
+    <p class="auth-subtitle">Введите 6-значный код комнаты, полученный от организатора</p>
+
+    <form asp-controller="Hub" asp-action="JoinRoom" method="post" style="width: 100%;">
+        <div asp-validation-summary="ModelOnly" style="color: #f85149; margin-bottom: 16px; font-size: 12px;"></div>
+
+        <div class="input-group">
+            <input asp-for="RoomCode" class="input" required placeholder=" " autocomplete="off" style="text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 2px; text-align: center; font-size: 16px; font-weight: 700;" />
+            <label class="user-label" asp-for="RoomCode">Код комнаты (напр. RM34XQ)</label>
+            <span asp-validation-for="RoomCode" style="color: #f85149; font-size: 11px; margin-top: 4px; display: block;"></span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px; margin-bottom: 24px; width: 100%;">
+            <button class="button-name" type="submit" style="width: 100%;">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span>Войти</span>
+            </button>
+
+            <a class="button-name btn-ghost" asp-controller="Hub" asp-action="Index" style="width: 100%;">
+                <span>Назад</span>
+            </a>
+        </div>
+    </form>
+</div>

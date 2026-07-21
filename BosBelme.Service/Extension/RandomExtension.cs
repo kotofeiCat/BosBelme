@@ -1,47 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace BosBelme.Service.Extension
+namespace BosBelme.Service.Extension;
+
+// Класс расширения для случайных генерайий.
+public static class RandomExtension
 {
-    // Класс расширения для случайных генерайий.
-    public static class RandomExtension
+    private static readonly char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+
+    private static readonly List<string> names = new List<string>
     {
-        private static readonly char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+        "CyberBosBelme 2077", "Босбелме и точка", "Осторожно, Босбелме закипает", "Босбелмешная №1",
+        "Босбелме головного мозга", "Следствие ведут Босбелме", "Босбелме комнатного масштаба", "Ты не поверишь, это Босбелме",
+        "Босбелме против Лямбда-выражений", "BosBelme 95 OSR2", "Клуб анонимных Босбелмеров", "No SQL, Only BosBelme", 
+        "BosBelme microservices network", "Семь раз отмерь, один раз Босбелме", "Босбелме шлёп"
+    };
 
-        private static readonly List<string> names = new List<string>
+
+    extension(String str)
+    {
+        // Метод для генерации случайной строки заданной длины. Возвращает строку, состоящую из случайных символов из массива chars.
+        public static string GetRandomString(int length = 10)
         {
-            "CyberBosBelme 2077", "Босбелме и точка", "Осторожно, Босбелме закипает", "Босбелмешная №1",
-            "Босбелме головного мозга", "Следствие ведут Босбелме", "Босбелме комнатного масштаба", "Ты не поверишь, это Босбелме",
-            "Босбелме против Лямбда-выражений", "BosBelme 95 OSR2", "Клуб анонимных Босбелмеров", "No SQL, Only BosBelme", 
-            "BosBelme microservices network", "Семь раз отмерь, один раз Босбелме", "Босбелме шлёп"
-        };
+            var result = new StringBuilder(length);
 
+            byte[] randBytes = RandomNumberGenerator.GetBytes(length);
 
-        extension(String str)
-        {
-            // Метод для генерации случайной строки заданной длины. Возвращает строку, состоящую из случайных символов из массива chars.
-            public static string GetRandomString(int length = 10)
+            foreach (byte b in randBytes)
             {
-                var result = new StringBuilder(length);
-
-                byte[] randBytes = RandomNumberGenerator.GetBytes(length);
-
-                foreach (byte b in randBytes)
-                {
-                    int index = b % chars.Length;
-                    result.Append(chars[index]);
-                }
-
-                return result.ToString();
+                int index = b % chars.Length;
+                result.Append(chars[index]);
             }
 
-            // Метод для получения случайного имени из списка names. Возвращает случайное имя из списка.
-            public static string GetRandomName()
-            {
-                return names[Random.Shared.Next(names.Count)];
-            }
+            return result.ToString();
+        }
+
+        // Метод для получения случайного имени из списка names. Возвращает случайное имя из списка.
+        public static string GetRandomName()
+        {
+            return names[Random.Shared.Next(names.Count)];
         }
     }
 }
