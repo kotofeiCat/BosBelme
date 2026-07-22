@@ -7,7 +7,33 @@ namespace One_Shot_Bounce.Engine;
 // Класс для расчета физики
 public static class Physics2D
 {
-    // Обработчик колизиций
+    // Величина отклонения при перпендикулярном ударе (~0.05 даёт сдвиг около 3 градусов)
+    private const float DeflectionAmount = 0.05f;
+
+    /// <summary>
+    /// Если пуля летит строго перпендикулярно стене, добавляем небольшое отклонение,
+    /// чтобы избежать бесконечного отскока туда-обратно.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void DeflectIfOrthogonal(ref Vector2 direction, Vector2 normal)
+    {
+        // Находим касательный вектор к поверхности
+        Vector2 tangent = new Vector2(-normal.Y, normal.X);
+
+        // Скалярное произведение показывает, есть ли у пули движение вдоль стены
+        float dotTangent = Vector2.Dot(direction, tangent);
+
+        // Если пуля летит почти перпендикулярно поверхности (доля тангенса близка к 0)
+        if (MathF.Abs(dotTangent) < DeflectionAmount)
+        {
+            // Случайно отклоняем пулю чуть-чуть влево или вправо
+            float side = (Random.Shared.NextSingle() > 0.5f) ? 1f : -1f;
+            direction += tangent * (DeflectionAmount * side);
+            direction = Vector2.Normalize(direction);
+        }
+    }
+
+    // Обработчик коллизий с границами карты
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HandleBoundaryCollision(ref Vector2 position, ref Vector2 direction, float mapWidth, float mapHeight, float radius)
     {
@@ -19,12 +45,14 @@ public static class Physics2D
         {
             position.X = radius;
             direction.X = -direction.X;
+            DeflectIfOrthogonal(ref direction, new Vector2(1, 0));
             bounced = true;
         }
         else if (position.X > maxEx)
         {
             position.X = maxEx;
             direction.X = -direction.X;
+            DeflectIfOrthogonal(ref direction, new Vector2(-1, 0));
             bounced = true;
         }
 
@@ -32,12 +60,14 @@ public static class Physics2D
         {
             position.Y = radius;
             direction.Y = -direction.Y;
+            DeflectIfOrthogonal(ref direction, new Vector2(0, 1));
             bounced = true;
         }
         else if (position.Y > maxEy)
         {
             position.Y = maxEy;
             direction.Y = -direction.Y;
+            DeflectIfOrthogonal(ref direction, new Vector2(0, -1));
             bounced = true;
         }
 
@@ -67,6 +97,8 @@ public static class Physics2D
             else if (minDistance == distToBottom) escapeNormal = new Vector2(0, 1);
 
             direction = direction - 2 * Vector2.Dot(direction, escapeNormal) * escapeNormal;
+            DeflectIfOrthogonal(ref direction, escapeNormal);
+
             position = prevPosition + (escapeNormal * minDistance) + (escapeNormal * 0.5f);
             return true;
         }
@@ -120,6 +152,7 @@ public static class Physics2D
 
         position = prevPosition + delta * tNear + finalNormal * 0.5f;
         direction = direction - 2 * Vector2.Dot(direction, finalNormal) * finalNormal;
+        DeflectIfOrthogonal(ref direction, finalNormal);
 
         return true;
     }

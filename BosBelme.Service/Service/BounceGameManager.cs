@@ -1,5 +1,5 @@
 ﻿namespace BosBelme.Service.Service;
-// Класс менеджер игры
+
 public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvider serviceProvider) : IBounceGameManager
 {
     private readonly ConcurrentDictionary<string, GameSessionInstance> _sessions = new();
@@ -20,40 +20,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         {
             if (_sessions.TryGetValue(roomId, out var instance))
             {
-                var session = instance.Session;
-
-                if (session.State.Player1?.Id == playerId || (session.State.Player1?.Name == playerName && playerName != "Гость"))
-                {
-                    _playerToRoomMap.TryRemove(session.State.Player1.Id, out _);
-                    session.State.Player1.Id = playerId;
-                    _playerToRoomMap[playerId] = roomId;
-                    return session;
-                }
-
-                if (session.State.Player2?.Id == playerId || (session.State.Player2?.Name == playerName && playerName != "Гость"))
-                {
-                    _playerToRoomMap.TryRemove(session.State.Player2.Id, out _);
-                    session.State.Player2.Id = playerId;
-                    _playerToRoomMap[playerId] = roomId;
-                    return session;
-                }
-
-                if (session.State.Player2 is null && session.State.Player1?.Id != playerId)
-                {
-                    session.State.Player2 = new Player
-                    {
-                        Id = playerId,
-                        Name = playerName,
-                        IsAlive = true,
-                        Position = session.State.CurrentMap.Player2SpawnPoint
-                    };
-
-                    session.StartNewRound();
-                    StartGameLoop(roomId, instance);
-                }
-
-                _playerToRoomMap[playerId] = roomId;
-                return session;
+                return AttachPlayerToSession(instance, roomId, playerId, playerName);
             }
         }
 
@@ -68,8 +35,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         {
             if (_sessions.TryGetValue(roomId, out var existingInstance))
             {
-                _playerToRoomMap[playerId] = roomId;
-                return existingInstance.Session;
+                return AttachPlayerToSession(existingInstance, roomId, playerId, playerName);
             }
 
             var newSession = new EngineGameSession(roomId);
@@ -81,7 +47,6 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
             };
 
             InitializeDefaultMap(newSession.State.CurrentMap);
-
             newSession.State.Player1.Position = newSession.State.CurrentMap.Player1SpawnPoint;
 
             var cts = new CancellationTokenSource();
@@ -99,28 +64,69 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
             return newSession;
         }
     }
+    private EngineGameSession AttachPlayerToSession(GameSessionInstance instance, string roomId, string playerId, string playerName)
+    {
+        var session = instance.Session;
+
+        if (session.State.Player1?.Id == playerId || (session.State.Player1?.Name == playerName && playerName != "Гость"))
+        {
+            _playerToRoomMap.TryRemove(session.State.Player1!.Id, out _);
+            session.State.Player1.Id = playerId;
+            _playerToRoomMap[playerId] = roomId;
+            return session;
+        }
+
+        if (session.State.Player2?.Id == playerId || (session.State.Player2?.Name == playerName && playerName != "Гость"))
+        {
+            _playerToRoomMap.TryRemove(session.State.Player2!.Id, out _);
+            session.State.Player2.Id = playerId;
+            _playerToRoomMap[playerId] = roomId;
+            return session;
+        }
+
+        if (session.State.Player2 is null && session.State.Player1?.Id != playerId)
+        {
+            session.State.Player2 = new Player
+            {
+                Id = playerId,
+                Name = playerName,
+                IsAlive = true,
+                Position = session.State.CurrentMap.Player2SpawnPoint
+            };
+
+            session.StartNewRound();
+            StartGameLoop(roomId, instance);
+        }
+
+        _playerToRoomMap[playerId] = roomId;
+        return session;
+    }
 
     public async Task UpdatePlayerInputAsync(string roomId, string playerId, Vector2 direction)
     {
         if (_sessions.TryGetValue(roomId, out var instance))
         {
-            await instance.Semaphore.WaitAsync();
             try
             {
-                var player = instance.Session.State.Player1?.Id == playerId
-                    ? instance.Session.State.Player1
-                    : instance.Session.State.Player2;
-
-                if (player is { IsAlive: true })
+                await instance.Semaphore.WaitAsync(instance.Cts.Token);
+                try
                 {
-                    player.RotationAngle = direction != Vector2.Zero ? MathF.Atan2(direction.Y, direction.X) : player.RotationAngle;
-                    _playerMoveDirections[playerId] = direction;
+                    var player = instance.Session.State.Player1?.Id == playerId
+                        ? instance.Session.State.Player1
+                        : instance.Session.State.Player2;
+
+                    if (player is { IsAlive: true })
+                    {
+                        player.RotationAngle = direction != Vector2.Zero ? MathF.Atan2(direction.Y, direction.X) : player.RotationAngle;
+                        _playerMoveDirections[playerId] = direction;
+                    }
+                }
+                finally
+                {
+                    instance.Semaphore.Release();
                 }
             }
-            finally
-            {
-                instance.Semaphore.Release();
-            }
+            catch (Exception) when (instance.Cts.IsCancellationRequested) { }
         }
     }
 
@@ -128,36 +134,42 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
     {
         if (_sessions.TryGetValue(roomId, out var instance))
         {
-            await instance.Semaphore.WaitAsync();
             try
             {
-                instance.Session.HandleShoot(playerId, angle);
+                await instance.Semaphore.WaitAsync(instance.Cts.Token);
+                try
+                {
+                    instance.Session.HandleShoot(playerId, angle);
+                }
+                finally
+                {
+                    instance.Semaphore.Release();
+                }
             }
-            finally
-            {
-                instance.Semaphore.Release();
-            }
+            catch (Exception) when (instance.Cts.IsCancellationRequested) { }
         }
     }
 
-    // Метод активации щита
     public async Task ActivateShieldAsync(string roomId, string playerId)
     {
         if (_sessions.TryGetValue(roomId, out var instance))
         {
-            await instance.Semaphore.WaitAsync();
             try
             {
-                instance.Session.ActivateShield(playerId);
+                await instance.Semaphore.WaitAsync(instance.Cts.Token);
+                try
+                {
+                    instance.Session.ActivateShield(playerId);
+                }
+                finally
+                {
+                    instance.Semaphore.Release();
+                }
             }
-            finally
-            {
-                instance.Semaphore.Release();
-            }
+            catch (Exception) when (instance.Cts.IsCancellationRequested) { }
         }
     }
 
-    // Метод обработки выхода игрока
     public async Task<string?> HandlePlayerDisconnectAsync(string playerId)
     {
         string? affectedRoomId = null;
@@ -198,9 +210,6 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
             if (instance.Session.State.Player1 is not null) _playerMoveDirections.TryRemove(instance.Session.State.Player1.Id, out _);
             if (instance.Session.State.Player2 is not null) _playerMoveDirections.TryRemove(instance.Session.State.Player2.Id, out _);
-
-            instance.Semaphore.Dispose();
-            instance.Cts.Dispose();
 
             _ = Task.Run(async () =>
             {
@@ -254,6 +263,9 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
                 if (deltaTime > 0.1f) deltaTime = 0.016f;
 
+                object? lightweightState = null;
+                bool isGameOver = false;
+
                 await instance.Semaphore.WaitAsync(ct);
                 try
                 {
@@ -265,7 +277,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
                     session.Update(deltaTime);
 
-                    var lightweightState = new
+                    lightweightState = new
                     {
                         Player1 = session.State.Player1,
                         Player2 = session.State.Player2,
@@ -276,17 +288,22 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
                         Grid = session.State.CurrentMap.Grid
                     };
 
-                    await hubContext.Clients.Group(roomId).SendAsync("UpdateState", lightweightState, cancellationToken: ct);
-
-                    if (session.State.Status == MatchStatus.MatchOver)
-                    {
-                        await hubContext.Clients.Group(roomId).SendAsync("GameOver", session.State.Scores, cancellationToken: ct);
-                        break;
-                    }
+                    isGameOver = session.State.Status == MatchStatus.MatchOver;
                 }
                 finally
                 {
                     instance.Semaphore.Release();
+                }
+
+                if (lightweightState != null)
+                {
+                    await hubContext.Clients.Group(roomId).SendAsync("UpdateState", lightweightState, cancellationToken: ct);
+                }
+
+                if (isGameOver)
+                {
+                    await hubContext.Clients.Group(roomId).SendAsync("GameOver", session.State.Scores, cancellationToken: ct);
+                    break;
                 }
             }
         }
@@ -297,7 +314,6 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         }
     }
 
-    // Метод иницилизации карты
     private static void InitializeDefaultMap(GameMap map)
     {
         int cols = 20;
