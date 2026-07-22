@@ -1,25 +1,110 @@
-﻿/* Глобальные оверлеи и системные подложки */
-.overlay {
-    display: none;
+﻿/* Контейнер для заднего фона */
+.background-container {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6); /* Чистое темное затемнение без цветного шума */
-    z-index: 1100;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
 }
 
-    .overlay.open {
-        display: block;
-        opacity: 1;
+/* Слои звезд */
+#stars1 {
+    background: transparent;
+    animation: animStar 50s linear infinite;
+}
+
+#stars2 {
+    background: transparent;
+    animation: animStar 100s linear infinite;
+}
+
+#stars3 {
+    background: transparent;
+    animation: animStar 150s linear infinite;
+}
+
+@keyframes animStar {
+    from {
+        transform: translateY(0px);
     }
 
-/* Фиксированный фон для полноэкранных viewport-зон (например, в игре Bounce) */
-.fullscreen-bg {
-    background-color: var(--color-bg);
+    to {
+        transform: translateY(-2000px);
+    }
+}
+
+/* 3D-Кубы на фоне */
+.bg-cube-wrapper {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    perspective: 600px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.bg-cube-1 {
+    top: 15%;
+    left: 8%;
+}
+
+.bg-cube-2 {
+    bottom: 20%;
+    right: 8%;
+    transform: scale(0.85);
+}
+
+.cube {
+    position: relative;
     width: 100%;
     height: 100%;
+    transform-style: preserve-3d;
+    animation: rotateCube 25s infinite linear;
+}
+
+.face {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03);
+}
+
+.front {
+    transform: translateZ(70px);
+}
+
+.back {
+    transform: rotateY(180deg) translateZ(70px);
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(70px);
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(70px);
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(70px);
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(70px);
+}
+
+@keyframes rotateCube {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    }
+
+    100% {
+        transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+    }
 }

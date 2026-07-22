@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>@ViewData["Title"] - RoomBox Platform</title>
+    <title>@ViewData["Title"] - RoomBox</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <!-- CDN FontAwesome 6 -->
@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="~/css/components.css" />
     <link rel="stylesheet" href="~/css/window.css" />
     <link rel="stylesheet" href="~/css/layout/header.css" />
-    <link rel="stylesheet" href="~/css/layout/sidebar.css" />
     <link rel="stylesheet" href="~/css/layout/footer.css" />
+    <link rel="stylesheet" href="~/css/layout/background.css" />
     @await RenderSectionAsync("Styles", required: false)
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,32 +22,7 @@
     <link rel="shortcut icon" href="~/old-computer.ico" type="image/x-icon" />
 </head>
 <body>
-    <!-- Космический фон -->
-    <div class="star-container">
-        <div id="stars"></div>
-        <div id="stars2"></div>
-        <div id="stars3"></div>
-        <div class="bg-cube-wrapper bg-cube-1">
-            <div class="cube">
-                <div class="face front"></div>
-                <div class="face back"></div>
-                <div class="face right"></div>
-                <div class="face left"></div>
-                <div class="face top"></div>
-                <div class="face bottom"></div>
-            </div>
-        </div>
-        <div class="bg-cube-wrapper bg-cube-2">
-            <div class="cube">
-                <div class="face front"></div>
-                <div class="face back"></div>
-                <div class="face right"></div>
-                <div class="face left"></div>
-                <div class="face top"></div>
-                <div class="face bottom"></div>
-            </div>
-        </div>
-    </div>
+    <partial name="_Background" />
 
     <partial name="_Header" />
 
@@ -94,6 +69,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/window.js" asp-append-version="true"></script>
     <script src="~/js/copy.js" asp-append-version="true"></script>
+    <script src="~/js/stars.js" asp-append-version="true"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
         const path = window.location.pathname.toLowerCase();
