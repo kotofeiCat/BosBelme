@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace One_Shot_Bounce.Engine;
 
+// Класс основной логики игры
 public class GameSession
 {
     public GameState State { get; }
@@ -18,7 +19,7 @@ public class GameSession
     private readonly float _bulletRadius = 8f;
     private readonly float _initialBulletSpeed = 450f;
     private readonly float _speedMultiplierPerBounce = 1.05f;
-    private readonly float _maxShieldDuration = 0.2f;
+    private readonly float _maxShieldDuration = 0.4f;
 
     private readonly List<string> _bulletsToRemove = new(4);
 
@@ -31,6 +32,7 @@ public class GameSession
         };
     }
 
+    // Метод обновленние кадров
     public void Update(float deltaTime)
     {
         lock (_sessionLock)
@@ -50,6 +52,7 @@ public class GameSession
         }
     }
 
+    // Метод обработки передвижения игрока
     public void MovePlayer(string playerId, Vector2 moveDirection, float deltaTime)
     {
         lock (_sessionLock)
@@ -135,6 +138,7 @@ public class GameSession
         }
     }
 
+    // Метод обработки выстрела
     public void HandleShoot(string playerId, float targetAngle)
     {
         lock (_sessionLock)
@@ -162,6 +166,7 @@ public class GameSession
         }
     }
 
+    // Метод активации щита
     public void ActivateShield(string playerId)
     {
         lock (_sessionLock)
@@ -176,6 +181,7 @@ public class GameSession
         }
     }
 
+    // Метод обновления физики игры
     private void UpdatePhysics(float deltaTime)
     {
         float mapWidth = State.CurrentMap.Columns * State.CurrentMap.BlockSize;
@@ -262,6 +268,7 @@ public class GameSession
         }
     }
 
+    // Метод попадания пули в игрока
     private bool CheckBulletPlayerCollision(ref Bullet bullet, Player? player)
     {
         if (player is not { IsAlive: true }) return false;
@@ -284,6 +291,7 @@ public class GameSession
         return false;
     }
 
+    // Метод обновления щита игрка
     private void UpdatePlayerShields(float deltaTime)
     {
         if (State.Player1 is { IsShieldActive: true })
@@ -298,6 +306,7 @@ public class GameSession
         }
     }
 
+    // Методы обработки режима игры
     private void UpdateWarmup(float deltaTime)
     {
         State.StatusTimer -= deltaTime;
@@ -323,6 +332,7 @@ public class GameSession
         }
     }
 
+    // Метод начала нового раунда
     public void StartNewRound()
     {
         State.Status = MatchStatus.Warmup;
@@ -334,6 +344,7 @@ public class GameSession
         State.ActiveBullets.Clear();
     }
 
+    // Метод сброса состояния игрока
     private static void ResetPlayer(Player player, Vector2 spawnPoint)
     {
         player.Position = spawnPoint;
@@ -342,6 +353,7 @@ public class GameSession
         player.IsShieldActive = false;
     }
 
+    // Вспомогательный метод поиска ID игрка
     private Player? GetPlayerById(string id)
     {
         if (State.Player1?.Id == id) return State.Player1;

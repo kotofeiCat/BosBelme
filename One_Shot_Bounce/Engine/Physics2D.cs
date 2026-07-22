@@ -7,6 +7,7 @@ namespace One_Shot_Bounce.Engine;
 // Класс для расчета физики
 public static class Physics2D
 {
+    // Обработчик колизиций
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HandleBoundaryCollision(ref Vector2 position, ref Vector2 direction, float mapWidth, float mapHeight, float radius)
     {

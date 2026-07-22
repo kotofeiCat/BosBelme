@@ -212,6 +212,7 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
     {
         var hub = await context.GameHubs
             .Include(gh => gh.Game)
+                .ThenInclude(pc => pc.PlayersCount)
             .Include(gh => gh.GameSessions)
             .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
             ?? throw new Exception("Комната не найдена");
@@ -222,11 +223,9 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
 
         int playersCount = hub.GameSessions.Count;
 
-        // if (playersCount < hub.Game.MinPlayers)
-        //     throw new Exception($"Недостаточно игроков! Миномум для этой игры: {hub.Game.MinPlayers}");
-
-        // if (playersCount > hub.Game.MaxPlayers)
-        //     throw new Exception($"Слишком много игроков! Максимум для этой игры: {hub.Game.MaxPlayers}");
+        bool isCountAllowed = hub.Game.PlayersCount.Any(pc => pc.Count == playersCount);
+        if (!isCountAllowed)
+            throw new Exception("Невозможно запустить, нет нужного числа игроков");
 
         var ordinaryPlayers = hub.GameSessions.Where(gs => !gs.IsHost);
         if (ordinaryPlayers.Any(gs => !gs.IsReady))

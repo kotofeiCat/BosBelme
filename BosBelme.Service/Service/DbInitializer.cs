@@ -1,7 +1,9 @@
 ﻿namespace BosBelme.Service.Service;
 
+// Класс иницилизации данных в БД
 public static class DbInitializer
 {
+    // Создает игры автоматически
     public static void Seed(AppDbContext context)
     {
         var gamesSet = context.Set<Game>();

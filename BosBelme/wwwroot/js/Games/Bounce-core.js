@@ -7,7 +7,7 @@ canvas.width = COLS * BLOCK_SIZE;
 canvas.height = ROWS * BLOCK_SIZE;
 const ctx = canvas.getContext("2d");
 
-// Offscreen Canvas (кэш для фоновой карты)
+// Offscreen Canvas
 const mapCanvas = document.createElement("canvas");
 mapCanvas.width = canvas.width;
 mapCanvas.height = canvas.height;
@@ -27,22 +27,11 @@ let bodyAngles = { p1: 0, p2: Math.PI };
 
 const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false };
 
-// --- SignalR Подключение ---
+// SignalR Подключение
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/bouncehub")
     .withAutomaticReconnect()
     .build();
-
-function writeLog(message, isAlert = false) {
-    const term = document.getElementById("game-terminal");
-    if (!term) return;
-    const time = new Date().toLocaleTimeString();
-    const row = document.createElement("div");
-    row.style.color = isAlert ? "#ff5555" : "#50fa7b";
-    row.textContent = `[${time}] ${message}`;
-    term.appendChild(row);
-    term.scrollTop = term.scrollHeight;
-}
 
 window.addEventListener("beforeunload", () => {
     if (connection) {
@@ -51,11 +40,11 @@ window.addEventListener("beforeunload", () => {
 });
 
 connection.start().then(() => {
-    writeLog("Связь с игровым шлюзом установлена.");
+    showErrorToast("Сессия", "Связь с игровым шлюзом установлена.");
     myConnectionId = connection.connectionId;
     connection.invoke("JoinRoom", roomCode);
 }).catch(err => {
-    writeLog("Сбой рукопожатия: " + err.toString(), true);
+    showErrorToast("Сбой рукопожатия", err.toString());
 });
 
 // Первичная инициализация состояния
@@ -90,11 +79,13 @@ connection.on("UpdateState", (state) => {
     updateHUD();
 });
 
-connection.on("OnError", (err) => { writeLog("Ошибка: " + err, true); });
+connection.on("OnError", (err) => {
+    showErrorToast("Ошибка игры", err);
+});
 
 connection.on("OpponentDisconnected", () => {
     isGameEnded = true;
-    writeLog("Соперник покинул игру. Сессия завершена.", true);
+    showErrorToast("Соединение разорвано", "Соперник покинул игру. Сессия завершена.");
 
     if (gameState) {
         gameState.status = 4;
@@ -109,7 +100,7 @@ connection.on("OpponentDisconnected", () => {
 
 connection.on("GameOver", (scores) => {
     isGameEnded = true;
-    writeLog("МАТЧ ЗАВЕРШЕН! Финальный счет зафиксирован.", true);
+    showErrorToast("Игра окончена", "МАТЧ ЗАВЕРШЕН! Финальный счет зафиксирован.");
 
     if (gameState) {
         gameState.status = 4;
@@ -131,7 +122,7 @@ function leaveGameAndRedirect() {
     }
 }
 
-// --- Обработка ввода (Клавиатура & Мышь) ---
+// Обработка ввода (Клавиатура & Мышь)
 window.addEventListener("keydown", (e) => {
     if (["KeyW", "KeyA", "KeyS", "KeyD"].includes(e.code)) {
         keys[e.code] = true;
@@ -173,7 +164,7 @@ window.addEventListener("mousedown", (e) => {
     }
 });
 
-// --- Мобильное управление ---
+// Мобильное управление
 function setupMobileControls() {
     const bindDir = (id, codeStr) => {
         const el = document.getElementById(id);
@@ -222,7 +213,7 @@ function sendMovementIfNeeded() {
     }
 }
 
-// --- Расчет углов и обновление интерфейса ---
+// Расчет углов и обновление интерфейса
 function updateBodyAngle(p, key) {
     if (!p) return;
     const pos = p.position || p.Position;
@@ -283,7 +274,7 @@ function updateHUD() {
     }
 }
 
-// --- Отрисовка Canvas ---
+// Отрисовка Canvas
 function renderMapToBuffer() {
     mapCtx.fillStyle = "#9bbc0f";
     mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
@@ -423,6 +414,54 @@ function drawPlayer(p, col, key) {
     }
 }
 
-// Запуск контроллеров и анимационного цикла
+// Всплывающие уведомления
+function showErrorToast(title, description, duration = 5000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container-fixed';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-item toast-animate-in';
+    toast.innerHTML = `
+        <div class="error-alert-toast">
+            <div style="display: flex; align-items: center;">
+                <div class="error-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"></path>
+                    </svg>
+                </div>
+                <div class="error-body">
+                    <p class="error-title">${title}</p>
+                    <p class="error-desc">${description}</p>
+                </div>
+            </div>
+            <button type="button" class="toast-close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+
+    const closeBtn = toast.querySelector('.toast-close-btn');
+    const removeToast = () => {
+        toast.classList.remove('toast-animate-in');
+        toast.classList.add('toast-animate-out');
+        setTimeout(() => toast.remove(), 250);
+    };
+
+    closeBtn.addEventListener('click', removeToast);
+
+    if (duration > 0) {
+        setTimeout(removeToast, duration);
+    }
+
+    container.appendChild(toast);
+}
+
 setupMobileControls();
 requestAnimationFrame(draw);

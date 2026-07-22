@@ -1,12 +1,12 @@
-﻿using System;
-using System.Numerics;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace One_Shot_Bounce.Engine;
 
+// Класс конвертор координат для игр
 public class Vector2JsonConverter : JsonConverter<Vector2>
 {
+    // Метод для чтения координат
     public override Vector2 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         using var doc = JsonDocument.ParseValue(ref reader);
@@ -36,6 +36,7 @@ public class Vector2JsonConverter : JsonConverter<Vector2>
         return new Vector2(x, y);
     }
 
+    // Метод для записи и отрпавки координат
     public override void Write(Utf8JsonWriter writer, Vector2 value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();

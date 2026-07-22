@@ -140,6 +140,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         }
     }
 
+    // Метод активации щита
     public async Task ActivateShieldAsync(string roomId, string playerId)
     {
         if (_sessions.TryGetValue(roomId, out var instance))
@@ -156,6 +157,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         }
     }
 
+    // Метод обработки выхода игрока
     public async Task<string?> HandlePlayerDisconnectAsync(string playerId)
     {
         string? affectedRoomId = null;
@@ -295,6 +297,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
         }
     }
 
+    // Метод иницилизации карты
     private static void InitializeDefaultMap(GameMap map)
     {
         int cols = 20;

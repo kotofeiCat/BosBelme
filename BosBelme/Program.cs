@@ -17,6 +17,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
+        // Настраиваем наш собсвенный конвертор для передачи JSON данных
         options.PayloadSerializerOptions.Converters.Add(new Vector2JsonConverter());
     });
 
