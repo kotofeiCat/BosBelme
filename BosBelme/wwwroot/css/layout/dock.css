@@ -1,0 +1,118 @@
+/* --- НИЖНИЙ ПЛАВАЮЩИЙ ДОК --- */
+.bottom-floating-dock {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 1000;
+    max-width: 90vw;
+}
+
+    .bottom-floating-dock .menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: rgba(22, 27, 34, 0.92);
+        border: 1px solid #30363d;
+        border-radius: 99rem;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.25s ease;
+    }
+
+        .bottom-floating-dock .menu .dock-item {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 54px;
+            height: 46px;
+            border-radius: 99rem;
+            color: #8b949e;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+            .bottom-floating-dock .menu .dock-item i {
+                font-size: 20px;
+            }
+
+            .bottom-floating-dock .menu .dock-item:hover {
+                color: #f0f6fc;
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+
+            .bottom-floating-dock .menu .dock-item:active {
+                transform: scale(0.92);
+            }
+
+            .bottom-floating-dock .menu .dock-item.active {
+                background-color: #30363d;
+                color: #f0f6fc;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            }
+
+.dock-tooltip {
+    position: absolute;
+    bottom: 58px;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px) scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+    background: #161b22;
+    border: 1px solid #30363d;
+    color: #f0f6fc;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1050;
+}
+
+    .dock-tooltip::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 6px;
+        height: 6px;
+        background-color: #161b22;
+        border-right: 1px solid #30363d;
+        border-bottom: 1px solid #30363d;
+    }
+
+.bottom-floating-dock .menu a.dock-item:hover .dock-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+@media (max-width: 640px) {
+    .bottom-floating-dock {
+        bottom: 14px;
+    }
+
+        .bottom-floating-dock .menu {
+            gap: 4px;
+            padding: 5px 6px;
+        }
+
+            .bottom-floating-dock .menu a.dock-item {
+                width: 44px;
+                height: 40px;
+            }
+
+                .bottom-floating-dock .menu a.dock-item i {
+                    font-size: 16px;
+                }
+
+    .dock-tooltip {
+        bottom: 50px;
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}

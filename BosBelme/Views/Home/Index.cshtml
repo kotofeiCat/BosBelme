@@ -2,6 +2,10 @@
     ViewData["Title"] = "Главная";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/home/index.css" />
+}
+
 <div style="text-align: center; padding: 40px 0 20px 0;">
 
     <h1 class="large-text" style="font-size: 34px; margin: 20px 0 12px 0;">
@@ -9,13 +13,13 @@
     </h1>
 
     <p class="other-text" style="max-width: 520px; margin: 0 auto 36px auto; font-size: 14px;">
-        Создавайте приватные лобби, подключайтесь к комнатам друзей и играйтwе в браузерные игры в реальном времени.
+        Создавайте приватные лобби, подключайтесь к комнатам друзей и играйте в браузерные игры в реальном времени.
     </p>
 
     <div style="display: flex; justify-content: center; margin-top: 24px;">
         <a asp-controller="Hub" asp-action="Index" class="learn-more">
             <span class="circle" aria-hidden="true">
-                <span class="icon arrow"></span>
+                <span class="arrow"></span>
             </span>
             <span class="button-text">Войти в лобби</span>
         </a>

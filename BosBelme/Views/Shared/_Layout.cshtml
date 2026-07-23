@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="~/css/layout/header.css" />
     <link rel="stylesheet" href="~/css/layout/footer.css" />
     <link rel="stylesheet" href="~/css/layout/background.css" />
+    <link rel="stylesheet" href="~/css/layout/dock.css" />
     @await RenderSectionAsync("Styles", required: false)
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,48 +45,14 @@
         </main>
     </div>
 
-    <!-- Плавающий Нижний Док -->
-    <nav class="bottom-floating-dock">
-        <div class="menu">
-            <a asp-controller="Home" asp-action="Index" class="dock-item" data-tab="home">
-                <i class="fa-solid fa-house"></i>
-                <span class="dock-tooltip">Главная</span>
-            </a>
-            <a asp-controller="Hub" asp-action="Index" class="dock-item" data-tab="hub">
-                <i class="fa-solid fa-gamepad"></i>
-                <span class="dock-tooltip">Лобби</span>
-            </a>
-            <a asp-controller="Account" asp-action="Profile" class="dock-item" data-tab="profile">
-                <i class="fa-solid fa-user"></i>
-                <span class="dock-tooltip">Профиль</span>
-            </a>
-            <a asp-controller="Home" asp-action="Help" class="dock-item" data-tab="help">
-                <i class="fa-solid fa-circle-question"></i>
-                <span class="dock-tooltip">Помощь</span>
-            </a>
-        </div>
-    </nav>
+    <partial name="_Dock" />
+
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/window.js" asp-append-version="true"></script>
     <script src="~/js/copy.js" asp-append-version="true"></script>
     <script src="~/js/stars.js" asp-append-version="true"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-        const path = window.location.pathname.toLowerCase();
-        const dockItems = document.querySelectorAll('.dock-item');
-        dockItems.forEach(item => item.classList.remove('active'));
-        if (path.includes('/hub')) {
-        document.querySelector('.dock-item[data-tab="hub"]')?.classList.add('active');
-        } else if (path.includes('/account')) {
-        document.querySelector('.dock-item[data-tab="profile"]')?.classList.add('active');
-        } else if (path.includes('/home/help')) {
-        document.querySelector('.dock-item[data-tab="help"]')?.classList.add('active');
-        } else {
-        document.querySelector('.dock-item[data-tab="home"]')?.classList.add('active');
-        }
-        });
-    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,21 @@
+<!-- Плавающий Нижний Док -->
+<nav class="bottom-floating-dock">
+    <div class="menu">
+        <a asp-controller="Home" asp-action="Index" class="dock-item" data-tab="home">
+            <i class="fa-solid fa-house"></i>
+            <span class="dock-tooltip">Главная</span>
+        </a>
+        <a asp-controller="Hub" asp-action="Index" class="dock-item" data-tab="hub">
+            <i class="fa-solid fa-gamepad"></i>
+            <span class="dock-tooltip">Лобби</span>
+        </a>
+        <a asp-controller="Account" asp-action="Profile" class="dock-item" data-tab="profile">
+            <i class="fa-solid fa-user"></i>
+            <span class="dock-tooltip">Профиль</span>
+        </a>
+        <a asp-controller="Home" asp-action="Help" class="dock-item" data-tab="help">
+            <i class="fa-solid fa-circle-question"></i>
+            <span class="dock-tooltip">Помощь</span>
+        </a>
+    </div>
+</nav>
