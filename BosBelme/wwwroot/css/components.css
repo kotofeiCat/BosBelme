@@ -1,283 +1,116 @@
-/* --- 3D-КНОПКИ ХАБА И ЛОББИ --- */
-.btn-uiverse-play {
-    position: relative !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding: 0 16px !important;
-    height: 48px !important;
-    color: #0d1117 !important;
-    text-transform: uppercase !important;
-    cursor: pointer !important;
-    border: 2px solid #d0d7de !important;
-    letter-spacing: 0.8px !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    background-color: #ffffff !important;
-    border-radius: var(--radius-md, 10px) !important;
-    text-decoration: none !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    transform-style: preserve-3d !important;
-    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1) !important;
+
+.btn-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    flex-wrap: wrap;
 }
 
-    .btn-uiverse-play::before {
-        position: absolute !important;
-        content: "" !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        background-color: #afb8c1 !important;
-        border-radius: inherit !important;
-        box-shadow: 0 0 0 2px #d0d7de, 0 0.4em 0 0 #6e7681 !important;
-        transform: translate3d(0, 0.4em, -1em) !important;
-        transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1) !important;
-        z-index: -1 !important;
+/* Основная кнопка */
+.btn {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+    height: 46px;
+    padding: 0 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-decoration: none;
+
+    background-color: #21262d;
+    color: #c9d1d9;
+
+    border: 2px solid #30363d;
+    border-radius: var(--radius-md, 10px);
+    
+    cursor: pointer;
+    user-select: none;
+    transform-style: preserve-3d;
+    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #161b22;
+        border-radius: inherit;
+        box-shadow: 0 0 0 2px #30363d, 0 0.4em 0 0 #010409;
+        transform: translate3d(0, 0.4em, -1em);
+        transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+        z-index: -1;
     }
 
-    .btn-uiverse-play:hover:not(.btn-danger-mono):not(.is-ready) {
-        background-color: #f6f8fa !important;
-        transform: translate(0, 0.15em) !important;
+    .btn:hover {
+        background-color: #30363d;
+        color: white;
+        transform: translate(0, 0.15em);
     }
 
-        .btn-uiverse-play:hover:not(.btn-danger-mono):not(.is-ready)::before {
-            box-shadow: 0 0 0 2px #d0d7de, 0 0.25em 0 0 #6e7681 !important;
-            transform: translate3d(0, 0.25em, -1em) !important;
-        }
-
-    .btn-uiverse-play:active {
-        background-color: #e1e4e8 !important;
-        transform: translate(0em, 0.4em) !important;
+    .btn:hover::before {
+        box-shadow: 0 0 0 2px #30363d;
     }
 
-        .btn-uiverse-play:active::before {
-            box-shadow: 0 0 0 2px #d0d7de, 0 0 #6e7681 !important;
-            transform: translate3d(0, 0, -1em) !important;
-        }
-
-    .btn-uiverse-play svg {
-        transition: all 0.3s ease !important;
-        z-index: 2 !important;
-        width: 18px !important;
-        height: 18px !important;
-        fill: currentColor !important;
-        flex-shrink: 0 !important;
-    }
-
-    .btn-uiverse-play .play-text {
-        z-index: 2 !important;
-        white-space: nowrap !important;
-    }
-
-    /* СОСТОЯНИЕ "ГОТОВ" (ЗЕЛЁНАЯ КНОПКА ПРИ КЛИКЕ) */
-    .btn-uiverse-play.is-ready {
-        background-color: #238636 !important;
-        color: #ffffff !important;
-        border-color: #2ea043 !important;
-    }
-
-        .btn-uiverse-play.is-ready::before {
-            background-color: #1a632b !important;
-            box-shadow: 0 0 0 2px #2ea043, 0 0.4em 0 0 #0f3818 !important;
-        }
-
-        .btn-uiverse-play.is-ready svg {
-            fill: #ffffff !important;
-        }
-
-        .btn-uiverse-play.is-ready:hover {
-            background-color: #2ea043 !important;
-            transform: translate(0, 0.15em) !important;
-        }
-
-            .btn-uiverse-play.is-ready:hover::before {
-                box-shadow: 0 0 0 2px #2ea043, 0 0.25em 0 0 #0f3818 !important;
-                transform: translate3d(0, 0.25em, -1em) !important;
-            }
-
-        .btn-uiverse-play.is-ready:active {
-            transform: translate(0em, 0.4em) !important;
-        }
-
-            .btn-uiverse-play.is-ready:active::before {
-                box-shadow: 0 0 0 2px #2ea043, 0 0 #0f3818 !important;
-                transform: translate3d(0, 0, -1em) !important;
-            }
-
-    /* Красная 3D-кнопка для Выхода */
-    .btn-uiverse-play.btn-danger-mono {
-        background-color: #21262d !important;
-        color: #f0f6fc !important;
-        border-color: #30363d !important;
-    }
-
-        .btn-uiverse-play.btn-danger-mono::before {
-            background-color: #161b22 !important;
-            box-shadow: 0 0 0 2px #30363d, 0 0.4em 0 0 #010409 !important;
-        }
-
-        .btn-uiverse-play.btn-danger-mono svg {
-            fill: #f0f6fc !important;
-        }
-
-        .btn-uiverse-play.btn-danger-mono:hover {
-            background-color: #da3633 !important;
-            color: #ffffff !important;
-            border-color: #f85149 !important;
-            transform: translate(0, 0.15em) !important;
-        }
-
-            .btn-uiverse-play.btn-danger-mono:hover::before {
-                background-color: #b62324 !important;
-                box-shadow: 0 0 0 2px #f85149, 0 0.25em 0 0 #4c0d0e !important;
-                transform: translate3d(0, 0.25em, -1em) !important;
-            }
-
-            .btn-uiverse-play.btn-danger-mono:hover svg {
-                fill: #ffffff !important;
-            }
-
-        .btn-uiverse-play.btn-danger-mono:active {
-            transform: translate(0em, 0.4em) !important;
-        }
-
-            .btn-uiverse-play.btn-danger-mono:active::before {
-                box-shadow: 0 0 0 2px #f85149, 0 0 #4c0d0e !important;
-                transform: translate3d(0, 0, -1em) !important;
-            }
-
-/* --- ОСНОВНЫЕ КНОПКИ --- */
-.button-name {
-    position: relative !important;
-    align-items: center !important;
-    appearance: button !important;
-    background-color: #ffffff !important;
-    border: 2px solid #d0d7de !important;
-    border-radius: var(--radius-md, 10px) !important;
-    color: #0d1117 !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
-    height: 46px !important;
-    justify-content: center !important;
-    gap: 10px !important;
-    padding: 0 20px !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
-    text-decoration: none !important;
-    user-select: none !important;
-    box-sizing: border-box !important;
-    transform-style: preserve-3d !important;
-    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1) !important;
+/* Белая кнопка */
+.btn.white {
+    background-color: white;
+    color: #0d1117;
+    border-color: #d0d7de;
 }
 
-    .button-name::before {
-        content: "" !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        background-color: #afb8c1 !important;
-        border-radius: inherit !important;
-        box-shadow: 0 0 0 2px #d0d7de, 0 0.4em 0 0 #6e7681 !important;
-        transform: translate3d(0, 0.4em, -1em) !important;
-        transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1) !important;
-        z-index: -1 !important;
+    .btn.white::before {
+        background-color: #afb8c1;
+        box-shadow: 0 0 0 2px #d0d7de, 0 0.4em 0 0 #6e7681;
     }
 
-    .button-name:hover:not(.btn-ghost):not(.btn-danger-ghost):not(:disabled) {
-        background-color: #f6f8fa !important;
-        transform: translate(0, 0.15em) !important;
+    .btn.white:hover {
+        background-color: #f6f8fa;
     }
 
-        .button-name:hover:not(.btn-ghost):not(.btn-danger-ghost):not(:disabled)::before {
-            box-shadow: 0 0 0 2px #d0d7de, 0 0.25em 0 0 #6e7681 !important;
-            transform: translate3d(0, 0.25em, -1em) !important;
-        }
-
-    .button-name:active:not(:disabled) {
-        transform: translate(0em, 0.4em) !important;
+    .btn.white:hover::before {
+        box-shadow: 0 0 0 2px #d0d7de;
     }
 
-        .button-name:active:not(:disabled)::before {
-            box-shadow: 0 0 0 2px #d0d7de, 0 0 #6e7681 !important;
-            transform: translate3d(0, 0, -1em) !important;
-        }
-
-    /* GHOST VARIANT */
-    .button-name.btn-ghost {
-        background-color: #21262d !important;
-        color: #c9d1d9 !important;
-        border-color: #30363d !important;
+/* Красная кнопка */
+.btn.red {
+    color: #f85149;
+}
+    .btn.red:hover {
+        background-color: #da3633;
+        color: white;
+        border-color: #f85149;
     }
 
-        .button-name.btn-ghost::before {
-            background-color: #161b22 !important;
-            box-shadow: 0 0 0 2px #30363d, 0 0.4em 0 0 #010409 !important;
-        }
-
-        .button-name.btn-ghost:hover {
-            background-color: #30363d !important;
-            color: #ffffff !important;
-            transform: translate(0, 0.15em) !important;
-        }
-
-            .button-name.btn-ghost:hover::before {
-                box-shadow: 0 0 0 2px #30363d, 0 0.25em 0 0 #010409 !important;
-                transform: translate3d(0, 0.25em, -1em) !important;
-            }
-
-        .button-name.btn-ghost:active::before {
-            box-shadow: 0 0 0 2px #30363d, 0 0 #010409 !important;
-            transform: translate3d(0, 0, -1em) !important;
-        }
-
-    /* DANGER GHOST VARIANT */
-    .button-name.btn-danger-ghost {
-        background-color: #21262d !important;
-        color: #f85149 !important;
-        border-color: #30363d !important;
+    .btn.red:hover::before {
+        background-color: #b62324;
+        box-shadow: 0 0 0 2px #f85149, 0 0.25em 0 0 #4c0d0e;
+        transform: translate3d(0, 0.25em, -1em);
     }
 
-        .button-name.btn-danger-ghost::before {
-            background-color: #161b22 !important;
-            box-shadow: 0 0 0 2px #30363d, 0 0.4em 0 0 #010409 !important;
-        }
+/* Зеленая кнопка */
+.btn.green {
+    background-color: #238636;
+    color: white;
+    border-color: #2ea043;
+}
 
-        .button-name.btn-danger-ghost:hover {
-            background-color: #da3633 !important;
-            color: #ffffff !important;
-            border-color: #f85149 !important;
-            transform: translate(0, 0.15em) !important;
-        }
-
-            .button-name.btn-danger-ghost:hover::before {
-                background-color: #b62324 !important;
-                box-shadow: 0 0 0 2px #f85149, 0 0.25em 0 0 #4c0d0e !important;
-                transform: translate3d(0, 0.25em, -1em) !important;
-            }
-
-        .button-name.btn-danger-ghost:active::before {
-            box-shadow: 0 0 0 2px #f85149, 0 0 #4c0d0e !important;
-            transform: translate3d(0, 0, -1em) !important;
-        }
-
-    /* --- ВЕРТИКАЛЬНЫЙ ОТСТУП ДЛЯ СТЕКА 3D-КНОПОК --- */
-    .button-name + .button-name,
-    .btn-uiverse-play + .btn-uiverse-play,
-    .button-name + .btn-uiverse-play,
-    .btn-uiverse-play + .button-name,
-    form + .button-name,
-    form + .btn-uiverse-play,
-    .button-name + form,
-    .btn-uiverse-play + form {
-        margin-top: 13px !important;
+    .btn.green:hover::before {
+        box-shadow: 0 0 0 2px #2ea043;
     }
+
+    .btn.green::before {
+        background-color: #1a632b;
+        box-shadow: 0 0 0 2px #2ea043, 0 0.4em 0 0 #0f3818;
+    }
+
 
 /* --- ЧИСТЫЙ МИНИМАЛИСТИЧНЫЙ ПРОФИЛЬ --- */
 .profile-card {
@@ -365,18 +198,6 @@
 .status-active {
     color: #3fb950 !important;
 }
-
-.profile-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 4px;
-    flex-wrap: wrap;
-}
-
-    .profile-actions .button-name {
-        flex: 1;
-        min-width: 110px;
-    }
 
 /* --- ОПТИМИЗИРОВАННАЯ ПОМОЩЬ (БЕЗ ПОИСКА) --- */
 .help-header {
@@ -676,13 +497,6 @@
     }
 }
 
-/* ==========================================================================
-   FIX: ВЫРАВНИВАНИЕ КНОПОК В ГРУППЕ
-   ========================================================================== */
-.actions-flex-group > *,
-.actions-flex-group form {
-    margin-top: 0 !important;
-}
 
 /* ==========================================================================
    TOAST INFO ALERT SYSTEM (PURE CSS)

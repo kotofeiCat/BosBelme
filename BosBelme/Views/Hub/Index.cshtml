@@ -16,16 +16,16 @@
     <h2 class="large-text" style="font-size: 24px; margin-bottom: 6px;">Комнаты и Сессии</h2>
     <p class="other-text" style="margin-bottom: 24px;">Выберите действие для начала игровой сессии</p>
 
-    <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
 
         <form asp-controller="Hub" asp-action="CreateRoom" method="post" style="width: 100%;">
-            <button type="submit" class="button-name" style="width: 100%; height: 46px;">
+            <button type="submit" class="btn white" style="width: 100%; height: 46px;">
                 <i class="fa-solid fa-plus"></i>
                 <span>Создать комнату</span>
             </button>
         </form>
 
-        <a asp-controller="Hub" asp-action="JoinRoom" class="button-name btn-ghost" style="width: 100%; height: 46px;">
+        <a asp-controller="Hub" asp-action="JoinRoom" class="btn" style="width: 100%; height: 46px;">
             <i class="fa-solid fa-right-to-bracket"></i>
             <span>Присоединиться</span>
         </a>
