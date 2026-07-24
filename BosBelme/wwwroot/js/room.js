@@ -72,10 +72,12 @@ connection.on("UpdateRoom", function (room) {
     if (readyBtn && me) {
         const isReady = me.isReady ?? me.IsReady ?? false;
         if (isReady) {
-            readyBtn.classList.add("is-ready");
+            readyBtn.classList.remove("white");
+            readyBtn.classList.add("green");
             if (readyBtnText) readyBtnText.textContent = "ГОТОВ!";
         } else {
-            readyBtn.classList.remove("is-ready");
+            readyBtn.classList.remove("green");
+            readyBtn.classList.add("white");
             if (readyBtnText) readyBtnText.textContent = "ГОТОВ";
         }
     }
