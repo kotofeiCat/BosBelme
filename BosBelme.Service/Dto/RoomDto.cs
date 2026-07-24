@@ -35,4 +35,15 @@ public record GameSelectDto
     public string Name { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
+
+    public bool IsStrictRange { get; set; }
+
+    public int? MinPlayers { get; set; }
+
+    public int? MaxPlayers { get; set; }
+}
+
+public record GamePlayersDto
+{
+    public int Count { get; set; }
 }

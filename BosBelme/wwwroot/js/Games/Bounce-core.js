@@ -27,6 +27,35 @@ let bodyAngles = { p1: 0, p2: Math.PI };
 
 const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false };
 
+// Вспомогательная функция для надёжного определения локального игрока и соперника
+function getLocalPlayerInfo() {
+    if (!gameState) return { me: null, opponent: null, isP1: true };
+    const p1 = gameState.player1 || gameState.Player1;
+    const p2 = gameState.player2 || gameState.Player2;
+
+    const p1Id = p1?.id || p1?.Id;
+    const p2Id = p2?.id || p2?.Id;
+    const p1Name = p1?.name || p1?.Name;
+    const p2Name = p2?.name || p2?.Name;
+
+    let isP1 = true;
+    if (myConnectionId) {
+        if (p1Id === myConnectionId) isP1 = true;
+        else if (p2Id === myConnectionId) isP1 = false;
+        else if (p1Name && p1Name === currentUserName && p1Name !== "Гость") isP1 = true;
+        else if (p2Name && p2Name === currentUserName && p2Name !== "Гость") isP1 = false;
+    } else if (currentUserName && currentUserName !== "Гость") {
+        if (p1Name === currentUserName) isP1 = true;
+        else if (p2Name === currentUserName) isP1 = false;
+    }
+
+    return {
+        me: isP1 ? p1 : p2,
+        opponent: isP1 ? p2 : p1,
+        isP1: isP1
+    };
+}
+
 // SignalR Подключение
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/bouncehub")
@@ -39,7 +68,7 @@ window.addEventListener("beforeunload", () => {
     }
 });
 
-// Тихое подключение без информационного тоста
+// Тихое подключение
 connection.start().then(() => {
     myConnectionId = connection.connectionId;
     connection.invoke("JoinRoom", roomCode);
@@ -50,6 +79,10 @@ connection.start().then(() => {
 // Первичная инициализация состояния
 connection.on("InitGame", (state) => {
     gameState = state;
+    if (gameState) {
+        gameState.player1 = state.player1 || state.Player1;
+        gameState.player2 = state.player2 || state.Player2;
+    }
     isMapDirty = true;
 });
 
@@ -65,9 +98,8 @@ connection.on("UpdateState", (state) => {
         gameState.activeBullets = state.activeBullets || state.ActiveBullets;
         gameState.status = state.status !== undefined ? state.status : state.Status;
         gameState.statusTimer = state.statusTimer !== undefined ? state.statusTimer : state.StatusTimer;
-        gameState.scores = state.scores || state.Scores;
+        gameState.scores = gameState.scores || gameState.Scores;
 
-        // Перерисовка буфера карты только если с сервера пришла новая сетка (разрушился блок)
         const newGrid = state.grid || state.Grid;
         if (newGrid) {
             if (!gameState.currentMap) gameState.currentMap = {};
@@ -85,7 +117,7 @@ connection.on("OnError", (err) => {
 
 connection.on("OpponentDisconnected", () => {
     isGameEnded = true;
-    showInfoToast("Соединение разорвано", "Соперник покинул игру. Сессия завершена.");
+    showInfoToast("Сосоединение разорвано", "Соперник покинул игру. Сессия завершена.");
 
     if (gameState) {
         gameState.status = 4;
@@ -144,21 +176,38 @@ window.addEventListener("mousedown", (e) => {
         if (e.clientX >= rect.left && e.clientX <= rect.right &&
             e.clientY >= rect.top && e.clientY <= rect.bottom) {
 
-            const p1 = gameState.player1 || gameState.Player1;
-            const p2 = gameState.player2 || gameState.Player2;
-            const p1Id = p1?.id || p1?.Id;
-            const p1Name = p1?.name || p1?.Name;
-            const localPlayer = (p1Id === myConnectionId || (p1Name === currentUserName && p1Name !== "Гость")) ? p1 : p2;
+            const { me: localPlayer } = getLocalPlayerInfo();
 
-            if (localPlayer && (localPlayer.isAlive ?? localPlayer.IsAlive) && (localPlayer.hasBullet ?? localPlayer.HasBullet)) {
-                const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
-                const pos = localPlayer.position || localPlayer.Position;
-                const px = pos.x !== undefined ? pos.x : pos.X;
-                const py = pos.y !== undefined ? pos.y : pos.Y;
+            if (localPlayer) {
+                const isAlive = localPlayer.isAlive ?? localPlayer.IsAlive;
+                const hasBullet = localPlayer.hasBullet ?? localPlayer.HasBullet;
 
-                const angle = Math.atan2(clickY - py, clickX - px);
-                connection.invoke("Shoot", roomCode, angle);
+                if (isAlive && hasBullet) {
+                    // Учитываем возможные стили рамки Canvas для точного позиционирования
+                    const style = window.getComputedStyle(canvas);
+                    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+                    const borderTop = parseFloat(style.borderTopWidth) || 0;
+
+                    const visibleWidth = rect.width - borderLeft * 2;
+                    const visibleHeight = rect.height - borderTop * 2;
+
+                    const clickX = (e.clientX - rect.left - borderLeft) * (canvas.width / visibleWidth);
+                    const clickY = (e.clientY - rect.top - borderTop) * (canvas.height / visibleHeight);
+
+                    const pos = localPlayer.position || localPlayer.Position;
+                    if (pos) {
+                        const px = pos.x !== undefined ? pos.x : pos.X;
+                        const py = pos.y !== undefined ? pos.y : pos.Y;
+
+                        const angle = Math.atan2(clickY - py, clickX - px);
+
+                        // Оптимистичное местное обновление угла пушки для плавности
+                        localPlayer.rotationAngle = angle;
+                        localPlayer.RotationAngle = angle;
+
+                        connection.invoke("Shoot", roomCode, angle);
+                    }
+                }
             }
         }
     }
@@ -178,14 +227,16 @@ function setupMobileControls() {
     document.getElementById("m-shoot")?.addEventListener("touchstart", (e) => {
         e.preventDefault();
         if (!gameState || isGameEnded) return;
-        const p1 = gameState.player1 || gameState.Player1;
-        const p2 = gameState.player2 || gameState.Player2;
-        const p1Id = p1?.id || p1?.Id;
-        const p1Name = p1?.name || p1?.Name;
-        const localPlayer = (p1Id === myConnectionId || (p1Name === currentUserName && p1Name !== "Гость")) ? p1 : p2;
+        const { me: localPlayer } = getLocalPlayerInfo();
 
-        if (localPlayer && (localPlayer.isAlive ?? localPlayer.IsAlive) && (localPlayer.hasBullet ?? localPlayer.HasBullet)) {
-            connection.invoke("Shoot", roomCode, localPlayer.rotationAngle ?? localPlayer.RotationAngle ?? 0);
+        if (localPlayer) {
+            const isAlive = localPlayer.isAlive ?? localPlayer.IsAlive;
+            const hasBullet = localPlayer.hasBullet ?? localPlayer.HasBullet;
+
+            if (isAlive && hasBullet) {
+                const rot = localPlayer.rotationAngle ?? localPlayer.RotationAngle ?? 0;
+                connection.invoke("Shoot", roomCode, rot);
+            }
         }
     });
 
@@ -234,12 +285,7 @@ function updateBodyAngle(p, key) {
 
 function updateHUD() {
     if (!gameState) return;
-    const p1 = gameState.player1 || gameState.Player1;
-    const p2 = gameState.player2 || gameState.Player2;
-    const p1Id = p1?.id || p1?.Id;
-    const isP1 = p1Id === myConnectionId;
-    const me = isP1 ? p1 : p2;
-    const opponent = isP1 ? p2 : p1;
+    const { me, opponent } = getLocalPlayerInfo();
 
     let scoreStr = "0 : 0";
     const scores = gameState.scores || gameState.Scores;
@@ -308,7 +354,6 @@ function draw() {
         renderMapToBuffer();
     }
 
-    // Мгновенный перенос готового изображения карты из буфера
     ctx.drawImage(mapCanvas, 0, 0);
 
     if (!gameState) { requestAnimationFrame(draw); return; }
@@ -414,7 +459,7 @@ function drawPlayer(p, col, key) {
     }
 }
 
-// Вспомогательная функция для контейнера уведомлений
+// Вспомогательные функции для всплывающих сообщений
 function getOrCreateToastContainer() {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -426,7 +471,6 @@ function getOrCreateToastContainer() {
     return container;
 }
 
-// Информационные уведомления (Info Alert)
 function showInfoToast(title, description, duration = 5000) {
     const container = getOrCreateToastContainer();
     const toast = document.createElement('div');
@@ -455,7 +499,6 @@ function showInfoToast(title, description, duration = 5000) {
     bindToastClose(toast, container, duration);
 }
 
-// Ошибки (Error Toast)
 function showErrorToast(title, description, duration = 5000) {
     const container = getOrCreateToastContainer();
     const toast = document.createElement('div');
@@ -484,7 +527,6 @@ function showErrorToast(title, description, duration = 5000) {
     bindToastClose(toast, container, duration);
 }
 
-// Закрытие и анимации
 function bindToastClose(toast, container, duration) {
     const closeBtn = toast.querySelector('.toast-close-btn');
     const removeToast = () => {

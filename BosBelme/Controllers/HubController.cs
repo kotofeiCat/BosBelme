@@ -77,7 +77,10 @@ public class HubController(IRegService registeredServices, IRoomService roomServ
             {
                 Id = g.Id,
                 Name = g.Name,
-                Description = g.Description
+                Description = g.Description,
+                IsStrictRange = g.IsStrictRange,
+                MaxPlayers = g.MaxPlayers,
+                MinPlayers = g.MinPlayers
             })
             .ToList(),
 

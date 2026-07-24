@@ -59,7 +59,7 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
         var gameHub = await context.GameHubs
             .AsNoTracking()
             .Include(gh => gh.Game)
-                .ThenInclude(gh => gh.PlayersCount)
+                .ThenInclude(gh => gh.PlayerCounts)
             .Include(gh => gh.GameSessions)
                 .ThenInclude(gs => gs.Player)
             .FirstOrDefaultAsync(gh => gh.ConnectionKey == code)
@@ -70,10 +70,10 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
 
         var allGames = await context.Games
             .AsNoTracking()
-            .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame, Description = g.Discription })
+            .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame, Description = g.Discription, IsStrictRange = g.IsStrictRange, MaxPlayers = g.MaxPlayers, MinPlayers = g.MinPlayers })
             .ToListAsync();
 
-        List<int> playersCounts = gameHub.Game.PlayersCount
+        List<int> playersCounts = gameHub.Game.PlayerCounts
             .Select(pc => pc.Count)
             .ToList();
 
@@ -146,7 +146,7 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
                 var updatedRoom = await GetRoomDetailsAsync(roomCode);
                 await hubContext.Clients.Group(roomCode).SendAsync("UpdateRoom", updatedRoom);
             }
-            catch {}
+            catch { }
         }
 
         return isCallerGuest;
@@ -212,7 +212,7 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
     {
         var hub = await context.GameHubs
             .Include(gh => gh.Game)
-                .ThenInclude(pc => pc.PlayersCount)
+                .ThenInclude(pc => pc.PlayerCounts)
             .Include(gh => gh.GameSessions)
             .FirstOrDefaultAsync(gh => gh.ConnectionKey == roomCode)
             ?? throw new Exception("Комната не найдена");
@@ -223,9 +223,26 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
 
         int playersCount = hub.GameSessions.Count;
 
-        bool isCountAllowed = hub.Game.PlayersCount.Any(pc => pc.Count == playersCount);
-        if (!isCountAllowed)
-            throw new Exception("Невозможно запустить, нет нужного числа игроков");
+        if (!hub.Game.IsStrictRange)
+        {
+            bool isCountAllowed = hub.Game.PlayerCounts.Any(pc => pc.Count == playersCount);
+
+            if (!isCountAllowed)
+                throw new Exception("Невозможно запустить, нет нужного числа игроков");
+        }
+        else
+        {
+            int min = hub.Game.MinPlayers ?? 0;
+            int max = hub.Game.MaxPlayers ?? int.MaxValue;
+
+            if (playersCount < hub.Game.MinPlayers)
+                throw new Exception("Невозможно запустить, игроков слишком мало");
+
+            if (playersCount > hub.Game.MaxPlayers)
+                throw new Exception("Невозможно запустить, игроков слишком много");
+        }
+
+
 
         var ordinaryPlayers = hub.GameSessions.Where(gs => !gs.IsHost);
         if (ordinaryPlayers.Any(gs => !gs.IsReady))

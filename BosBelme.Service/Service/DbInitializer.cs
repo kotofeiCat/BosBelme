@@ -9,14 +9,17 @@ public static class DbInitializer
         var gamesSet = context.Set<Game>();
         var playersCountSet = context.Set<PlayersCount>();
 
-        if (!gamesSet.Any(g => g.NameGame == "One-Shot Bounce"))
+        if (!gamesSet.Any(g => g.NameGame == "Tank-A-Catch"))
         {
-            Console.WriteLine("[DB_SEED] Игра 'One-Shot Bounce' отсутствует. Начинаем добавление...");
+            Console.WriteLine("[DB_SEED] Игра 'Tank-A-Catch' отсутствует. Начинаем добавление...");
 
             var bounceGame = new Game
             {
-                NameGame = "One-Shot Bounce",
-                Discription = "Динамичная неоновая 2D-дуэль на выживание. Один выстрел, бесконечные рикошеты, щиты-ловушки и разрушаемые блоки!"
+                NameGame = "Tank-A-Catch",
+                Discription = "Игра, где твое собственное оружие гарантированно станет причиной твоей гибели." +
+                "\r\nПравила просты: у каждого по одной пуле. Ты стреляешь, промахиваешься, пуля начинает рикошетить с дикой скоростью, " +
+                "а твой «друг» ловит ее корпусом, смотрит тебе в глаза и медленно прямой наводкой делает ВЫСТРЕЛ!!!",
+                IsStrictRange = false
             };
 
             gamesSet.Add(bounceGame);
@@ -30,7 +33,7 @@ public static class DbInitializer
             playersCountSet.Add(playersCountConfig);
 
             context.SaveChanges();
-            Console.WriteLine("[DB_SEED] Игра 'One-Shot Bounce' и конфигурация игроков (2 чел.) успешно добавлены в PostgreSQL!");
+            Console.WriteLine("[DB_SEED] Игра 'Tank-A-Catch' и конфигурация игроков (2 чел.) успешно добавлены в PostgreSQL!");
         }
     }
 }

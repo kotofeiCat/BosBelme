@@ -11,7 +11,7 @@ connection.on("OnError", function (errorMessage) {
 
 connection.on("GameStarted", function () {
     setTimeout(() => {
-        if (currentRoom && currentRoom.gameName === "One-Shot Bounce") {
+        if (currentRoom && currentRoom.gameName === "Tank-A-Catch") {
             window.location.href = "/Games/Bounce/" + roomCode;
         }
     }, 2000);
