@@ -137,3 +137,188 @@
     }
 }
 
+/* --- Кнопка-плашка выбора игры --- */
+.game-select-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0d1117;
+    color: #f0f6fc;
+    border: 1px solid #30363d;
+    border-radius: var(--radius-md, 12px);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .game-select-trigger:hover {
+        border-color: #8b949e;
+        background-color: #161b22;
+    }
+
+    .game-select-trigger i {
+        color: #8b949e;
+        font-size: 12px;
+        transition: transform 0.2s ease;
+    }
+
+    .game-select-trigger:hover i {
+        transform: translateX(3px);
+        color: #f0f6fc;
+    }
+
+/* --- Оверлей модального окна (Центрирование) --- */
+.game-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(9, 10, 15, 0.8) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+    .game-modal-overlay.show {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+/* --- Каркас окна --- */
+.game-modal {
+    width: min(600px, 100%);
+    max-height: 80vh;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: var(--radius-lg, 20px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.game-modal-overlay.show .game-modal {
+    transform: translateY(0) scale(1);
+}
+
+/* --- Шапка модалки --- */
+.game-modal-header {
+    height: 50px;
+    background-color: #0d1117;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.game-modal-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f0f6fc;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.game-modal-close {
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+    .game-modal-close:hover {
+        color: #f0f6fc;
+    }
+
+/* --- Список игр --- */
+.game-modal-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.game-card-item {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: var(--radius-md, 12px);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+    .game-card-item:hover {
+        border-color: #8b949e;
+        transform: translateY(-2px);
+        background: #1c2128;
+    }
+
+    .game-card-item.active {
+        border-color: #2ea043;
+        background: rgba(46, 160, 67, 0.08);
+    }
+
+.game-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.game-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f0f6fc;
+    margin: 0;
+}
+
+.game-players-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b949e;
+    background: #21262d;
+    border: 1px solid #30363d;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.game-card-item.active .game-players-badge {
+    color: #3fb950;
+    border-color: rgba(63, 185, 80, 0.3);
+    background: rgba(63, 185, 80, 0.1);
+}
+
+.game-card-desc {
+    font-size: 12px;
+    color: #8b949e;
+    margin: 0;
+    line-height: 1.4;
+}

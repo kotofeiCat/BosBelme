@@ -20,9 +20,6 @@
         <h1 class="large-text" style="font-size: 24px; margin: 0;">@Model.RoomName</h1>
         <span style="font-size: 12px; color: #8b949e;"><i class="fa-solid fa-wifi"></i> Канал подключен</span>
     </div>
-    <span style="background: #21262d; color: #f0f6fc; border: 1px solid #30363d; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px;">
-        ● @Model.Status
-    </span>
 </div>
 
 <div class="hub-container">
@@ -43,12 +40,12 @@
                 <label class="other-text" style="display: block; margin-bottom: 8px;">Игра:</label>
                 @if (isAmIHost)
                 {
-                    <select id="game-selector" class="game-select-animated">
-                        @foreach (var game in Model.AvailableGames)
-                        {
-                            <option value="@game.Id">@game.Name</option>
-                        }
-                    </select>
+                    <input type="hidden" id="game-selector" value="@Model.AvailableGames.FirstOrDefault(g => g.Name == Model.GameName)?.Id" />
+
+                    <button type="button" id="open-game-modal-btn" class="game-select-trigger">
+                        <span id="selected-game-title">@Model.GameName</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 }
                 else
                 {
@@ -65,7 +62,6 @@
             </button>
         </div>
 
-        <!-- Кнопки действий (Добавлен класс actions-flex-group) -->
         <div class="actions-flex-group" style="display: flex; gap: 12px; align-items: stretch;">
             @if (isAmIHost)
             {
@@ -81,7 +77,7 @@
                     <span class="play-text" id="ready-btn-text">@(isCurrentPlayerReady ? "ГОТОВ!" : "ГОТОВ")</span>
                 </button>
             }
-            <form asp-controller="Hub" asp-action="LeaveRoom" asp-route-code="@Model.RoomCode" method="post" style="flex: 1; margin: 0;">
+            <form asp-controller="Hub" asp-action="LeaveRoom" asp-route-code="@Model.RoomCode" method="post" style="flex: 1; margin: 0; display: flex;">
                 <button type="submit" class="btn-uiverse-play btn-danger-mono">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" /></svg>
                     <span class="play-text">Выйти</span>
@@ -151,7 +147,85 @@
                     }
                 });
             });
+
+            const gameModal = document.getElementById("game-modal-overlay");
+
+            if (gameModal) {
+                document.body.appendChild(gameModal);
+            }
+
+            const openGameModalBtn = document.getElementById("open-game-modal-btn");
+            const closeGameModalBtn = document.getElementById("close-game-modal-btn");
+            const gameSelectorInput = document.getElementById("game-selector");
+            const selectedGameTitle = document.getElementById("selected-game-title");
+
+            if (openGameModalBtn) {
+                openGameModalBtn.addEventListener("click", () => {
+                    if (gameModal) gameModal.classList.add("show");
+                });
+            }
+
+            const closeModal = () => {
+                if (gameModal) gameModal.classList.remove("show");
+            };
+
+            if (closeGameModalBtn) {
+                closeGameModalBtn.addEventListener("click", closeModal);
+            }
+
+            if (gameModal) {
+                gameModal.addEventListener("click", (e) => {
+                    if (e.target === gameModal) closeModal();
+                });
+            }
+
+            document.querySelectorAll(".game-card-item").forEach(card => {
+                card.addEventListener("click", () => {
+                    const gameId = card.getAttribute("data-game-id");
+                    const gameName = card.getAttribute("data-game-name");
+
+                    document.querySelectorAll(".game-card-item").forEach(c => c.classList.remove("active"));
+                    card.classList.add("active");
+
+                    if (selectedGameTitle) selectedGameTitle.textContent = gameName;
+
+                    if (gameSelectorInput) {
+                        gameSelectorInput.value = gameId;
+                        gameSelectorInput.dispatchEvent(new Event("change", { bubbles: true }));
+                    }
+
+                    closeModal();
+                });
+            });
         });
     </script>
     <script src="~/js/room.js" asp-append-version="true"></script>
 }
+
+<div id="game-modal-overlay" class="game-modal-overlay">
+    <div class="game-modal">
+        <div class="game-modal-header">
+            <span class="game-modal-title"><i class="fa-solid fa-gamepad"></i> Выберите игру</span>
+            <button type="button" id="close-game-modal-btn" class="game-modal-close">&times;</button>
+        </div>
+        <div class="game-modal-body">
+            @foreach (var game in Model.AvailableGames)
+            {
+                bool isSelected = game.Name == Model.GameName;
+                <div class="game-card-item @(isSelected ? "active" : "")" data-game-id="@game.Id" data-game-name="@game.Name">
+                    <div class="game-card-info">
+                        <div class="game-card-top">
+                            <h4 class="game-card-title">@game.Name</h4>
+                            <span class="game-players-badge">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+                        </div>
+                        <p class="game-card-desc">
+                            @(string.IsNullOrWhiteSpace(game.Description) ? "Описание пока не добавлено." : game.Description)
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

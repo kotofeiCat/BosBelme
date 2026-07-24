@@ -70,7 +70,7 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
 
         var allGames = await context.Games
             .AsNoTracking()
-            .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame })
+            .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame, Description = g.Discription })
             .ToListAsync();
 
         List<int> playersCounts = gameHub.Game.PlayersCount

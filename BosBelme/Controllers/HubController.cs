@@ -76,7 +76,8 @@ public class HubController(IRegService registeredServices, IRoomService roomServ
             AvailableGames = model.AvailableGames.Select(g => new GameSelectViewModel
             {
                 Id = g.Id,
-                Name = g.Name 
+                Name = g.Name,
+                Description = g.Description
             })
             .ToList(),
 

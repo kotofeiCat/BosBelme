@@ -675,3 +675,86 @@
         transform: translateY(-20px) scale(0.95);
     }
 }
+
+/* ==========================================================================
+   FIX: ВЫРАВНИВАНИЕ КНОПОК В ГРУППЕ
+   ========================================================================== */
+.actions-flex-group > *,
+.actions-flex-group form {
+    margin-top: 0 !important;
+}
+
+/* ==========================================================================
+   TOAST INFO ALERT SYSTEM (PURE CSS)
+   ========================================================================== */
+.info-alert-toast {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 10px !important;
+    background-color: #232531 !important;
+    border: 1px solid #30363d !important;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.65) !important;
+    box-sizing: border-box !important;
+}
+
+    .info-alert-toast .info-icon-box {
+        color: #1c56be !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(12px) !important;
+        padding: 6px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .info-alert-toast svg {
+        width: 20px !important;
+        height: 20px !important;
+        display: block !important;
+        flex-shrink: 0 !important;
+    }
+
+    .info-alert-toast .info-body {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+    }
+
+    .info-alert-toast .info-title {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+    }
+
+    .info-alert-toast .info-desc {
+        color: #8b949e !important;
+        font-size: 11px !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    .info-alert-toast .toast-close-btn {
+        background: transparent !important;
+        border: none !important;
+        color: #6e7681 !important;
+        cursor: pointer !important;
+        padding: 4px !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: color 0.15s ease, background 0.15s ease !important;
+    }
+
+        .info-alert-toast .toast-close-btn:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
