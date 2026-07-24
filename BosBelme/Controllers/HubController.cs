@@ -80,7 +80,8 @@ public class HubController(IRegService registeredServices, IRoomService roomServ
                 Description = g.Description,
                 IsStrictRange = g.IsStrictRange,
                 MaxPlayers = g.MaxPlayers,
-                MinPlayers = g.MinPlayers
+                MinPlayers = g.MinPlayers,
+                AllowedPlayerCounts = g.AllowedPlayerCounts
             })
             .ToList(),
 

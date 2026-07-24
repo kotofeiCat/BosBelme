@@ -41,6 +41,8 @@ public record GameSelectDto
     public int? MinPlayers { get; set; }
 
     public int? MaxPlayers { get; set; }
+
+    public List<int> AllowedPlayerCounts { get; set; } = new();
 }
 
 public record GamePlayersDto

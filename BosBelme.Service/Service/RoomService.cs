@@ -70,7 +70,16 @@ public class RoomService(AppDbContext context, IHubContext<GameRoomHub> hubConte
 
         var allGames = await context.Games
             .AsNoTracking()
-            .Select(g => new GameSelectDto { Id = g.Id, Name = g.NameGame, Description = g.Discription, IsStrictRange = g.IsStrictRange, MaxPlayers = g.MaxPlayers, MinPlayers = g.MinPlayers })
+            .Select(g => new GameSelectDto
+            { 
+                Id = g.Id, 
+                Name = g.NameGame,
+                Description = g.Discription,
+                IsStrictRange = g.IsStrictRange,
+                MaxPlayers = g.MaxPlayers,
+                MinPlayers = g.MinPlayers,
+                AllowedPlayerCounts = g.PlayerCounts.Select(pc => pc.Count).ToList()
+            })
             .ToListAsync();
 
         List<int> playersCounts = gameHub.Game.PlayerCounts

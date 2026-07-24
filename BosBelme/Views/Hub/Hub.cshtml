@@ -8,6 +8,9 @@
     var currentPlayer = Model.Players.FirstOrDefault(p => p.Id.ToString() == currentUserId);
     bool isCurrentPlayerReady = currentPlayer?.IsReady ?? false;
 
+    var currentGame = Model.AvailableGames.FirstOrDefault(g => g.Id == Model.GameId)
+                   ?? Model.AvailableGames.FirstOrDefault(g => g.Name == Model.GameName);
+
     ViewData["Title"] = Model.RoomName;
 }
 
@@ -40,7 +43,7 @@
                 <label class="other-text" style="display: block; margin-bottom: 8px;">Игра:</label>
                 @if (isAmIHost)
                 {
-                    <input type="hidden" id="game-selector" value="@Model.AvailableGames.FirstOrDefault(g => g.Name == Model.GameName)?.Id" />
+                    <input type="hidden" id="game-selector" value="@(currentGame?.Id ?? Model.GameId)" />
 
                     <button type="button" id="open-game-modal-btn" class="game-select-trigger">
                         <span id="selected-game-title">@Model.GameName</span>
@@ -87,6 +90,7 @@
     </div>
 
     <div class="hub-column">
+        <!-- Счетчик участников в хабе -->
         <div class="hub-card">
             <div class="hub-card-title"><i class="fa-solid fa-users"></i> Игроки (<span id="player-count">@Model.Players.Count</span>)</div>
             <ul id="player-list">
@@ -216,8 +220,21 @@
                     <div class="game-card-info">
                         <div class="game-card-top">
                             <h4 class="game-card-title">@game.Name</h4>
+
                             <span class="game-players-badge">
                                 <i class="fa-solid fa-users"></i>
+                                @if (game.IsStrictRange)
+                                {
+                                    @($"{game.MinPlayers ?? 0}-{game.MaxPlayers ?? 0}")
+                                }
+                                else if (game.AllowedPlayerCounts != null && game.AllowedPlayerCounts.Any())
+                                {
+                                    @string.Join(", ", game.AllowedPlayerCounts)
+                                }
+                                else
+                                {
+                                    <span>—</span>
+                                }
                             </span>
                         </div>
                         <p class="game-card-desc">

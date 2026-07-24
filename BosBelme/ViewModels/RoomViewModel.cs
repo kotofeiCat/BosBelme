@@ -9,7 +9,7 @@
 
         public int GameId { get; set; }
         public string GameName { get; set; } = string.Empty;
-        public int PlayersCounts { get; set; }
+        public List<int> PlayersCounts { get; set; } = new();
 
         public List<GameSelectViewModel> AvailableGames { get; set; } = new();
         public List<RoomPlayerViewModel> Players { get; set; } = new();
@@ -36,6 +36,8 @@
         public int? MinPlayers { get; set; }
 
         public int? MaxPlayers { get; set; }
+
+        public List<int> AllowedPlayerCounts { get; set; } = new();
     }
 
     public class GamePlayerViewModel
