@@ -1,7 +1,6 @@
 ﻿/* ==========================================================================
    ROOMBOX - BOUNCE GAME STYLES (GITHUB / VS CODE MONOCHROME)
    ========================================================================== */
-
 :root {
     --bg-dark: #0d1117;
     --panel-bg: #161b22;
@@ -47,7 +46,7 @@
     background: var(--bg-dark) !important;
 }
 
-/* Основной вьюпорт игры (Уменьшены отступы) */
+/* Основной вьюпорт игры */
 .game-viewport {
     display: flex;
     flex-direction: column;
@@ -55,7 +54,7 @@
     height: calc(100vh - 56px);
     margin-top: 56px;
     box-sizing: border-box;
-    padding: 10px 12px 12px 12px; /* Было: 14px 20px 20px 20px */
+    padding: 10px 12px 12px 12px;
     background-color: var(--bg-dark);
     font-family: var(--font-sans);
     overflow: hidden;
@@ -70,11 +69,11 @@
     align-items: center;
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
-    padding: 8px 14px; /* Уменьшено на ~20% (Было: 10px 18px) */
+    padding: 8px 14px;
     border-radius: var(--radius-md);
     font-size: 13px;
-    margin-bottom: 10px; /* Уменьшено на ~28% (Было: 14px) */
-    gap: 12px; /* Уменьшено на 25% (Было: 16px) */
+    margin-bottom: 10px;
+    gap: 12px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     user-select: none;
     box-sizing: border-box;
@@ -86,7 +85,7 @@
 .hud-left {
     display: flex;
     align-items: center;
-    gap: 6px; /* Было 8px */
+    gap: 6px;
     color: var(--text-muted);
     min-width: 0;
     flex: 1 1 auto;
@@ -109,7 +108,7 @@
 .hud-status {
     display: inline-flex;
     align-items: center;
-    gap: 5px; /* Было 6px */
+    gap: 5px;
     color: var(--accent-red);
     font-family: var(--font-mono);
     font-size: 11px;
@@ -117,7 +116,7 @@
     text-transform: uppercase;
     background: rgba(248, 81, 73, 0.1);
     border: 1px solid rgba(248, 81, 73, 0.25);
-    padding: 3px 8px; /* Уменьшено (Было: 4px 10px) */
+    padding: 3px 8px;
     border-radius: 20px;
     white-space: nowrap;
     flex-shrink: 0;
@@ -135,34 +134,37 @@
 .hud-right {
     display: flex;
     align-items: center;
-    gap: 10px; /* Было 12px */
+    gap: 10px;
     flex-shrink: 0;
 }
 
 .hud-score {
     background: #0d1117;
     color: var(--text-main);
-    padding: 4px 10px; /* Было: 5px 12px */
+    padding: 4px 10px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .hud-exit-btn {
     background: #21262d;
     border: 1px solid var(--border-color);
     color: var(--accent-red);
-    padding: 5px 11px; /* Было: 6px 14px */
+    padding: 5px 11px;
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 12px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 5px; /* Было 6px */
+    gap: 5px;
     transition: all 0.2s ease;
     white-space: nowrap;
 }
@@ -173,7 +175,7 @@
         border-color: var(--accent-red);
     }
 
-/* Контейнер поля игры (Растягиваем по максимум) */
+/* Контейнер поля игры */
 .game-layout-container {
     display: flex;
     flex: 1;
@@ -222,29 +224,37 @@ canvas {
     .game-viewport {
         height: calc(100vh - 56px);
         min-height: unset;
-        padding: 6px 8px 8px 8px; /* Уменьшены внешние отступы */
-        overflow: hidden; /* Исключаем скроллбар, умещая все элементы */
+        padding: 6px 8px 8px 8px;
+        overflow: hidden;
     }
 
     .global-hud-bar {
-        padding: 6px 10px; /* Было 8px 12px */
-        gap: 8px; /* Было 10px */
+        padding: 6px 10px;
+        gap: 8px;
         margin-bottom: 6px;
         flex-wrap: nowrap;
     }
 
     .hud-left strong {
-        max-width: 130px;
+        max-width: 110px;
         font-size: 12px;
     }
 
-    /* Включение сенсорного геймпада с компактными отступами */
+    .hud-score {
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+
+    .hud-score-label {
+        display: none; /* Скрываем надпись "Счёт:" на узких экранах */
+    }
+
     .mobile-pure-controls {
         display: flex !important;
         justify-content: space-between;
         align-items: center;
-        margin-top: 8px; /* Было 12px */
-        padding: 8px 12px; /* Было 12px 16px */
+        margin-top: 8px;
+        padding: 8px 12px;
         background: var(--panel-bg);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-lg);
@@ -254,12 +264,11 @@ canvas {
         flex-shrink: 0;
     }
 
-    /* Крестовина D-Pad */
     .m-dpad-grid {
         display: grid;
-        grid-template-columns: repeat(3, 36px); /* Было 42px */
-        grid-template-rows: repeat(3, 36px); /* Было 42px */
-        gap: 3px; /* Было 4px */
+        grid-template-columns: repeat(3, 36px);
+        grid-template-rows: repeat(3, 36px);
+        gap: 3px;
         grid-template-areas:
             ". up ."
             "left . right"
@@ -302,10 +311,9 @@ canvas {
         grid-area: down;
     }
 
-    /* Кнопки Щита и Выстрела */
     .m-actions-wrapper {
         display: flex;
-        gap: 10px; /* Было 12px */
+        gap: 10px;
         align-items: center;
     }
 
@@ -314,9 +322,9 @@ canvas {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px; /* Было 4px */
-        width: 52px; /* Было 60px */
-        height: 52px; /* Было 60px */
+        gap: 2px;
+        width: 52px;
+        height: 52px;
         border-radius: 50%;
         border: 1px solid var(--border-color);
         border-bottom-width: 2px;

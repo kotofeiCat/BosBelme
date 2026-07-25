@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace One_Shot_Bounce.Models;
 
@@ -16,6 +14,8 @@ public class Player
 
     public float RotationAngle { get; set; }
 
+    public int BulletCount { get; set; } = 1;
+
     public bool HasBullet { get; set; } = true;
 
     public bool IsAlive { get; set; } = true;
@@ -23,4 +23,8 @@ public class Player
     public bool IsShieldActive { get; set; }
 
     public float ShieldDurationLeft { get; set; }
+
+    public float ShieldCooldownLeft { get; set; }
+
+    public int Score { get; set; } = 0;
 }

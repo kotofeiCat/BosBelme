@@ -20,6 +20,7 @@ public class GameSession
     private readonly float _initialBulletSpeed = 450f;
     private readonly float _speedMultiplierPerBounce = 1.05f;
     private readonly float _maxShieldDuration = 0.4f;
+    private readonly float _shieldCooldown = 3.0f;
 
     private readonly List<string> _bulletsToRemove = new(4);
 
@@ -32,7 +33,6 @@ public class GameSession
         };
     }
 
-    // Метод обновленние кадров
     public void Update(float deltaTime)
     {
         lock (_sessionLock)
@@ -52,7 +52,6 @@ public class GameSession
         }
     }
 
-    // Метод обработки передвижения игрока
     public void MovePlayer(string playerId, Vector2 moveDirection, float deltaTime)
     {
         lock (_sessionLock)
@@ -138,7 +137,20 @@ public class GameSession
         }
     }
 
-    // Метод обработки выстрела
+    // Поворот башни (прицеливание) без попытки выстрела
+    public void Aim(string playerId, float targetAngle)
+    {
+        lock (_sessionLock)
+        {
+            var player = GetPlayerById(playerId);
+            if (player is { IsAlive: true })
+            {
+                player.RotationAngle = targetAngle;
+            }
+        }
+    }
+
+    // Обработка выстрела
     public void HandleShoot(string playerId, float targetAngle)
     {
         lock (_sessionLock)
@@ -146,10 +158,17 @@ public class GameSession
             if (State.Status != MatchStatus.RoundInProgress) return;
 
             var player = GetPlayerById(playerId);
-            if (player is not { IsAlive: true, HasBullet: true }) return;
+            if (player is not { IsAlive: true }) return;
 
-            player.HasBullet = false;
+            // ВСЕГДА обновляем угол поворота башни игрока при клике/выстреле
             player.RotationAngle = targetAngle;
+
+            int currentBullets = player.BulletCount > 0 ? player.BulletCount : (player.HasBullet ? 1 : 0);
+            if (currentBullets <= 0) return;
+
+            currentBullets--;
+            player.BulletCount = currentBullets;
+            player.HasBullet = currentBullets > 0;
 
             Vector2 direction = new Vector2(MathF.Cos(targetAngle), MathF.Sin(targetAngle));
             Vector2 spawnPos = player.Position + direction * (_playerRadius + _bulletRadius + 2f);
@@ -166,7 +185,6 @@ public class GameSession
         }
     }
 
-    // Метод активации щита
     public void ActivateShield(string playerId)
     {
         lock (_sessionLock)
@@ -175,13 +193,14 @@ public class GameSession
 
             var player = GetPlayerById(playerId);
             if (player is not { IsAlive: true, IsShieldActive: false }) return;
+            if (player.ShieldCooldownLeft > 0f) return;
 
             player.IsShieldActive = true;
             player.ShieldDurationLeft = _maxShieldDuration;
+            player.ShieldCooldownLeft = _shieldCooldown;
         }
     }
 
-    // Метод обновления физики игры
     private void UpdatePhysics(float deltaTime)
     {
         float mapWidth = State.CurrentMap.Columns * State.CurrentMap.BlockSize;
@@ -244,12 +263,12 @@ public class GameSession
                                     }
 
                                     bounced = true;
-                                    break; 
+                                    break;
                                 }
                             }
                         }
                     }
-                    if (bounced) break; 
+                    if (bounced) break;
                 }
             }
 
@@ -268,7 +287,6 @@ public class GameSession
         }
     }
 
-    // Метод попадания пули в игрока
     private bool CheckBulletPlayerCollision(ref Bullet bullet, Player? player)
     {
         if (player is not { IsAlive: true }) return false;
@@ -279,6 +297,7 @@ public class GameSession
         {
             if (player.IsShieldActive)
             {
+                player.BulletCount += 1;
                 player.HasBullet = true;
                 return true;
             }
@@ -291,22 +310,31 @@ public class GameSession
         return false;
     }
 
-    // Метод обновления щита игрка
     private void UpdatePlayerShields(float deltaTime)
     {
-        if (State.Player1 is { IsShieldActive: true })
+        UpdateShieldForPlayer(State.Player1, deltaTime);
+        UpdateShieldForPlayer(State.Player2, deltaTime);
+    }
+
+    private static void UpdateShieldForPlayer(Player? player, float deltaTime)
+    {
+        if (player == null) return;
+
+        if (player.IsShieldActive)
         {
-            State.Player1.ShieldDurationLeft -= deltaTime;
-            if (State.Player1.ShieldDurationLeft <= 0) State.Player1.IsShieldActive = false;
+            player.ShieldDurationLeft -= deltaTime;
+            if (player.ShieldDurationLeft <= 0f)
+            {
+                player.IsShieldActive = false;
+            }
         }
-        if (State.Player2 is { IsShieldActive: true })
+
+        if (player.ShieldCooldownLeft > 0f)
         {
-            State.Player2.ShieldDurationLeft -= deltaTime;
-            if (State.Player2.ShieldDurationLeft <= 0) State.Player2.IsShieldActive = false;
+            player.ShieldCooldownLeft = MathF.Max(0f, player.ShieldCooldownLeft - deltaTime);
         }
     }
 
-    // Методы обработки режима игры
     private void UpdateWarmup(float deltaTime)
     {
         State.StatusTimer -= deltaTime;
@@ -327,12 +355,17 @@ public class GameSession
 
         if (!string.IsNullOrEmpty(winnerId))
         {
-            State.Scores[winnerId] = State.Scores.GetValueOrDefault(winnerId, 0) + 1;
-            if (State.Scores[winnerId] >= 5) State.Status = MatchStatus.MatchOver;
+            var winner = GetPlayerById(winnerId);
+            if (winner != null)
+            {
+                winner.Score++;
+                State.Scores[winnerId] = winner.Score;
+            }
+
+            if ((winner?.Score ?? 0) >= 5) State.Status = MatchStatus.MatchOver;
         }
     }
 
-    // Метод начала нового раунда
     public void StartNewRound()
     {
         State.Status = MatchStatus.Warmup;
@@ -344,16 +377,17 @@ public class GameSession
         State.ActiveBullets.Clear();
     }
 
-    // Метод сброса состояния игрока
     private static void ResetPlayer(Player player, Vector2 spawnPoint)
     {
         player.Position = spawnPoint;
         player.IsAlive = true;
+        player.BulletCount = 1;
         player.HasBullet = true;
         player.IsShieldActive = false;
+        player.ShieldDurationLeft = 0f;
+        player.ShieldCooldownLeft = 0f;
     }
 
-    // Вспомогательный метод поиска ID игрка
     private Player? GetPlayerById(string id)
     {
         if (State.Player1?.Id == id) return State.Player1;

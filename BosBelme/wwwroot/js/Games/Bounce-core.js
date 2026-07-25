@@ -21,13 +21,13 @@ let gameState = null;
 let lastInputVector = { x: 0, y: 0 };
 let myConnectionId = null;
 let isGameEnded = false;
+let lastAimAngle = null;
 
 let prevPositions = { p1: null, p2: null };
 let bodyAngles = { p1: 0, p2: Math.PI };
 
 const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false };
 
-// Вспомогательная функция для надёжного определения локального игрока и соперника
 function getLocalPlayerInfo() {
     if (!gameState) return { me: null, opponent: null, isP1: true };
     const p1 = gameState.player1 || gameState.Player1;
@@ -56,7 +56,6 @@ function getLocalPlayerInfo() {
     };
 }
 
-// SignalR Подключение
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/bouncehub")
     .withAutomaticReconnect()
@@ -68,7 +67,6 @@ window.addEventListener("beforeunload", () => {
     }
 });
 
-// Тихое подключение
 connection.start().then(() => {
     myConnectionId = connection.connectionId;
     connection.invoke("JoinRoom", roomCode);
@@ -76,7 +74,6 @@ connection.start().then(() => {
     showErrorToast("Сбой рукопожатия", err.toString());
 });
 
-// Первичная инициализация состояния
 connection.on("InitGame", (state) => {
     gameState = state;
     if (gameState) {
@@ -86,19 +83,19 @@ connection.on("InitGame", (state) => {
     isMapDirty = true;
 });
 
-// Прием легких обновлений состояния
 connection.on("UpdateState", (state) => {
     if (isGameEnded) return;
 
     if (!gameState) {
         gameState = state;
     } else {
-        gameState.player1 = state.player1 || state.Player1;
-        gameState.player2 = state.player2 || state.Player2;
+        gameState.player1 = state.player1 || state.Player1 || gameState.player1;
+        gameState.player2 = state.player2 || state.Player2 || gameState.player2;
         gameState.activeBullets = state.activeBullets || state.ActiveBullets;
         gameState.status = state.status !== undefined ? state.status : state.Status;
         gameState.statusTimer = state.statusTimer !== undefined ? state.statusTimer : state.StatusTimer;
-        gameState.scores = gameState.scores || gameState.Scores;
+
+        gameState.scores = state.scores || state.Scores || gameState.scores;
 
         const newGrid = state.grid || state.Grid;
         if (newGrid) {
@@ -154,7 +151,84 @@ function leaveGameAndRedirect() {
     }
 }
 
-// Обработка ввода (Клавиатура & Мышь)
+// Расчет точных координат на холсте с учетом стилей, рамки и масштаба
+function getCanvasCoords(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const style = window.getComputedStyle(canvas);
+
+    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+    const borderTop = parseFloat(style.borderTopWidth) || 0;
+    const borderRight = parseFloat(style.borderRightWidth) || 0;
+    const borderBottom = parseFloat(style.borderBottomWidth) || 0;
+
+    const paddingLeft = parseFloat(style.paddingLeft) || 0;
+    const paddingTop = parseFloat(style.paddingTop) || 0;
+    const paddingRight = parseFloat(style.paddingRight) || 0;
+    const paddingBottom = parseFloat(style.paddingBottom) || 0;
+
+    const contentWidth = rect.width - borderLeft - borderRight - paddingLeft - paddingRight;
+    const contentHeight = rect.height - borderTop - borderBottom - paddingTop - paddingBottom;
+
+    const mouseX = clientX - rect.left - borderLeft - paddingLeft;
+    const mouseY = clientY - rect.top - borderTop - paddingTop;
+
+    const x = mouseX * (canvas.width / contentWidth);
+    const y = mouseY * (canvas.height / contentHeight);
+
+    return { x, y };
+}
+
+// Логика поворота башни и выстрела
+function handleAimOrShoot(clientX, clientY, isShooting) {
+    if (!gameState || isGameEnded) return;
+
+    const { me: localPlayer } = getLocalPlayerInfo();
+    if (!localPlayer) return;
+
+    const isAlive = localPlayer.isAlive ?? localPlayer.IsAlive;
+    if (!isAlive) return;
+
+    const pos = localPlayer.position || localPlayer.Position;
+    if (!pos) return;
+
+    const px = pos.x !== undefined ? pos.x : pos.X;
+    const py = pos.y !== undefined ? pos.y : pos.Y;
+
+    const coords = getCanvasCoords(clientX, clientY);
+    const angle = Math.atan2(coords.y - py, coords.x - px);
+
+    // Оптимистично поворачиваем башню локально
+    localPlayer.rotationAngle = angle;
+    localPlayer.RotationAngle = angle;
+
+    if (isShooting) {
+        connection.invoke("Shoot", roomCode, angle);
+    } else if (lastAimAngle === null || Math.abs(angle - lastAimAngle) > 0.03) {
+        lastAimAngle = angle;
+        connection.invoke("Aim", roomCode, angle);
+    }
+}
+
+// Поворот башни при движении мыши по игровому полю
+window.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    if (e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        handleAimOrShoot(e.clientX, e.clientY, false);
+    }
+});
+
+// Стрельба / прицеливание при клике мыши
+window.addEventListener("mousedown", (e) => {
+    if (e.button === 0 && gameState && !isGameEnded) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right &&
+            e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            handleAimOrShoot(e.clientX, e.clientY, true);
+        }
+    }
+});
+
 window.addEventListener("keydown", (e) => {
     if (["KeyW", "KeyA", "KeyS", "KeyD"].includes(e.code)) {
         keys[e.code] = true;
@@ -170,50 +244,6 @@ window.addEventListener("keyup", (e) => {
     }
 });
 
-window.addEventListener("mousedown", (e) => {
-    if (e.button === 0 && gameState && !isGameEnded) {
-        const rect = canvas.getBoundingClientRect();
-        if (e.clientX >= rect.left && e.clientX <= rect.right &&
-            e.clientY >= rect.top && e.clientY <= rect.bottom) {
-
-            const { me: localPlayer } = getLocalPlayerInfo();
-
-            if (localPlayer) {
-                const isAlive = localPlayer.isAlive ?? localPlayer.IsAlive;
-                const hasBullet = localPlayer.hasBullet ?? localPlayer.HasBullet;
-
-                if (isAlive && hasBullet) {
-                    // Учитываем возможные стили рамки Canvas для точного позиционирования
-                    const style = window.getComputedStyle(canvas);
-                    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
-                    const borderTop = parseFloat(style.borderTopWidth) || 0;
-
-                    const visibleWidth = rect.width - borderLeft * 2;
-                    const visibleHeight = rect.height - borderTop * 2;
-
-                    const clickX = (e.clientX - rect.left - borderLeft) * (canvas.width / visibleWidth);
-                    const clickY = (e.clientY - rect.top - borderTop) * (canvas.height / visibleHeight);
-
-                    const pos = localPlayer.position || localPlayer.Position;
-                    if (pos) {
-                        const px = pos.x !== undefined ? pos.x : pos.X;
-                        const py = pos.y !== undefined ? pos.y : pos.Y;
-
-                        const angle = Math.atan2(clickY - py, clickX - px);
-
-                        // Оптимистичное местное обновление угла пушки для плавности
-                        localPlayer.rotationAngle = angle;
-                        localPlayer.RotationAngle = angle;
-
-                        connection.invoke("Shoot", roomCode, angle);
-                    }
-                }
-            }
-        }
-    }
-});
-
-// Мобильное управление
 function setupMobileControls() {
     const bindDir = (id, codeStr) => {
         const el = document.getElementById(id);
@@ -231,9 +261,7 @@ function setupMobileControls() {
 
         if (localPlayer) {
             const isAlive = localPlayer.isAlive ?? localPlayer.IsAlive;
-            const hasBullet = localPlayer.hasBullet ?? localPlayer.HasBullet;
-
-            if (isAlive && hasBullet) {
+            if (isAlive) {
                 const rot = localPlayer.rotationAngle ?? localPlayer.RotationAngle ?? 0;
                 connection.invoke("Shoot", roomCode, rot);
             }
@@ -247,7 +275,15 @@ function setupMobileControls() {
 }
 
 function triggerShield() {
-    if (!isGameEnded) connection.invoke("ActivateShield", roomCode);
+    if (!isGameEnded && gameState) {
+        const { me: localPlayer } = getLocalPlayerInfo();
+        if (localPlayer) {
+            const cd = localPlayer.shieldCooldownLeft ?? localPlayer.ShieldCooldownLeft ?? 0;
+            if (cd <= 0) {
+                connection.invoke("ActivateShield", roomCode);
+            }
+        }
+    }
 }
 
 function sendMovementIfNeeded() {
@@ -264,7 +300,6 @@ function sendMovementIfNeeded() {
     }
 }
 
-// Расчет углов и обновление интерфейса
 function updateBodyAngle(p, key) {
     if (!p) return;
     const pos = p.position || p.Position;
@@ -285,17 +320,24 @@ function updateBodyAngle(p, key) {
 
 function updateHUD() {
     if (!gameState) return;
-    const { me, opponent } = getLocalPlayerInfo();
 
-    let scoreStr = "0 : 0";
-    const scores = gameState.scores || gameState.Scores;
-    if (scores && me && opponent) {
-        const myId = me.id ?? me.Id;
-        const oppId = opponent.id ?? opponent.Id;
-        scoreStr = `${scores[myId] || 0} : ${scores[oppId] || 0}`;
-        if (document.getElementById("score-text")) document.getElementById("score-text").textContent = scoreStr;
-    }
-    if (document.getElementById("mb-score")) document.getElementById("mb-score").textContent = scoreStr;
+    const p1 = gameState.player1 || gameState.Player1;
+    const p2 = gameState.player2 || gameState.Player2;
+    const scores = gameState.scores || gameState.Scores || {};
+
+    const p1Id = p1?.id || p1?.Id;
+    const p2Id = p2?.id || p2?.Id;
+
+    const p1Score = p1?.score ?? p1?.Score ?? (p1Id && scores[p1Id] !== undefined ? scores[p1Id] : 0);
+    const p2Score = p2?.score ?? p2?.Score ?? (p2Id && scores[p2Id] !== undefined ? scores[p2Id] : 0);
+
+    const scoreStr = `${p1Score} : ${p2Score}`;
+
+    const scoreEl = document.getElementById("score-text");
+    if (scoreEl) scoreEl.textContent = scoreStr;
+
+    const mbScoreEl = document.getElementById("mb-score");
+    if (mbScoreEl) mbScoreEl.textContent = scoreStr;
 
     const status = gameState.status !== undefined ? gameState.status : gameState.Status;
     const timer = gameState.statusTimer !== undefined ? gameState.statusTimer : gameState.StatusTimer;
@@ -310,17 +352,21 @@ function updateHUD() {
     if (document.getElementById("warmup-timer")) document.getElementById("warmup-timer").textContent = st;
     if (document.getElementById("mb-timer")) document.getElementById("mb-timer").textContent = st;
 
-    const hasBullet = me && (me.hasBullet !== undefined ? me.hasBullet : me.HasBullet);
-    if (document.getElementById("bullet-state")) {
-        document.getElementById("bullet-state").className = hasBullet ? "bullet-indicator" : "bullet-indicator bullet-empty";
-    }
-    if (document.getElementById("mb-bullet")) {
-        document.getElementById("mb-bullet").textContent = hasBullet ? "1/1" : "0/1";
-        document.getElementById("mb-bullet").style.color = hasBullet ? "#00ff55" : "#ff3333";
+    const { me } = getLocalPlayerInfo();
+    if (me) {
+        const hasBullet = me.hasBullet !== undefined ? me.hasBullet : me.HasBullet;
+        const bulletCount = me.bulletCount !== undefined ? me.bulletCount : (me.BulletCount !== undefined ? me.BulletCount : (hasBullet ? 1 : 0));
+
+        if (document.getElementById("bullet-state")) {
+            document.getElementById("bullet-state").className = bulletCount > 0 ? "bullet-indicator" : "bullet-indicator bullet-empty";
+        }
+        if (document.getElementById("mb-bullet")) {
+            document.getElementById("mb-bullet").textContent = `${bulletCount}`;
+            document.getElementById("mb-bullet").style.color = bulletCount > 0 ? "#00ff55" : "#ff3333";
+        }
     }
 }
 
-// Отрисовка Canvas
 function renderMapToBuffer() {
     mapCtx.fillStyle = "#9bbc0f";
     mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
@@ -405,7 +451,6 @@ function drawPlayer(p, col, key) {
         return;
     }
 
-    // Гусеницы и корпус
     ctx.save();
     ctx.translate(px, py);
     ctx.rotate(bodyAngles[key] || 0);
@@ -429,7 +474,6 @@ function drawPlayer(p, col, key) {
     ctx.fillRect(-13, -7, 3, 14);
     ctx.restore();
 
-    // Башня и дуло
     ctx.save();
     ctx.translate(px, py);
     ctx.rotate(turretAngle || 0);
@@ -448,7 +492,6 @@ function drawPlayer(p, col, key) {
     ctx.beginPath(); ctx.arc(-2, 0, 3, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    // Отрисовка щита
     const isShieldActive = p.isShieldActive !== undefined ? p.isShieldActive : p.IsShieldActive;
     if (isShieldActive) {
         ctx.save(); ctx.translate(px, py);
@@ -459,7 +502,6 @@ function drawPlayer(p, col, key) {
     }
 }
 
-// Вспомогательные функции для всплывающих сообщений
 function getOrCreateToastContainer() {
     let container = document.getElementById('toast-container');
     if (!container) {

@@ -1,6 +1,5 @@
 ﻿namespace BosBelme.Service.Service;
 
-// Сервис логики игры
 public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvider serviceProvider) : IBounceGameManager
 {
     private readonly ConcurrentDictionary<string, GameSessionInstance> _sessions = new();
@@ -44,7 +43,9 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
             {
                 Id = playerId,
                 Name = playerName,
-                IsAlive = true
+                IsAlive = true,
+                BulletCount = 1,
+                HasBullet = true
             };
 
             InitializeDefaultMap(newSession.State.CurrentMap);
@@ -65,6 +66,7 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
             return newSession;
         }
     }
+
     private EngineGameSession AttachPlayerToSession(GameSessionInstance instance, string roomId, string playerId, string playerName)
     {
         var session = instance.Session;
@@ -92,6 +94,8 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
                 Id = playerId,
                 Name = playerName,
                 IsAlive = true,
+                BulletCount = 1,
+                HasBullet = true,
                 Position = session.State.CurrentMap.Player2SpawnPoint
             };
 
@@ -118,9 +122,28 @@ public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvid
 
                     if (player is { IsAlive: true })
                     {
-                        player.RotationAngle = direction != Vector2.Zero ? MathF.Atan2(direction.Y, direction.X) : player.RotationAngle;
                         _playerMoveDirections[playerId] = direction;
                     }
+                }
+                finally
+                {
+                    instance.Semaphore.Release();
+                }
+            }
+            catch (Exception) when (instance.Cts.IsCancellationRequested) { }
+        }
+    }
+
+    public async Task UpdatePlayerAimAsync(string roomId, string playerId, float angle)
+    {
+        if (_sessions.TryGetValue(roomId, out var instance))
+        {
+            try
+            {
+                await instance.Semaphore.WaitAsync(instance.Cts.Token);
+                try
+                {
+                    instance.Session.Aim(playerId, angle);
                 }
                 finally
                 {

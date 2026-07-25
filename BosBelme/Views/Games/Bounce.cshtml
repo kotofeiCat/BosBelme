@@ -23,7 +23,10 @@
         </div>
 
         <div class="hud-right">
-            <div class="hud-score">Счёт: <span id="score-text" style="color: var(--accent-green);">0 : 0</span></div>
+            <div class="hud-score">
+                <span class="hud-score-label">Счёт:</span>
+                <span id="score-text" style="color: var(--accent-green);">0 : 0</span>
+            </div>
             <form asp-controller="Hub" asp-action="ReturnToLobby" asp-route-code="@roomCode" method="post" style="display:inline;">
                 <button type="submit" class="hud-exit-btn">
                     <i class="fa-solid fa-door-open"></i>
@@ -68,8 +71,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
         window.gameRoomConfig = {
-        roomCode: "@roomCode",
-        currentUserName: "@User.FindFirstValue(ClaimTypes.Name)"
+            roomCode: "@roomCode",
+            currentUserName: "@User.FindFirstValue(ClaimTypes.Name)"
         };
     </script>
     <script src="~/js/Games/Bounce-core.js" asp-append-version="true"></script>

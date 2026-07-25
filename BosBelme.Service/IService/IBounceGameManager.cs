@@ -9,4 +9,6 @@ public interface IBounceGameManager
     Task ActivateShieldAsync(string roomId, string playerId);
     Task<string?> HandlePlayerDisconnectAsync(string playerId);
     void RemoveSession(string roomId);
+
+    Task UpdatePlayerAimAsync(string roomId, string playerId, float angle);
 }
