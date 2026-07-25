@@ -1,5 +1,6 @@
 ﻿namespace BosBelme.Service.Service;
 
+// Сервис логики игры
 public class BounceGameManager(IHubContext<BounceHub> hubContext, IServiceProvider serviceProvider) : IBounceGameManager
 {
     private readonly ConcurrentDictionary<string, GameSessionInstance> _sessions = new();
